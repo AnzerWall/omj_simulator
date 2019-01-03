@@ -1,0 +1,23 @@
+{
+  "name": "omj_simulator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "tslint --fix -c tslint.json 'src/**/*.ts'"
+  },
+  "keywords": [
+    "onmyouji"
+  ],
+  "author": "anzerwall",
+  "license": "MIT",
+  "devDependencies": {
+    "tslint": "^5.11.0",
+    "tslint-config-egg": "^1.0.0",
+    "typescript": "^3.2.2"
+  },
+  "dependencies": {
+    "lodash": "^4.17.11"
+  }
+}

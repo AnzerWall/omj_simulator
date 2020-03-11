@@ -9,8 +9,9 @@ let entity_counter = 0;
 export class Entity implements IHandler {
     event_priority: number = 0;
     entity_id: number;
-    properties: Map<string, number>;
-    effects: Effect[];
+    properties: Map<string, number>; // 基础属性，最大生命 攻击等
+    effects: Effect[]; // 附加效果，影响基础属性
+
     constructor() {
         this.entity_id = ++entity_counter;
         this.properties = new Map();
@@ -39,7 +40,7 @@ export class Entity implements IHandler {
     getComputedProperty(name) {
         const origin = this.properties.get(name);
         if (isNil(origin)) return null;
-        const effects = this.effects.filter(e => e.property_name === name);
+        const effects = this.effects.filter(e => e.property_name === name); // 过滤出影响该属性的effect
 
         return effects.reduce((current, e: Effect) => {
             switch (e.op) {

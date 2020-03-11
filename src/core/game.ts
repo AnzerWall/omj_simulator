@@ -4,7 +4,6 @@ import Codes from './codes';
 import { Event } from '.';
 import { IHandler } from './ihandler';
 
-
 export default class Game {
     event_queue: Event[]; // 事件队列
     handlersMap: { [code: number]: Array<{ priority: number, handler: IHandler}> }; // 事件监听者表

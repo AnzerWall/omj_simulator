@@ -7,4 +7,4 @@ export default class Event {
         Object.seal(this.data);
     }
 }
-
+

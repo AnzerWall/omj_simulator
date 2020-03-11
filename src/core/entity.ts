@@ -3,7 +3,7 @@ import { IHandler } from './ihandler';
 import Game from './game';
 import Effect, { Operator } from './effect';
 import { isNil } from 'lodash';
-
+import util from 'util';
 let entity_counter = 0;
 
 export class Entity implements IHandler {
@@ -60,6 +60,24 @@ export class Entity implements IHandler {
     }
 
     handleEvent(game: Game, code: Codes, data: object): void {
+    }
+
+    toJSON() {
+        const ret: any = {};
+
+        ret.event_priority = this.event_priority;
+        ret.entity_id = this.entity_id;
+
+        this.properties.forEach((value, key) => {
+           ret[key] = value;
+           ret[key + '[computed]'] = this.getComputedProperty(key);
+        });
+        return ret;
+
+    }
+
+    [util.inspect.custom]() {
+        return JSON.stringify(this.toJSON(), null, 2);
     }
 
 }

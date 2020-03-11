@@ -19,6 +19,7 @@
     "typescript": "^3.2.2"
   },
   "dependencies": {
+    "@types/node": "^13.9.0",
     "lodash": "^4.17.11",
     "xlsx": "^0.15.5"
   }

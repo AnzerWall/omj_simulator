@@ -55,6 +55,10 @@ export class Entity implements IHandler {
         }, origin);
     }
 
+    setProperty(name, value = 0) {
+        this.properties.set(name, value);
+    }
+
     handleEvent(game: Game, code: Codes, data: object): void {
     }
 

@@ -1,0 +1,9 @@
+.idea/
+.project/
+.sublime-project/
+.tern-project/
+logs/
+node_modules/
+*.log
+package-lock.json
+src_old

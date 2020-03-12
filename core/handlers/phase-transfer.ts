@@ -1,5 +1,4 @@
-import { IHandler } from '../core/ihandler';
-import { Codes, Event, Game } from '../core';
+import { Codes, Event, Game, IHandler } from '../system';
 
 export default class PhaseTransfer implements IHandler {
     constructor(public currentPhase: Codes, public nextPhase: Codes) {}

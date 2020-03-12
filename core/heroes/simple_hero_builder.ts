@@ -14,10 +14,10 @@
 //     "def_pt": 86,
 //     "total_pt": 300
 // }
-import Hero from '../core/hero';
+import Hero from '../system/hero';
 import { BattleProperties } from '../fixtures/hero-property-names';
 
-export default function build (data) {
+export default function build (data: any) {
     return class SimpleHero extends Hero {
         constructor() {
             super();

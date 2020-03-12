@@ -2,7 +2,6 @@ import { Entity } from './entity';
 import { BattleProperties, BattleStatus } from '../fixtures/hero-property-names';
 import { values, forEach } from 'lodash';
 export default class Hero extends Entity {
-    team_id: number; // 队伍id
     position: number; // 位置
     hp: number; // 生命值
     shield: number; // 生命值
@@ -14,6 +13,7 @@ export default class Hero extends Entity {
         this.hp = 1;
         this.shield = 0;
         this.index = 0;
+        this.important = true;
         forEach(values(BattleProperties), key => {
            this.setProperty(key, 0);
         });

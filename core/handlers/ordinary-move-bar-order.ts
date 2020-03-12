@@ -1,5 +1,4 @@
-import { IHandler } from '../core/ihandler';
-import { Codes, Event, Game } from '../core';
+import { Codes, Event, Game, IHandler } from '../system';
 
 export default class OrdinaryMoveBarOrder implements IHandler {
         event_priority: number = -1;
@@ -9,4 +8,3 @@ export default class OrdinaryMoveBarOrder implements IHandler {
             }
         }
     }
-

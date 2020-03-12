@@ -2,12 +2,13 @@
 
 [node.js](https://nodejs.org)  
 [vue.js](https://vuejs.org)  
+[pixi.js](https://www.pixijs.com/)  
 
 # 运行方式
 
 
 ```shell
-npm run start
+npm run serve
 ```
 
 # Roadmap

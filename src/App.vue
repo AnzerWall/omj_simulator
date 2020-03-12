@@ -2,22 +2,26 @@
     <a-layout id="app">
         <a-layout-sider :trigger="null" collapsible v-model="collapsed">
             <div class="logo">{{collapsed ? 'OS' : 'Onmyoji Simulator'}}</div>
-            <a-menu class="site-menu" theme="dark" mode="inline" :defaultSelectedKeys="['1']">
-                <a-menu-item key="1">
-                    <a-icon type="user"/>
+            <a-menu class="site-menu" theme="dark" mode="inline" :defaultSelectedKeys="['1']" @select="onSelectMenu" :selectedKeys="selectedKeys">
+                <a-menu-item key="/">
+                    <a-icon type="home"/>
                     <span>首页</span>
                 </a-menu-item>
-                <a-menu-item key="2">
-                    <a-icon type="video-camera"/>
+                <a-menu-item key="/team">
+                    <a-icon type="profile"/>
                     <span>队伍设置</span>
                 </a-menu-item>
-                <a-menu-item key="3">
-                    <a-icon type="upload"/>
+                <a-menu-item key="/debug">
+                    <a-icon type="build"/>
                     <span>对战调试</span>
                 </a-menu-item>
-                <a-menu-item key="4">
-                    <a-icon type="upload"/>
+                <a-menu-item key="/predict">
+                    <a-icon type="crown"/>
                     <span>胜率估算</span>
+                </a-menu-item>
+                <a-menu-item key="/hero">
+                    <a-icon type="table"/>
+                    <span>英雄列表</span>
                 </a-menu-item>
             </a-menu>
         </a-layout-sider>
@@ -43,9 +47,22 @@
 <script>
     export default {
         data() {
+            console.log(this.$route)
             return {
-                collapsed: false,
+                collapsed: false
             };
+        },
+        methods: {
+            onSelectMenu({ selectedKeys }) {
+                if (selectedKeys && selectedKeys.length) {
+                    this.$router.push(selectedKeys[0])
+                }
+            }
+        },
+        computed:{
+            selectedKeys() {
+                return [this.$route.path]
+            }
         }
     }
 </script>

@@ -6,7 +6,15 @@
 
 # 运行方式
 
+## 安装node
 
+从(官网)[https://nodejs.org]根据平台下载安装包
+## 安装依赖
+
+```shell
+npm i
+```
+## 运行
 ```shell
 npm run serve
 ```

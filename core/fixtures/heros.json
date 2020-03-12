@@ -13,7 +13,12 @@
     "atk_pt": 124,
     "hp_pt": 90,
     "def_pt": 86,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "煉獄茨木童子",
+    "name_en": "",
+    "name_roma": "rengoku ibarakidouji",
+    "name_kana": "れんごくいばらきどうじ",
+    "id": 322
   },
   {
     "index": 2,
@@ -29,7 +34,12 @@
     "atk_pt": 130,
     "hp_pt": 85,
     "def_pt": 85,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "少羽大天狗",
+    "name_en": "",
+    "name_roma": "shouu ootengu",
+    "name_kana": "しょううおおてんぐ",
+    "id": 315
   },
   {
     "index": 3,
@@ -44,7 +54,12 @@
     "atk_pt": 152,
     "hp_pt": 109,
     "def_pt": 109,
-    "total_pt": 370
+    "total_pt": 370,
+    "name_jp": "",
+    "name_en": "",
+    "name_roma": "",
+    "name_kana": "",
+    "id": 0
   },
   {
     "index": 4,
@@ -60,7 +75,12 @@
     "atk_pt": 116,
     "hp_pt": 93,
     "def_pt": 91,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "桔梗",
+    "name_en": "",
+    "name_roma": "kikyou",
+    "name_kana": "ききょう",
+    "id": 319
   },
   {
     "index": 5,
@@ -76,7 +96,12 @@
     "atk_pt": 68,
     "hp_pt": 125,
     "def_pt": 107,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "白蔵主",
+    "name_en": "",
+    "name_roma": "hakuzousu",
+    "name_kana": "はくぞうす",
+    "id": 316
   },
   {
     "index": 6,
@@ -92,7 +117,12 @@
     "atk_pt": 124,
     "hp_pt": 88,
     "def_pt": 88,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "殺生丸",
+    "name_en": "Sesshomaru",
+    "name_roma": "sesshoumaru",
+    "name_kana": "せっしょうまる",
+    "id": 314
   },
   {
     "index": 7,
@@ -108,7 +138,12 @@
     "atk_pt": 111,
     "hp_pt": 100,
     "def_pt": 89,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "犬夜叉",
+    "name_en": "Inuyasha",
+    "name_roma": "inuyasha",
+    "name_kana": "いぬやしゃ",
+    "id": 313
   },
   {
     "index": 8,
@@ -124,7 +159,12 @@
     "atk_pt": 125,
     "hp_pt": 95,
     "def_pt": 80,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "鬼切",
+    "name_en": "Onikiri",
+    "name_roma": "onikiri",
+    "name_kana": "おにきり",
+    "id": 312
   },
   {
     "index": 9,
@@ -140,7 +180,12 @@
     "atk_pt": 121,
     "hp_pt": 89,
     "def_pt": 90,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "面霊気",
+    "name_en": "",
+    "name_roma": "menreiki",
+    "name_kana": "めんれいき",
+    "id": 311
   },
   {
     "index": 10,
@@ -156,7 +201,12 @@
     "atk_pt": 119,
     "hp_pt": 81,
     "def_pt": 100,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "鬼灯",
+    "name_en": "Hozuki",
+    "name_roma": "hoozuki",
+    "name_kana": "ほおずき",
+    "id": 308
   },
   {
     "index": 11,
@@ -172,7 +222,12 @@
     "atk_pt": 125,
     "hp_pt": 90,
     "def_pt": 89,
-    "total_pt": 304
+    "total_pt": 304,
+    "name_jp": "薬売り",
+    "name_en": "Medicine Seller",
+    "name_roma": "kusuri uri",
+    "name_kana": "くすりうり",
+    "id": 305
   },
   {
     "index": 12,
@@ -188,7 +243,12 @@
     "atk_pt": 112,
     "hp_pt": 111,
     "def_pt": 102,
-    "total_pt": 325
+    "total_pt": 325,
+    "name_jp": "御饌津",
+    "name_en": "",
+    "name_roma": "miketsu",
+    "name_kana": "みけつ",
+    "id": 304
   },
   {
     "index": 13,
@@ -204,7 +264,12 @@
     "atk_pt": 125,
     "hp_pt": 110,
     "def_pt": 80,
-    "total_pt": 315
+    "total_pt": 315,
+    "name_jp": "玉藻前",
+    "name_en": "Tamamonomae",
+    "name_roma": "tamamono mae",
+    "name_kana": "たまものまえ",
+    "id": 300
   },
   {
     "index": 14,
@@ -220,7 +285,12 @@
     "atk_pt": 127,
     "hp_pt": 100,
     "def_pt": 88,
-    "total_pt": 315
+    "total_pt": 315,
+    "name_jp": "山風",
+    "name_en": "",
+    "name_roma": "yamakaze",
+    "name_kana": "やまかぜ",
+    "id": 296
   },
   {
     "index": 15,
@@ -236,7 +306,12 @@
     "atk_pt": 113,
     "hp_pt": 100,
     "def_pt": 87,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "奴良リクオ",
+    "name_en": "",
+    "name_roma": "nura rikuo",
+    "name_kana": "ぬらりくお",
+    "id": 294
   },
   {
     "index": 16,
@@ -252,7 +327,12 @@
     "atk_pt": 124,
     "hp_pt": 88,
     "def_pt": 88,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "雪童子",
+    "name_en": "Yuki",
+    "name_roma": "yuki douji",
+    "name_kana": "ゆきどうじ",
+    "id": 292
   },
   {
     "index": 17,
@@ -268,7 +348,12 @@
     "atk_pt": 112,
     "hp_pt": 100,
     "def_pt": 88,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "彼岸花",
+    "name_en": "Higanbana",
+    "name_roma": "higanbana",
+    "name_kana": "ひがんばな",
+    "id": 288
   },
   {
     "index": 18,
@@ -284,7 +369,12 @@
     "atk_pt": 124,
     "hp_pt": 90,
     "def_pt": 111,
-    "total_pt": 325
+    "total_pt": 325,
+    "name_jp": "荒",
+    "name_en": "Susabi",
+    "name_roma": "susabi",
+    "name_kana": "すさび",
+    "id": 283
   },
   {
     "index": 19,
@@ -300,7 +390,12 @@
     "atk_pt": 87,
     "hp_pt": 121,
     "def_pt": 92,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "かぐや姫",
+    "name_en": "Kaguya",
+    "name_roma": "kaguya hime",
+    "name_kana": "かぐやひめ",
+    "id": 280
   },
   {
     "index": 20,
@@ -316,7 +411,12 @@
     "atk_pt": 86,
     "hp_pt": 124,
     "def_pt": 90,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "花鳥風月",
+    "name_en": "Hana",
+    "name_roma": "kachouhuugetsu",
+    "name_kana": "かちょうふうげつ",
+    "id": 279
   },
   {
     "index": 21,
@@ -332,7 +432,12 @@
     "atk_pt": 89,
     "hp_pt": 122,
     "def_pt": 89,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "一目連",
+    "name_en": "Ichimokuren",
+    "name_roma": "ichimokuren",
+    "name_kana": "いちもくれん",
+    "id": 272
   },
   {
     "index": 22,
@@ -348,7 +453,12 @@
     "atk_pt": 122,
     "hp_pt": 88,
     "def_pt": 90,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "妖刀姫",
+    "name_en": "Yoto Hime",
+    "name_roma": "youtou hime",
+    "name_kana": "ようとうひめ",
+    "id": 269
   },
   {
     "index": 23,
@@ -364,7 +474,12 @@
     "atk_pt": 91,
     "hp_pt": 102,
     "def_pt": 107,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "青行灯",
+    "name_en": "Aoandon",
+    "name_roma": "aoandon",
+    "name_kana": "あおあんどん",
+    "id": 266
   },
   {
     "index": 24,
@@ -380,7 +495,12 @@
     "atk_pt": 120,
     "hp_pt": 90,
     "def_pt": 90,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "茨木童子",
+    "name_en": "Ibaraki Doji",
+    "name_roma": "ibaraki douji",
+    "name_kana": "いばらきどうじ",
+    "id": 265
   },
   {
     "index": 25,
@@ -396,7 +516,12 @@
     "atk_pt": 105,
     "hp_pt": 98,
     "def_pt": 97,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "シシオ",
+    "name_en": "Shishio",
+    "name_roma": "shishio",
+    "name_kana": "ししお",
+    "id": 259
   },
   {
     "index": 26,
@@ -412,7 +537,12 @@
     "atk_pt": 117,
     "hp_pt": 92,
     "def_pt": 91,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "両面仏",
+    "name_en": "Ryomen",
+    "name_roma": "ryoumen botoke",
+    "name_kana": "りょうめんぼとけ",
+    "id": 258
   },
   {
     "index": 27,
@@ -428,7 +558,12 @@
     "atk_pt": 92,
     "hp_pt": 105,
     "def_pt": 103,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "閻魔",
+    "name_en": "Enma",
+    "name_roma": "enma",
+    "name_kana": "えんま",
+    "id": 255
   },
   {
     "index": 28,
@@ -444,7 +579,12 @@
     "atk_pt": 112,
     "hp_pt": 97,
     "def_pt": 91,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "荒川の主",
+    "name_en": "Lord Arakawa ",
+    "name_roma": "arakawa no aruji",
+    "name_kana": "あらかわのあるじ",
+    "id": 248
   },
   {
     "index": 29,
@@ -460,7 +600,12 @@
     "atk_pt": 117,
     "hp_pt": 98,
     "def_pt": 85,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "酒呑童子",
+    "name_en": "Shuten Doji",
+    "name_roma": "shuten douji",
+    "name_kana": "しゅてんどうじ",
+    "id": 219
   },
   {
     "index": 30,
@@ -476,7 +621,12 @@
     "atk_pt": 117,
     "hp_pt": 88,
     "def_pt": 95,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "大天狗",
+    "name_en": "Ootengu",
+    "name_roma": "ootengu",
+    "name_kana": "おおてんぐ",
+    "id": 217
   },
   {
     "index": 31,
@@ -492,7 +642,12 @@
     "atk_pt": 113,
     "hp_pt": 82,
     "def_pt": 105,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "納棺師",
+    "name_en": "",
+    "name_roma": "noukanshi",
+    "name_kana": "のうかんし",
+    "id": 321
   },
   {
     "index": 32,
@@ -508,7 +663,12 @@
     "atk_pt": 102,
     "hp_pt": 103,
     "def_pt": 95,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "一反木綿",
+    "name_en": "",
+    "name_roma": "ittanmomen",
+    "name_kana": "いったんもめん",
+    "id": 320
   },
   {
     "index": 33,
@@ -524,7 +684,12 @@
     "atk_pt": 110,
     "hp_pt": 105,
     "def_pt": 85,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "お菊虫",
+    "name_en": "",
+    "name_roma": "okikumushi",
+    "name_kana": "おきくむし",
+    "id": 318
   },
   {
     "index": 34,
@@ -540,7 +705,12 @@
     "atk_pt": 67,
     "hp_pt": 114,
     "def_pt": 116,
-    "total_pt": 297
+    "total_pt": 297,
+    "name_jp": "人面樹",
+    "name_en": "",
+    "name_roma": "ninmenju",
+    "name_kana": "にんめんじゅ",
+    "id": 317
   },
   {
     "index": 35,
@@ -556,7 +726,12 @@
     "atk_pt": 118,
     "hp_pt": 93,
     "def_pt": 91,
-    "total_pt": 302
+    "total_pt": 302,
+    "name_jp": "お香",
+    "name_en": "Oko",
+    "name_roma": "okou",
+    "name_kana": "おこう",
+    "id": 309
   },
   {
     "index": 36,
@@ -572,7 +747,12 @@
     "atk_pt": 112,
     "hp_pt": 94,
     "def_pt": 94,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "猫又",
+    "name_en": "",
+    "name_roma": "nekomata",
+    "name_kana": "ねこまた",
+    "id": 307
   },
   {
     "index": 37,
@@ -588,7 +768,12 @@
     "atk_pt": 112,
     "hp_pt": 87,
     "def_pt": 101,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "棋聖",
+    "name_en": "Kisei",
+    "name_roma": "kisei",
+    "name_kana": "きせい",
+    "id": 303
   },
   {
     "index": 38,
@@ -604,7 +789,12 @@
     "atk_pt": 84,
     "hp_pt": 122,
     "def_pt": 90,
-    "total_pt": 296
+    "total_pt": 296,
+    "name_jp": "薫",
+    "name_en": "",
+    "name_roma": "kaoru",
+    "name_kana": "かおる",
+    "id": 298
   },
   {
     "index": 39,
@@ -620,7 +810,12 @@
     "atk_pt": 88,
     "hp_pt": 123,
     "def_pt": 89,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "日和坊",
+    "name_en": "Hiyoribou",
+    "name_roma": "hiyoribou",
+    "name_kana": "ひよりぼう",
+    "id": 297
   },
   {
     "index": 40,
@@ -636,7 +831,12 @@
     "atk_pt": 86,
     "hp_pt": 112,
     "def_pt": 102,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "追月神",
+    "name_en": "Oitsuki",
+    "name_roma": "oitsukigami",
+    "name_kana": "おいつきがみ",
+    "id": 295
   },
   {
     "index": 41,
@@ -652,7 +852,12 @@
     "atk_pt": 102,
     "hp_pt": 83,
     "def_pt": 115,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "百目鬼",
+    "name_en": "Dodomeki",
+    "name_roma": "doumeki",
+    "name_kana": "どうめき",
+    "id": 293
   },
   {
     "index": 42,
@@ -668,7 +873,12 @@
     "atk_pt": 100,
     "hp_pt": 100,
     "def_pt": 100,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "書妖",
+    "name_en": "Bukkuman",
+    "name_roma": "shoyou",
+    "name_kana": "しょよう",
+    "id": 291
   },
   {
     "index": 43,
@@ -684,7 +894,12 @@
     "atk_pt": 109,
     "hp_pt": 95,
     "def_pt": 96,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "小松丸",
+    "name_en": "Komatsu",
+    "name_roma": "komatsumaru",
+    "name_kana": "こまつまる",
+    "id": 290
   },
   {
     "index": 44,
@@ -700,7 +915,12 @@
     "atk_pt": 91,
     "hp_pt": 120,
     "def_pt": 89,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "匣の少女",
+    "name_en": "Hako Shoujo",
+    "name_roma": "hako no shoujo",
+    "name_kana": "はこのしょうじょ",
+    "id": 287
   },
   {
     "index": 45,
@@ -716,7 +936,12 @@
     "atk_pt": 122,
     "hp_pt": 88,
     "def_pt": 90,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "以津真天",
+    "name_en": "Itsumade",
+    "name_roma": "itsumade",
+    "name_kana": "いつまで",
+    "id": 286
   },
   {
     "index": 46,
@@ -732,7 +957,12 @@
     "atk_pt": 112,
     "hp_pt": 100,
     "def_pt": 88,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "鴆",
+    "name_en": "Chin",
+    "name_roma": "chin",
+    "name_kana": "ちん",
+    "id": 285
   },
   {
     "index": 47,
@@ -748,7 +978,12 @@
     "atk_pt": 87,
     "hp_pt": 120,
     "def_pt": 93,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "金魚姫",
+    "name_en": "Kingyo",
+    "name_roma": "kingyo hime",
+    "name_kana": "きんぎょひめ",
+    "id": 282
   },
   {
     "index": 48,
@@ -764,7 +999,12 @@
     "atk_pt": 118,
     "hp_pt": 93,
     "def_pt": 89,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "煙々羅",
+    "name_en": "Enenra",
+    "name_roma": "enenra",
+    "name_kana": "えんえんら",
+    "id": 281
   },
   {
     "index": 49,
@@ -780,7 +1020,12 @@
     "atk_pt": 119,
     "hp_pt": 92,
     "def_pt": 89,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "白童子",
+    "name_en": "Shiro",
+    "name_roma": "shiro douji",
+    "name_kana": "しろどうじ",
+    "id": 278
   },
   {
     "index": 50,
@@ -796,7 +1041,12 @@
     "atk_pt": 126,
     "hp_pt": 87,
     "def_pt": 87,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "黒童子",
+    "name_en": "Kuro",
+    "name_roma": "kuro douji",
+    "name_kana": "くろどうじ",
+    "id": 277
   },
   {
     "index": 51,
@@ -812,7 +1062,12 @@
     "atk_pt": 122,
     "hp_pt": 89,
     "def_pt": 89,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "夜叉",
+    "name_en": "Yasha",
+    "name_roma": "yasha",
+    "name_kana": "やしゃ",
+    "id": 276
   },
   {
     "index": 52,
@@ -828,7 +1083,12 @@
     "atk_pt": 122,
     "hp_pt": 89,
     "def_pt": 89,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "万年竹",
+    "name_en": "Mannendake",
+    "name_roma": "mannen dake",
+    "name_kana": "まんねんだけ",
+    "id": 275
   },
   {
     "index": 53,
@@ -844,7 +1104,12 @@
     "atk_pt": 89,
     "hp_pt": 117,
     "def_pt": 94,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "青坊主",
+    "name_en": "Aobozu",
+    "name_roma": "ao bouzu",
+    "name_kana": "あおぼうず",
+    "id": 273
   },
   {
     "index": 54,
@@ -860,7 +1125,12 @@
     "atk_pt": 117,
     "hp_pt": 93,
     "def_pt": 90,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "般若",
+    "name_en": "Hannya",
+    "name_roma": "hannya",
+    "name_kana": "はんにゃ",
+    "id": 271
   },
   {
     "index": 55,
@@ -876,7 +1146,12 @@
     "atk_pt": 120,
     "hp_pt": 90,
     "def_pt": 90,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "絡新婦",
+    "name_en": "Jorogumo",
+    "name_roma": "jorou gumo",
+    "name_kana": "じょろうぐも",
+    "id": 270
   },
   {
     "index": 56,
@@ -892,7 +1167,12 @@
     "atk_pt": 88,
     "hp_pt": 113,
     "def_pt": 99,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "恵比寿",
+    "name_en": "Ebisu",
+    "name_roma": "ebisu",
+    "name_kana": "えびす",
+    "id": 268
   },
   {
     "index": 57,
@@ -908,7 +1188,12 @@
     "atk_pt": 89,
     "hp_pt": 121,
     "def_pt": 90,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "桜の精",
+    "name_en": "Sakura",
+    "name_roma": "sakura no sei",
+    "name_kana": "さくらのせい",
+    "id": 267
   },
   {
     "index": 58,
@@ -924,7 +1209,12 @@
     "atk_pt": 115,
     "hp_pt": 95,
     "def_pt": 90,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "白狼",
+    "name_en": "Hakuro",
+    "name_roma": "hakurou",
+    "name_kana": "はくろう",
+    "id": 264
   },
   {
     "index": 59,
@@ -940,7 +1230,12 @@
     "atk_pt": 98,
     "hp_pt": 101,
     "def_pt": 101,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "二口女",
+    "name_en": "Futakuchi",
+    "name_roma": "hutakuchi onna",
+    "name_kana": "ふたくちおんな",
+    "id": 263
   },
   {
     "index": 60,
@@ -956,7 +1251,12 @@
     "atk_pt": 115,
     "hp_pt": 95,
     "def_pt": 90,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "姑獲鳥",
+    "name_en": "Ubume",
+    "name_roma": "ubume",
+    "name_kana": "うぶめ",
+    "id": 262
   },
   {
     "index": 61,
@@ -972,7 +1272,12 @@
     "atk_pt": 100,
     "hp_pt": 102,
     "def_pt": 98,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "鎌鼬",
+    "name_en": "Kamaitachi",
+    "name_roma": "kamaitachi",
+    "name_kana": "かまいたち",
+    "id": 261
   },
   {
     "index": 62,
@@ -988,7 +1293,12 @@
     "atk_pt": 90,
     "hp_pt": 104,
     "def_pt": 106,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "清姫",
+    "name_en": "Kiyohime",
+    "name_roma": "kiyo hime",
+    "name_kana": "きよひめ",
+    "id": 260
   },
   {
     "index": 63,
@@ -1004,7 +1314,12 @@
     "atk_pt": 90,
     "hp_pt": 105,
     "def_pt": 105,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "夢喰い",
+    "name_en": "Yumekui",
+    "name_roma": "yume kui",
+    "name_kana": "ゆめくい",
+    "id": 257
   },
   {
     "index": 64,
@@ -1020,7 +1335,12 @@
     "atk_pt": 96,
     "hp_pt": 111,
     "def_pt": 93,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "妖琴師",
+    "name_en": "Maestro",
+    "name_roma": "youkinshi",
+    "name_kana": "ようきんし",
+    "id": 256
   },
   {
     "index": 65,
@@ -1036,7 +1356,12 @@
     "atk_pt": 114,
     "hp_pt": 91,
     "def_pt": 95,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "妖狐",
+    "name_en": "Youko",
+    "name_roma": "youko",
+    "name_kana": "ようこ",
+    "id": 254
   },
   {
     "index": 66,
@@ -1052,7 +1377,12 @@
     "atk_pt": 112,
     "hp_pt": 96,
     "def_pt": 92,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "吸血姫",
+    "name_en": "Vampira",
+    "name_roma": "kyuuketsu hime",
+    "name_kana": "きゅうけつひめ",
+    "id": 253
   },
   {
     "index": 67,
@@ -1068,7 +1398,12 @@
     "atk_pt": 100,
     "hp_pt": 100,
     "def_pt": 100,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "鳳凰火",
+    "name_en": "Hououga",
+    "name_roma": "hououka",
+    "name_kana": "ほうおうか",
+    "id": 252
   },
   {
     "index": 68,
@@ -1084,7 +1419,12 @@
     "atk_pt": 113,
     "hp_pt": 92,
     "def_pt": 95,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "判官",
+    "name_en": "Hangan",
+    "name_roma": "hangan",
+    "name_kana": "はんがん",
+    "id": 251
   },
   {
     "index": 69,
@@ -1100,7 +1440,12 @@
     "atk_pt": 114,
     "hp_pt": 89,
     "def_pt": 97,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "海坊主",
+    "name_en": "Umibozu",
+    "name_roma": "umi bouzu",
+    "name_kana": "うみぼうず",
+    "id": 247
   },
   {
     "index": 70,
@@ -1116,7 +1461,12 @@
     "atk_pt": 106,
     "hp_pt": 103,
     "def_pt": 91,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "傀儡師",
+    "name_en": "Puppeteer",
+    "name_roma": "kairaishi",
+    "name_kana": "かいらいし",
+    "id": 242
   },
   {
     "index": 71,
@@ -1132,7 +1482,12 @@
     "atk_pt": 114,
     "hp_pt": 94,
     "def_pt": 92,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "キョンシー兄",
+    "name_en": "Kyonshi Ani",
+    "name_roma": "kyonshii ani",
+    "name_kana": "きょんしーあに",
+    "id": 233
   },
   {
     "index": 72,
@@ -1148,7 +1503,12 @@
     "atk_pt": 111,
     "hp_pt": 90,
     "def_pt": 99,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "鬼女紅葉",
+    "name_en": "Momiji",
+    "name_roma": "kijo momiji",
+    "name_kana": "きじょもみじ",
+    "id": 231
   },
   {
     "index": 73,
@@ -1164,7 +1524,12 @@
     "atk_pt": 110,
     "hp_pt": 87,
     "def_pt": 103,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "骨女",
+    "name_en": "Hone Onna",
+    "name_roma": "hone onna",
+    "name_kana": "ほねおんな",
+    "id": 223
   },
   {
     "index": 74,
@@ -1180,7 +1545,12 @@
     "atk_pt": 112,
     "hp_pt": 90,
     "def_pt": 98,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "犬神",
+    "name_en": "Inugami",
+    "name_roma": "inugami",
+    "name_kana": "いぬがみ",
+    "id": 220
   },
   {
     "index": 75,
@@ -1196,7 +1566,12 @@
     "atk_pt": 109,
     "hp_pt": 94,
     "def_pt": 97,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "孟婆",
+    "name_en": "Mouba",
+    "name_roma": "mouba",
+    "name_kana": "もうば",
+    "id": 215
   },
   {
     "index": 76,
@@ -1212,7 +1587,12 @@
     "atk_pt": 116,
     "hp_pt": 91,
     "def_pt": 93,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "黒無常",
+    "name_en": "Kuro Mujou",
+    "name_roma": "kuro mujou",
+    "name_kana": "くろむじょう",
+    "id": 211
   },
   {
     "index": 77,
@@ -1228,7 +1608,12 @@
     "atk_pt": 114,
     "hp_pt": 90,
     "def_pt": 96,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "白無常",
+    "name_en": "Shiro Mujou",
+    "name_roma": "shiro mujou",
+    "name_kana": "しろむじょう",
+    "id": 210
   },
   {
     "index": 78,
@@ -1244,7 +1629,12 @@
     "atk_pt": 114,
     "hp_pt": 92,
     "def_pt": 94,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "雪女",
+    "name_en": "Yuki Onna",
+    "name_roma": "yuki onna",
+    "name_kana": "ゆきおんな",
+    "id": 201
   },
   {
     "index": 79,
@@ -1260,7 +1650,12 @@
     "atk_pt": 89,
     "hp_pt": 100,
     "def_pt": 111,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "桃の精",
+    "name_en": "Momo",
+    "name_roma": "momo no sei",
+    "name_kana": "もものせい",
+    "id": 200
   },
   {
     "index": 80,
@@ -1275,7 +1670,12 @@
     "atk_pt": 84,
     "hp_pt": 105,
     "def_pt": 111,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "",
+    "name_en": "",
+    "name_roma": "",
+    "name_kana": "",
+    "id": 323
   },
   {
     "index": 81,
@@ -1291,7 +1691,12 @@
     "atk_pt": 77,
     "hp_pt": 109,
     "def_pt": 110,
-    "total_pt": 296
+    "total_pt": 296,
+    "name_jp": "マキ＆芥子",
+    "name_en": "Maki & Karashi",
+    "name_roma": "maki & karashi",
+    "name_kana": "まき＆からし",
+    "id": 310
   },
   {
     "index": 82,
@@ -1307,7 +1712,12 @@
     "atk_pt": 89,
     "hp_pt": 123,
     "def_pt": 88,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "蟲師",
+    "name_en": "",
+    "name_roma": "mushishi",
+    "name_kana": "むしし",
+    "id": 306
   },
   {
     "index": 83,
@@ -1323,7 +1733,12 @@
     "atk_pt": 110,
     "hp_pt": 97,
     "def_pt": 91,
-    "total_pt": 298
+    "total_pt": 298,
+    "name_jp": "小袖の手",
+    "name_en": "Kosodenote",
+    "name_roma": "kosode no te",
+    "name_kana": "こそでのて",
+    "id": 302
   },
   {
     "index": 84,
@@ -1339,7 +1754,12 @@
     "atk_pt": 84,
     "hp_pt": 97,
     "def_pt": 110,
-    "total_pt": 291
+    "total_pt": 291,
+    "name_jp": "数珠",
+    "name_en": "Juzu",
+    "name_roma": "juzu",
+    "name_kana": "じゅず",
+    "id": 301
   },
   {
     "index": 85,
@@ -1355,7 +1775,12 @@
     "atk_pt": 90,
     "hp_pt": 116,
     "def_pt": 94,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "兎丸",
+    "name_en": "Usagi",
+    "name_roma": "usagimaru",
+    "name_kana": "うさぎまる",
+    "id": 289
   },
   {
     "index": 86,
@@ -1371,7 +1796,12 @@
     "atk_pt": 94,
     "hp_pt": 116,
     "def_pt": 90,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "古籠火",
+    "name_en": "Koroka",
+    "name_roma": "korouka",
+    "name_kana": "ころうか",
+    "id": 274
   },
   {
     "index": 87,
@@ -1387,7 +1817,12 @@
     "atk_pt": 111,
     "hp_pt": 93,
     "def_pt": 96,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "磁器蛙",
+    "name_en": "Jikikaeru",
+    "name_roma": "jiki kaeru",
+    "name_kana": "じきかえる",
+    "id": 250
   },
   {
     "index": 88,
@@ -1403,7 +1838,12 @@
     "atk_pt": 97,
     "hp_pt": 102,
     "def_pt": 101,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "覚",
+    "name_en": "Satori",
+    "name_roma": "kaku",
+    "name_kana": "かく",
+    "id": 249
   },
   {
     "index": 89,
@@ -1419,7 +1859,12 @@
     "atk_pt": 108,
     "hp_pt": 96,
     "def_pt": 96,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "首なし",
+    "name_en": "Kubinashi",
+    "name_roma": "kubi nashi",
+    "name_kana": "くびなし",
+    "id": 244
   },
   {
     "index": 90,
@@ -1435,7 +1880,12 @@
     "atk_pt": 112,
     "hp_pt": 89,
     "def_pt": 99,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "山童",
+    "name_en": "Yamawaro",
+    "name_roma": "yamawaro",
+    "name_kana": "やまわろ",
+    "id": 243
   },
   {
     "index": 91,
@@ -1451,7 +1901,12 @@
     "atk_pt": 91,
     "hp_pt": 106,
     "def_pt": 103,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "胡蝶の精",
+    "name_en": "Chocho",
+    "name_roma": "kochou no sei",
+    "name_kana": "こちょうのせい",
+    "id": 241
   },
   {
     "index": 92,
@@ -1467,7 +1922,12 @@
     "atk_pt": 100,
     "hp_pt": 100,
     "def_pt": 100,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "蛍草",
+    "name_en": "Kusa",
+    "name_roma": "hotarugusa",
+    "name_kana": "ほたるぐさ",
+    "id": 238
   },
   {
     "index": 93,
@@ -1483,7 +1943,12 @@
     "atk_pt": 108,
     "hp_pt": 94,
     "def_pt": 98,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "山兎",
+    "name_en": "Yamausagi",
+    "name_roma": "yamausagi",
+    "name_kana": "やまうさぎ",
+    "id": 237
   },
   {
     "index": 94,
@@ -1499,7 +1964,12 @@
     "atk_pt": 112,
     "hp_pt": 93,
     "def_pt": 95,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "管狐",
+    "name_en": "Kanko",
+    "name_roma": "kudagitsune",
+    "name_kana": "くだぎつね",
+    "id": 236
   },
   {
     "index": 95,
@@ -1515,7 +1985,12 @@
     "atk_pt": 86,
     "hp_pt": 108,
     "def_pt": 106,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "椒図",
+    "name_en": "Shuzu",
+    "name_roma": "shouzu",
+    "name_kana": "しょうず",
+    "id": 234
   },
   {
     "index": 96,
@@ -1531,7 +2006,12 @@
     "atk_pt": 109,
     "hp_pt": 94,
     "def_pt": 97,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "鉄鼠",
+    "name_en": "Tesso",
+    "name_roma": "tesso",
+    "name_kana": "てっそ",
+    "id": 232
   },
   {
     "index": 97,
@@ -1547,7 +2027,12 @@
     "atk_pt": 94,
     "hp_pt": 103,
     "def_pt": 103,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "一つ目小僧",
+    "name_en": "Hitosume",
+    "name_roma": "hitotsu me kozou",
+    "name_kana": "ひとつめこぞう",
+    "id": 230
   },
   {
     "index": 98,
@@ -1563,7 +2048,12 @@
     "atk_pt": 108,
     "hp_pt": 98,
     "def_pt": 94,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "丑の刻参り",
+    "name_en": "Ushi no Toki",
+    "name_roma": "ushi no kokumairi",
+    "name_kana": "うしのこくまいり",
+    "id": 228
   },
   {
     "index": 99,
@@ -1579,7 +2069,12 @@
     "atk_pt": 89,
     "hp_pt": 117,
     "def_pt": 94,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "兵傭",
+    "name_en": "Samurai X",
+    "name_roma": "heiyou",
+    "name_kana": "へいよう",
+    "id": 227
   },
   {
     "index": 100,
@@ -1595,7 +2090,12 @@
     "atk_pt": 114,
     "hp_pt": 96,
     "def_pt": 90,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "キョンシー妹",
+    "name_en": "Kyonshi Imoto",
+    "name_roma": "kyonshii imouto",
+    "name_kana": "きょんしーいもうと",
+    "id": 226
   },
   {
     "index": 101,
@@ -1611,7 +2111,12 @@
     "atk_pt": 113,
     "hp_pt": 94,
     "def_pt": 93,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "キョンシー弟",
+    "name_en": "Kyonshi Ototo",
+    "name_roma": "kyonshii otouto",
+    "name_kana": "きょんしーおとうと",
+    "id": 225
   },
   {
     "index": 102,
@@ -1627,7 +2132,12 @@
     "atk_pt": 84,
     "hp_pt": 108,
     "def_pt": 108,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "雨女",
+    "name_en": "Ame Onna",
+    "name_roma": "ame onna",
+    "name_kana": "あめおんな",
+    "id": 224
   },
   {
     "index": 103,
@@ -1643,7 +2153,12 @@
     "atk_pt": 113,
     "hp_pt": 92,
     "def_pt": 95,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "侍の霊",
+    "name_en": "Warrior Soul",
+    "name_roma": "samurai no rei",
+    "name_kana": "さむらいのれい",
+    "id": 222
   },
   {
     "index": 104,
@@ -1659,7 +2174,12 @@
     "atk_pt": 108,
     "hp_pt": 94,
     "def_pt": 98,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "髪喰い",
+    "name_en": "Kamikui",
+    "name_roma": "kami kui",
+    "name_kana": "かみくい",
+    "id": 221
   },
   {
     "index": 105,
@@ -1675,7 +2195,12 @@
     "atk_pt": 111,
     "hp_pt": 92,
     "def_pt": 97,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "烏天狗",
+    "name_en": "Karasu Tengu",
+    "name_roma": "karasu tengu",
+    "name_kana": "からすてんぐ",
+    "id": 218
   },
   {
     "index": 106,
@@ -1691,7 +2216,12 @@
     "atk_pt": 114,
     "hp_pt": 94,
     "def_pt": 92,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "蠱毒師",
+    "name_en": "Kodokushi",
+    "name_roma": "kodokushi",
+    "name_kana": "こどくし",
+    "id": 216
   },
   {
     "index": 107,
@@ -1707,7 +2237,12 @@
     "atk_pt": 106,
     "hp_pt": 100,
     "def_pt": 94,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "餓鬼",
+    "name_en": "Gaki",
+    "name_roma": "gaki",
+    "name_kana": "がき",
+    "id": 214
   },
   {
     "index": 108,
@@ -1723,7 +2258,12 @@
     "atk_pt": 90,
     "hp_pt": 114,
     "def_pt": 96,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "童女",
+    "name_en": "Doujo",
+    "name_roma": "doujo",
+    "name_kana": "どうじょ",
+    "id": 213
   },
   {
     "index": 109,
@@ -1739,7 +2279,12 @@
     "atk_pt": 91,
     "hp_pt": 112,
     "def_pt": 97,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "童男",
+    "name_en": "Oguna",
+    "name_roma": "oguna",
+    "name_kana": "おぐな",
+    "id": 212
   },
   {
     "index": 110,
@@ -1755,7 +2300,12 @@
     "atk_pt": 113,
     "hp_pt": 89,
     "def_pt": 98,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "河童",
+    "name_en": "Kappa",
+    "name_roma": "kappa",
+    "name_kana": "かっぱ",
+    "id": 209
   },
   {
     "index": 111,
@@ -1771,7 +2321,12 @@
     "atk_pt": 88,
     "hp_pt": 113,
     "def_pt": 99,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "化け狸",
+    "name_en": "Tanuki",
+    "name_roma": "bake tanuki",
+    "name_kana": "ばけたぬき",
+    "id": 208
   },
   {
     "index": 112,
@@ -1787,7 +2342,12 @@
     "atk_pt": 111,
     "hp_pt": 86,
     "def_pt": 103,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "九命猫",
+    "name_en": "Kyuumei Neko",
+    "name_roma": "kyuumei neko",
+    "name_kana": "きゅうめいねこ",
+    "id": 207
   },
   {
     "index": 113,
@@ -1803,7 +2363,12 @@
     "atk_pt": 102,
     "hp_pt": 102,
     "def_pt": 96,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "鯉の精",
+    "name_en": "Koi",
+    "name_roma": "koi no sei",
+    "name_kana": "こいのせい",
+    "id": 206
   },
   {
     "index": 114,
@@ -1819,7 +2384,12 @@
     "atk_pt": 87,
     "hp_pt": 109,
     "def_pt": 104,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "座敷童子",
+    "name_en": "Zashiki",
+    "name_roma": "zashiki warashi",
+    "name_kana": "ざしきわらし",
+    "id": 205
   },
   {
     "index": 115,
@@ -1835,7 +2405,12 @@
     "atk_pt": 109,
     "hp_pt": 91,
     "def_pt": 100,
-    "total_pt": 300
+    "total_pt": 300,
+    "name_jp": "三尾の狐",
+    "name_en": "Mio",
+    "name_roma": "sanbi no kitsune",
+    "name_kana": "さんびのきつね",
+    "id": 202
   },
   {
     "index": 116,
@@ -1851,7 +2426,12 @@
     "atk_pt": 90,
     "hp_pt": 89,
     "def_pt": 91,
-    "total_pt": 270
+    "total_pt": 270,
+    "name_jp": "彼岸花蛙",
+    "name_en": "Higanbana Frog",
+    "name_roma": "",
+    "name_kana": "",
+    "id": 427
   },
   {
     "index": 117,
@@ -1867,7 +2447,12 @@
     "atk_pt": 91,
     "hp_pt": 90,
     "def_pt": 89,
-    "total_pt": 270
+    "total_pt": 270,
+    "name_jp": "荒蛙",
+    "name_en": "Susabi Frog",
+    "name_roma": "",
+    "name_kana": "",
+    "id": 426
   },
   {
     "index": 118,
@@ -1883,7 +2468,12 @@
     "atk_pt": 86,
     "hp_pt": 90,
     "def_pt": 92,
-    "total_pt": 268
+    "total_pt": 268,
+    "name_jp": "かぐや姫蛙",
+    "name_en": "Kaguya Frog",
+    "name_roma": "",
+    "name_kana": "",
+    "id": 425
   },
   {
     "index": 119,
@@ -1899,7 +2489,12 @@
     "atk_pt": 87,
     "hp_pt": 92,
     "def_pt": 90,
-    "total_pt": 269
+    "total_pt": 269,
+    "name_jp": "花鳥風月蛙",
+    "name_en": "Hana Frog",
+    "name_roma": "",
+    "name_kana": "",
+    "id": 424
   },
   {
     "index": 120,
@@ -1915,7 +2510,12 @@
     "atk_pt": 88,
     "hp_pt": 91,
     "def_pt": 91,
-    "total_pt": 270
+    "total_pt": 270,
+    "name_jp": "一目連蛙",
+    "name_en": "Ichimokuren Frog",
+    "name_roma": "",
+    "name_kana": "",
+    "id": 423
   },
   {
     "index": 121,
@@ -1931,7 +2531,12 @@
     "atk_pt": 92,
     "hp_pt": 90,
     "def_pt": 86,
-    "total_pt": 268
+    "total_pt": 268,
+    "name_jp": "妖刀姫蛙",
+    "name_en": "Yoto Hime Frog",
+    "name_roma": "",
+    "name_kana": "",
+    "id": 422
   },
   {
     "index": 122,
@@ -1947,7 +2552,12 @@
     "atk_pt": 89,
     "hp_pt": 90,
     "def_pt": 91,
-    "total_pt": 270
+    "total_pt": 270,
+    "name_jp": "青行灯蛙",
+    "name_en": "Aoandon Frog",
+    "name_roma": "",
+    "name_kana": "",
+    "id": 421
   },
   {
     "index": 123,
@@ -1963,7 +2573,12 @@
     "atk_pt": 90,
     "hp_pt": 90,
     "def_pt": 90,
-    "total_pt": 270
+    "total_pt": 270,
+    "name_jp": "茨木蛙",
+    "name_en": "Ibaraki Frog",
+    "name_roma": "",
+    "name_kana": "",
+    "id": 420
   },
   {
     "index": 124,
@@ -1979,7 +2594,12 @@
     "atk_pt": 87,
     "hp_pt": 93,
     "def_pt": 90,
-    "total_pt": 270
+    "total_pt": 270,
+    "name_jp": "シシオ蛙",
+    "name_en": "Shishio Frog",
+    "name_roma": "",
+    "name_kana": "",
+    "id": 419
   },
   {
     "index": 125,
@@ -1995,7 +2615,12 @@
     "atk_pt": 91,
     "hp_pt": 90,
     "def_pt": 86,
-    "total_pt": 267
+    "total_pt": 267,
+    "name_jp": "両面仏蛙",
+    "name_en": "Ryomen Frog",
+    "name_roma": "",
+    "name_kana": "",
+    "id": 418
   },
   {
     "index": 126,
@@ -2011,7 +2636,12 @@
     "atk_pt": 85,
     "hp_pt": 92,
     "def_pt": 90,
-    "total_pt": 267
+    "total_pt": 267,
+    "name_jp": "閻魔蛙",
+    "name_en": "Enma Frog",
+    "name_roma": "",
+    "name_kana": "",
+    "id": 417
   },
   {
     "index": 127,
@@ -2027,7 +2657,12 @@
     "atk_pt": 93,
     "hp_pt": 90,
     "def_pt": 88,
-    "total_pt": 271
+    "total_pt": 271,
+    "name_jp": "荒川蛙",
+    "name_en": "Arakawa Frog",
+    "name_roma": "",
+    "name_kana": "",
+    "id": 416
   },
   {
     "index": 128,
@@ -2043,7 +2678,12 @@
     "atk_pt": 91,
     "hp_pt": 89,
     "def_pt": 91,
-    "total_pt": 271
+    "total_pt": 271,
+    "name_jp": "酒呑蛙",
+    "name_en": "Shuten Frog",
+    "name_roma": "",
+    "name_kana": "",
+    "id": 415
   },
   {
     "index": 129,
@@ -2059,7 +2699,12 @@
     "atk_pt": 92,
     "hp_pt": 88,
     "def_pt": 90,
-    "total_pt": 270
+    "total_pt": 270,
+    "name_jp": "大天狗蛙",
+    "name_en": "Ootengu Frog",
+    "name_roma": "",
+    "name_kana": "",
+    "id": 414
   },
   {
     "index": 130,
@@ -2075,7 +2720,12 @@
     "atk_pt": 90,
     "hp_pt": 90,
     "def_pt": 90,
-    "total_pt": 270
+    "total_pt": 270,
+    "name_jp": "ぬりかべ",
+    "name_en": "Nurikabe",
+    "name_roma": "nurikabe",
+    "name_kana": "ぬりかべ",
+    "id": 409
   },
   {
     "index": 131,
@@ -2091,7 +2741,12 @@
     "atk_pt": 90,
     "hp_pt": 90,
     "def_pt": 90,
-    "total_pt": 270
+    "total_pt": 270,
+    "name_jp": "箒神",
+    "name_en": "Hakakigami",
+    "name_roma": "houkikami",
+    "name_kana": "ほうきかみ",
+    "id": 408
   },
   {
     "index": 132,
@@ -2107,7 +2762,12 @@
     "atk_pt": 90,
     "hp_pt": 90,
     "def_pt": 90,
-    "total_pt": 270
+    "total_pt": 270,
+    "name_jp": "天邪鬼青",
+    "name_en": "Blue Imp",
+    "name_roma": "amanojaku ao",
+    "name_kana": "あまのじゃくあお",
+    "id": 407
   },
   {
     "index": 133,
@@ -2123,7 +2783,12 @@
     "atk_pt": 90,
     "hp_pt": 90,
     "def_pt": 90,
-    "total_pt": 270
+    "total_pt": 270,
+    "name_jp": "天邪鬼黄",
+    "name_en": "Yellow Imp",
+    "name_roma": "amanojaku ki",
+    "name_kana": "あまのじゃくき",
+    "id": 406
   },
   {
     "index": 134,
@@ -2139,7 +2804,12 @@
     "atk_pt": 90,
     "hp_pt": 90,
     "def_pt": 90,
-    "total_pt": 270
+    "total_pt": 270,
+    "name_jp": "天邪鬼赤",
+    "name_en": "Red Imp",
+    "name_roma": "amanojaku aka",
+    "name_kana": "あまのじゃくあか",
+    "id": 405
   },
   {
     "index": 135,
@@ -2155,7 +2825,12 @@
     "atk_pt": 90,
     "hp_pt": 90,
     "def_pt": 90,
-    "total_pt": 270
+    "total_pt": 270,
+    "name_jp": "天邪鬼緑",
+    "name_en": "Green Imp",
+    "name_roma": "amanojaku midori",
+    "name_kana": "あまのじゃくみどり",
+    "id": 404
   },
   {
     "index": 136,
@@ -2171,7 +2846,12 @@
     "atk_pt": 90,
     "hp_pt": 90,
     "def_pt": 90,
-    "total_pt": 270
+    "total_pt": 270,
+    "name_jp": "からかさ小僧",
+    "name_en": "Umbrella",
+    "name_roma": "karakasa kozou",
+    "name_kana": "からかさこぞう",
+    "id": 403
   },
   {
     "index": 137,
@@ -2187,7 +2867,12 @@
     "atk_pt": 90,
     "hp_pt": 90,
     "def_pt": 90,
-    "total_pt": 270
+    "total_pt": 270,
+    "name_jp": "寄生霊",
+    "name_en": "Parasite",
+    "name_roma": "kiseirei",
+    "name_kana": "きせいれい",
+    "id": 401
   },
   {
     "index": 138,
@@ -2203,7 +2888,12 @@
     "atk_pt": 90,
     "hp_pt": 90,
     "def_pt": 90,
-    "total_pt": 270
+    "total_pt": 270,
+    "name_jp": "墓荒らしの霊",
+    "name_en": "Grave Digger",
+    "name_roma": "hakaarashi no rei",
+    "name_kana": "はかあらしのれい",
+    "id": 400
   },
   {
     "index": 139,
@@ -2219,7 +2909,12 @@
     "atk_pt": 90,
     "hp_pt": 90,
     "def_pt": 90,
-    "total_pt": 270
+    "total_pt": 270,
+    "name_jp": "赤舌",
+    "name_en": "Akashita",
+    "name_roma": "akajita",
+    "name_kana": "あかじた",
+    "id": 246
   },
   {
     "index": 140,
@@ -2235,6 +2930,11 @@
     "atk_pt": 90,
     "hp_pt": 90,
     "def_pt": 90,
-    "total_pt": 270
+    "total_pt": 270,
+    "name_jp": "提灯小僧",
+    "name_en": "Lantern Boy",
+    "name_roma": "chouchin kozou",
+    "name_kana": "ちょうちんこぞう",
+    "id": 245
   }
 ]

@@ -36,11 +36,11 @@
             <a-layout-content class="site-content"
             >
                 <router-view></router-view>
-
+                <a-layout-footer class="site-footer">
+                    Onmyoji Simulator ©2020 Created by AnzerWall
+                </a-layout-footer>
             </a-layout-content>
-            <a-layout-footer class="site-footer">
-                Onmyoji Simulator ©2020 Created by AnzerWall
-            </a-layout-footer>
+
         </a-layout>
     </a-layout>
 </template>

@@ -8,7 +8,7 @@
 
 ## 安装node
 
-从(官网)[https://nodejs.org]根据平台下载安装包
+从[官网](https://nodejs.org)根据平台下载安装包
 ## 安装依赖
 
 ```shell

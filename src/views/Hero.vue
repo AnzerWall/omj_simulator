@@ -2,7 +2,7 @@
     <div class="site-card">
         <a-table
                 :columns="columns"
-                :rowKey="record => record.id"
+                :rowKey="record => record.name"
                 :dataSource="data"
         >
             <span slot="name" slot-scope="name, record">  <a-avatar :src=" '/avator/'+ record.id + '.png'" />    {{name}}</span>

@@ -24,12 +24,12 @@ npm run serve
 
 ## 核心组件
 
-1. 基于Vue的调试页面
-2. Mana(鬼火机制)
-3. MoveBar(行动条) 
-4. Team(队伍)
-5. Equipment(基础御魂)
-6. Buff(buff机制)
+- [ ] 基于Vue的调试页面
+- [ ] Mana(鬼火机制) 
+- [ ] MoveBar(行动条)  
+- [ ] Team(队伍) 
+- [ ] Equipment(基础御魂) 
+- [ ] Buff(buff机制) 
 
 ## 基于式神逻辑逐步补充机制属性事件等
 后面出新式神由于数据来源帖子未更新，暂时不在todo列表里

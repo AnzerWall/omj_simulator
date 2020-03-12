@@ -21,7 +21,7 @@
                 </a-menu-item>
                 <a-menu-item key="/hero">
                     <a-icon type="table"/>
-                    <span>英雄列表</span>
+                    <span>式神列表</span>
                 </a-menu-item>
             </a-menu>
         </a-layout-sider>

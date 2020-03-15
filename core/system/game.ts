@@ -177,16 +177,6 @@ export default class Game {
         return ret;
     }
 
-    // 获取实体在行动条上得位置
-    getOrder(entity_id: number): number {
-        const o = this.order.get(entity_id);
-        if (isNil(o)) {
-            return -1;
-        }
-        return o;
-    }
-
-
 
 
 }

@@ -57,9 +57,10 @@ export class Entity implements IHandler {
         const origin = this.properties.get(name);
 
         if (isNil(origin)) return null;
-
         return origin;
     }
+
+
 
     getComputedProperty(name: string) {
         const origin = this.properties.get(name);

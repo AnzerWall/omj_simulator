@@ -6,24 +6,7 @@ import IHandler from './ihandler';
 import * as Handlers from '../handlers';
 import teamIds from '../fixtures/team_ids';
 import Mana from './mana';
-
-const eps: number = 1e-6; // 精度
-const TURN_BAR_GOAL: number = 10000; // 行动条终点
-const oo = 1e10;
-
-function feq(a: number, b: number): boolean {
-    return Math.abs(a - b) < eps;
-}
-
-// 计算到达终点的时间
-function getReachGoalTime(pos: number, spd: number): number {
-    return (TURN_BAR_GOAL - pos) / spd;
-}
-
-// 判断是否到达终点
-function isReachGoal(pos: number): boolean {
-    return feq(pos, TURN_BAR_GOAL);
-}
+import Runway from './runway'
 
 export default class Game {
     event_queue: Event[]; // 事件队列
@@ -35,7 +18,7 @@ export default class Game {
     turn: number; // 当前回合
     fields: number[][]; // 场上位置
     manas: Mana[]; // 鬼火信息
-    order: Map<number, number>; // 行动条位置
+    runway: Runway; // 行动条位置
     current_entity: number; // 当前回合实体
     constructor(entities: Entity[]) {
         this.handlersMap = {};
@@ -47,7 +30,7 @@ export default class Game {
         this.entities = new Map<number, Entity>();
         this.fields = [[], []];
         this.manas = [new Mana(4), new Mana(4)];
-        this.order = new Map<number, number>();
+        this.runway = new Runway(); // 行动条
         this.current_entity = 0;
         this._init(entities);
     }
@@ -66,7 +49,7 @@ export default class Game {
 
         forEach(entities, entity => {
             this.entities.set(entity.entity_id, entity);
-            this.order.set(entity.entity_id, 0);
+            this.runway.addEntity(entity.entity_id, () => (entity.getComputedProperty('spd') || 0));
             if (entity.team_id === teamIds.TEAM1 || entity.team_id === teamIds.TEAM2) {
                 this.fields[entity.team_id].push(entity.entity_id);
             }
@@ -203,71 +186,7 @@ export default class Game {
         return o;
     }
 
-    // 处理行动条，直到计算出最后的单位
-    computeOrder() {
-        // 计算出最快到达行动条底端的单位的时间
-        let minT: number = +oo;
-        for (const [ id, o ] of this.order) {
-            const entity = this.getEntity(id);
-            if (entity) {
-                const spd = entity.getProperty('spd') || eps;
-                minT = Math.min(minT, getReachGoalTime(o, spd));
-            }
-        }
-        // 更新所有单位的当前位置
-        for (const [ id, o ] of this.order) {
-            const entity = this.getEntity(id);
-            if (entity) {
-                const spd = entity.getProperty('spd') || eps;
-                const newO = Math.min(o + spd * minT, TURN_BAR_GOAL);
-                this.order.set(
-                    id,
-                    newO
-                );
-            }
-        }
-    }
 
-    // // 获得下一个行动的单位
-    // getNext(): number {
-    //     const reachGoalUnits: Unit[] = [];
-    //     let retMemberSpeed: number = -1;
-    //     let retMembers: Unit[] = [];
-    //
-    //     for (const [ unit, pos ] of this.positionMap) {
-    //         if (isReachGoal(pos)) {
-    //             if (feq(unit.spd, retMemberSpeed)) {
-    //                 retMembers.push(unit);
-    //             } else if (unit.spd > retMemberSpeed) {
-    //                 retMembers = [ unit ];
-    //                 retMemberSpeed = unit.spd;
-    //             }
-    //         }
-    //     }
-    //
-    //     if (retMembers) {
-    //         return _.sample(retMembers);
-    //     }
-    //     return null;
-    // }
-    // // 拉条
-    // orderRaise(entity_id: number, percent: number): boolean {
-    //     if (!this.order.has(entity_id)) {
-    //         return false;
-    //     }
-    //     if (percent <= 0) return true;
-    //     if (percent >= 1) {
-    //         percent = 1;
-    //     }
-    //
-    //     const lastOrder = this.order.get(entity_id) || 0;
-    //     const newOrder = Math.min(lastOrder + (TURN_BAR_GOAL * percent), TURN_BAR_GOAL);
-    //
-    //
-    //     this.order.set(entity_id, newOrder);
-    //     return true;
-    // }
-    //
 
 
 }

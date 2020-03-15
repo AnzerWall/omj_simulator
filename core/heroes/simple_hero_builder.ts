@@ -27,7 +27,8 @@ export default function build (data: any) {
             this.setProperty(BattleProperties.SPD, data.spd);
             this.setProperty(BattleProperties.CRI, data.cri);
             this.setProperty(BattleProperties.CRI_DMG, data.cri_dmg);
-            this.index = data.index;
+            this.id = data.id || (data.index + 10000);
+            this.addTags('simple_hero')
         }
     };
 }

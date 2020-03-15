@@ -47,7 +47,6 @@
 <script>
     export default {
         data() {
-            console.log(this.$route)
             return {
                 collapsed: false
             };

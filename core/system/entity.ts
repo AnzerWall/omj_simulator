@@ -3,22 +3,43 @@ import IHandler from './ihandler';
 import Game from './game';
 import Effect, { Operator } from './effect';
 import { isNil } from 'lodash';
+// @ts-ignore
 import util from 'util';
 let entity_counter = 0;
 
 export class Entity implements IHandler {
-    event_priority: number = 0;
     entity_id: number;
     properties: Map<string, number>; // 基础属性，最大生命 攻击等
     effects: Effect[]; // 附加效果，影响基础属性
     team_id: number; // 队伍id
     important: boolean; // 决定是否是重要实体，一方不存在重要实体时另一方获胜
+    tags: string[]; // 实体标志，用于识别实体
 
     constructor() {
         this.entity_id = ++entity_counter;
         this.properties = new Map();
         this.effects = [];
         this.important = false;
+        this.team_id = 0;
+        this.tags = [];
+    }
+
+    addTags(tag: string) {
+        if (!this.hasTag(tag)) {
+            this.tags.push(tag);
+        }
+    }
+
+    removeTags(tag: string) {
+        const index = this.tags.indexOf(tag);
+
+        if (index !== -1) {
+            this.tags.splice(index,1);
+        }
+    }
+
+    hasTag(tag: string): boolean {
+        return this.tags.includes(tag);
     }
 
     addEffect(effect: Effect) {
@@ -69,22 +90,21 @@ export class Entity implements IHandler {
     handleEvent(game: Game, code: Codes, data: object): void {
     }
 
-    toJSON() {
-        const ret: any = {};
-
-        ret.event_priority = this.event_priority;
-        ret.entity_id = this.entity_id;
-
-        this.properties.forEach((value, key) => {
-           // ret[key] = value;
-           ret[key + '[computed]'] = this.getComputedProperty(key);
-        });
-        return ret;
-
-    }
-
-    [util.inspect.custom]() {
-        return JSON.stringify(this.toJSON(), null, 2);
-    }
+    // toJSON() {
+    //     const ret: any = {};
+    //
+    //     ret.entity_id = this.entity_id;
+    //
+    //     this.properties.forEach((value, key) => {
+    //        // ret[key] = value;
+    //        ret[key + '[computed]'] = this.getComputedProperty(key);
+    //     });
+    //     return ret;
+    //
+    // }
+    //
+    // [util.inspect.custom]() {
+    //     return JSON.stringify(this.toJSON(), null, 2);
+    // }
 
 }

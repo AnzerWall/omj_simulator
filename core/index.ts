@@ -1,6 +1,6 @@
 import Game from './ordinary-game';
 import teamIds from './fixtures/team_ids';
-import { Entity } from './system/entity';
+import { Entity } from './system';
 import { Heros } from './heroes';
 import { sampleSize } from 'lodash';
 

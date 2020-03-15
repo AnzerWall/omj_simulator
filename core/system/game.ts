@@ -1,7 +1,7 @@
-import { forEach, isNil } from 'lodash';
-import { Entity } from './entity';
+import {forEach, isNil} from 'lodash';
+import Entity from './entity';
 import Codes from './codes';
-import { Event } from '.';
+import {Event} from '.';
 import IHandler from './ihandler';
 import * as Handlers from '../handlers';
 import teamIds from '../fixtures/team_ids';
@@ -10,7 +10,7 @@ import Runway from './runway'
 
 export default class Game {
     event_queue: Event[]; // 事件队列
-    handlersMap: { [code: number]: Array<{ priority: number, handler: IHandler}> }; // 事件监听者表
+    handlersMap: { [code: number]: Array<{ priority: number, handler: IHandler }> }; // 事件监听者表
     rules: object; // 规则表
     entities: Map<number, Entity>; // 实体列表
     isEnd: boolean; // 是否游戏结束
@@ -28,14 +28,14 @@ export default class Game {
         this.winner = 0;
         this.turn = 0;
         this.entities = new Map<number, Entity>();
-        this.fields = [[], []];
+        this.fields = [[], [], []];
         this.manas = [new Mana(4), new Mana(4)];
         this.runway = new Runway(); // 行动条
         this.current_entity = 0;
         this._init(entities);
     }
 
-    _init (entities: Entity[]) {
+    _init(entities: Entity[]) {
         this.enqueueEvent(new Event(Codes.PHASE_START));
 
         this.registerHandler(Codes.PHASE_START, Handlers.ordinaryStart, -1);
@@ -70,6 +70,7 @@ export default class Game {
 
         this.handlersMap[code] = list.sort((a, b) => a.priority - b.priority);
     }
+
     // 移除事件
     removeHandler(code: Codes, h: IHandler): void {
         if (!this.handlersMap[code]) {
@@ -79,7 +80,7 @@ export default class Game {
         const list = this.handlersMap[code];
 
         if (list) {
-            const index = list.findIndex(({ handler }) => handler === h);
+            const index = list.findIndex(({handler}) => handler === h);
 
             if (index !== -1) {
                 list.splice(index, 1);
@@ -87,12 +88,13 @@ export default class Game {
         }
 
     }
+
     // 分发事件
     dispatchEvent(event: Event): void {
         const handlers = this.handlersMap[event.code];
         console.log(`[Event:${Codes[event.code]}]`);
         if (handlers) {
-            for (const { handler } of handlers) {
+            for (const {handler} of handlers) {
                 handler.handleEvent(this, event.code, event.data);
 
                 this.judgeWin();
@@ -139,10 +141,10 @@ export default class Game {
             [teamIds.TEAM2]: 0,
         };
         this.entities.forEach(entity => {
-           if (entity.important && // 重要实体
-               [ teamIds.TEAM1, teamIds.TEAM2 ].includes(entity.team_id)) {
-               entityCounter[entity.team_id] = (entityCounter[entity.team_id] || 0) + 1;
-           }
+            if (entity.important && // 重要实体
+                [teamIds.TEAM1, teamIds.TEAM2].includes(entity.team_id)) {
+                entityCounter[entity.team_id] = (entityCounter[entity.team_id] || 0) + 1;
+            }
         });
 
         if (entityCounter[teamIds.TEAM1] === 0 && entityCounter[teamIds.TEAM2] >= 0) {
@@ -157,7 +159,7 @@ export default class Game {
         }
     }
 
-    getEntity(entity_id: number) :Entity|null {
+    getEntity(entity_id: number): Entity | null {
         return this.entities.get(entity_id) || null;
     }
 
@@ -176,7 +178,6 @@ export default class Game {
 
         return ret;
     }
-
 
 
 }

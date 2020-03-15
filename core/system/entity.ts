@@ -5,15 +5,22 @@ import Effect, { Operator } from './effect';
 import { isNil } from 'lodash';
 // @ts-ignore
 import util from 'util';
+import {BattleProperties, BattleStatus} from "../fixtures/hero-property-names";
+import { values, forEach } from 'lodash';
 let entity_counter = 0;
 
-export class Entity implements IHandler {
+export default class Entity implements IHandler {
     entity_id: number;
-    properties: Map<string, number>; // 基础属性，最大生命 攻击等
-    effects: Effect[]; // 附加效果，影响基础属性
     team_id: number; // 队伍id
     important: boolean; // 决定是否是重要实体，一方不存在重要实体时另一方获胜
+
     tags: string[]; // 实体标志，用于识别实体
+
+    properties: Map<string, number>; // 基础属性，最大生命 攻击等
+    effects: Effect[]; // 附加效果，影响基础属性
+    hp: number; // 生命值
+    shield: number; // 护盾
+
 
     constructor() {
         this.entity_id = ++entity_counter;
@@ -22,6 +29,15 @@ export class Entity implements IHandler {
         this.important = false;
         this.team_id = 0;
         this.tags = [];
+        this.hp = 1;
+        this.shield = 0;
+        forEach(values(BattleProperties), key => {
+            this.setProperty(key, 0);
+        });
+        forEach(values(BattleStatus), key => {
+            this.setProperty(key, 0);
+        });
+        this.setProperty(BattleProperties.MAX_HP, 1);
     }
 
     addTags(tag: string) {
@@ -91,21 +107,9 @@ export class Entity implements IHandler {
     handleEvent(game: Game, code: Codes, data: object): void {
     }
 
-    // toJSON() {
-    //     const ret: any = {};
-    //
-    //     ret.entity_id = this.entity_id;
-    //
-    //     this.properties.forEach((value, key) => {
-    //        // ret[key] = value;
-    //        ret[key + '[computed]'] = this.getComputedProperty(key);
-    //     });
-    //     return ret;
-    //
-    // }
-    //
-    // [util.inspect.custom]() {
-    //     return JSON.stringify(this.toJSON(), null, 2);
-    // }
+    // 触发技能
+    skill(no: number, target: Entity): boolean {
+        return true;
+    }
 
 }

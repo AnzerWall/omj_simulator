@@ -14,11 +14,12 @@
 //     "def_pt": 86,
 //     "total_pt": 300
 // }
-import Hero from '../system/hero';
+import {Entity} from '../system';
 import { BattleProperties } from '../fixtures/hero-property-names';
 
 export default function build (data: any) {
-    return class SimpleHero extends Hero {
+    return class SimpleHero extends Entity {
+        id: number;
         constructor() {
             super();
             this.setProperty(BattleProperties.MAX_HP, data.hp);
@@ -28,7 +29,8 @@ export default function build (data: any) {
             this.setProperty(BattleProperties.CRI, data.cri);
             this.setProperty(BattleProperties.CRI_DMG, data.cri_dmg);
             this.id = data.id || (data.index + 10000);
-            this.addTags('simple_hero')
+            this.addTags('simple_hero');
+            this.important = true;
         }
     };
 }

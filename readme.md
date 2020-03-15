@@ -46,3 +46,4 @@ npm run serve
 # 鸣谢
 
 [六星满级面板数据](https://nga.178.com/read.php?tid=14788831)
+[阴阳师式神AI全解](https://bbs.nga.cn/read.php?tid=16541728)

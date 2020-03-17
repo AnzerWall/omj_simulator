@@ -7,8 +7,8 @@ function sleep(ms: number): void {
 export default class OrdinaryGame extends Game {
     run() {
         while (this.process()) {
-            sleep(100);
+            sleep(10);
         }
-        console.log('游戏结束.');
+        console.log('游戏结束， 胜利者为队伍: ', this.winner);
     }
 }

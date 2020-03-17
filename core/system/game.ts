@@ -90,6 +90,8 @@ export default class Game {
             entity.setProperty(BattleProperties.CRI, properties.cri);
             entity.setProperty(BattleProperties.CRI_DMG, properties.cri_dmg);
 
+            entity.hp = properties.hp;
+
             console.log(`【${data.team_id}】${properties.name}(${data.id})`);
             this.entities.set(entity.entity_id, entity);
             this.runway.addEntity(entity.entity_id, () => (entity.getComputedProperty('spd') || 0));
@@ -101,6 +103,7 @@ export default class Game {
 
     process(): boolean {
         if (this.seed === null) return false;
+        if (this.isEnd) return false;
         let unit;
         if (this.microTasks.length) {
             unit = this.microTasks.shift();
@@ -131,8 +134,8 @@ export default class Game {
     judgeWin() {
         const entityCounter: [number, number] = [0, 0];
         this.entities.forEach(entity => {
-            if (entity.important && // 重要实体
-                [0, 1].includes(entity.team_id)) {
+            if (entity.id && // 重要实体
+                [0, 1].includes(entity.team_id) && !entity.dead) {
                 entityCounter[entity.team_id] = entityCounter[entity.team_id]+ 1;
             }
         });
@@ -165,7 +168,7 @@ export default class Game {
         const ret: Entity[] = [];
 
         this.entities.forEach((e: Entity) => {
-            if (e.team_id !== teamId) {
+            if (e.team_id !== teamId && !e.dead) {
                 ret.push(e);
             }
         });
@@ -173,5 +176,24 @@ export default class Game {
         return ret;
     }
 
+    action_normal_attack(source: number, target: number, rate: number = 1) {
+        const sourceEntity = this.getEntity(source);
+        const targetEntity = this.getEntity(target);
+
+        if (!sourceEntity || !targetEntity) return false;
+
+        const damage = sourceEntity.getComputedProperty('atk') * rate;
+        const remainHp = Math.max(targetEntity.hp - damage, 0);
+        const isDead = remainHp <= 0;
+
+        console.log(`队伍${sourceEntity.team_id}的${sourceEntity.name} 对 队伍${targetEntity.team_id}的${targetEntity.name} 造成${damage}点伤害，其${targetEntity.hp}->${remainHp}`, isDead && '【死亡】');
+
+        targetEntity.hp = remainHp;
+        targetEntity.dead = isDead;
+        if (isDead) {
+            this.runway.freeze(targetEntity.entity_id);
+        }
+
+    }
 
 }

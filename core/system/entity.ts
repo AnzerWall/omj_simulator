@@ -12,7 +12,6 @@ let entity_counter = 0;
 export default class Entity implements IHandler {
     entity_id: number;
     team_id: number; // 队伍id
-    important: boolean; // 决定是否是重要实体，一方不存在重要实体时另一方获胜
 
     tags: string[]; // 实体标志，用于识别实体
 
@@ -22,19 +21,20 @@ export default class Entity implements IHandler {
     shield: number; // 护盾
     id: number;
     name: string;
+    dead: boolean;
 
 
     constructor() {
         this.entity_id = ++entity_counter;
         this.properties = new Map();
         this.effects = [];
-        this.important = false;
         this.team_id = 0;
         this.tags = [];
         this.hp = 1;
         this.shield = 0;
         this.id = 0;
-        this.name = '<Unknown>'
+        this.name = '<Unknown>';
+        this.dead = false;
         forEach(values(BattleProperties), key => {
             this.setProperty(key, 0);
         });
@@ -73,18 +73,18 @@ export default class Entity implements IHandler {
         }
     }
 
-    getProperty(name: string) {
+    getProperty(name: string):number {
         const origin = this.properties.get(name);
 
-        if (isNil(origin)) return null;
+        if (isNil(origin)) return 0;
         return origin;
     }
 
 
 
-    getComputedProperty(name: string) {
+    getComputedProperty(name: string): number {
         const origin = this.properties.get(name);
-        if (isNil(origin)) return null;
+        if (isNil(origin)) return 0;
         const effects = this.effects.filter(e => e.property_name === name); // 过滤出影响该属性的effect
 
         return effects.reduce((current, e: Effect) => {
@@ -98,6 +98,10 @@ export default class Entity implements IHandler {
                     return current;
             }
         }, origin);
+    }
+
+    hasProperty(name: string): boolean {
+        return this.properties.has(name);
     }
 
     setProperty(name: string, value = 0) {

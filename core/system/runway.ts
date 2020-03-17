@@ -159,3 +159,8 @@ export default class Runway {
 
 
 }
+
+// const runway = new Runway();
+// runway.addEntity(1, () => 273);
+// runway.freeze(1);
+// console.log(runway.computeNext());

@@ -30,7 +30,6 @@ export default function build (data: any) {
             this.setProperty(BattleProperties.CRI_DMG, data.cri_dmg);
             this.id = data.id || (data.index + 10000);
             this.addTags('simple_hero');
-            this.important = true;
         }
     };
 }

@@ -30,7 +30,7 @@ npm run serve
 - [ ] UI-对弈竞猜预测页(机器学习法)
 - [x] Mana(鬼火机制) 
 - [x] Runway(行动条)  
-- [ ] Team(队伍) 
+- [x] Team(队伍) 
 - [ ] Equipment(基础御魂) 
 - [ ] Buff(buff机制) 
 - [x] Entity(实体) 

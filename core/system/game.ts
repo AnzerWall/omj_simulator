@@ -3,7 +3,6 @@ import Entity from './entity';
 import Codes from './codes';
 import {Event} from '.';
 import IHandler from './ihandler';
-import * as Handlers from '../handlers';
 import Mana from './mana';
 import Runway from './runway'
 import EntityData from './entity-data';
@@ -14,8 +13,6 @@ import * as PhaseUnits from '../units/phase_units'
 type Unit=[(game: Game, data: object) => boolean, object, string];
 
 export default class Game {
-    event_queue: Event[]; // 事件队列
-    handlersMap: { [code: number]: Array<{ priority: number, handler: IHandler }> }; // 事件监听者表
     rules: object; // 规则表
 
     output: object[]; // 游戏记录
@@ -35,9 +32,7 @@ export default class Game {
     winner: number; // 获胜者id
 
     constructor(datas: EntityData[]) {
-        this.handlersMap = {};
         this.rules = {};
-        this.event_queue = [];
         this.isEnd = false;
         this.winner = -1;
         this.turn = 0;
@@ -102,85 +97,6 @@ export default class Game {
         });
 
         this.enqueueTask(PhaseUnits.phaseGameStart, {},'游戏开始');
-    }
-
-    // 注册事件
-    registerHandler(code: Codes, handler: IHandler, priority = 0): void {
-        if (!this.handlersMap[code]) {
-            this.handlersMap[code] = [];
-        }
-        const list = this.handlersMap[code];
-
-        list.push({
-            priority,
-            handler,
-        });
-
-        this.handlersMap[code] = list.sort((a, b) => a.priority - b.priority);
-    }
-
-    // 移除事件
-    removeHandler(code: Codes, h: IHandler): void {
-        if (!this.handlersMap[code]) {
-            return;
-        }
-
-        const list = this.handlersMap[code];
-
-        if (list) {
-            const index = list.findIndex(({handler}) => handler === h);
-
-            if (index !== -1) {
-                list.splice(index, 1);
-            }
-        }
-
-    }
-
-    // 分发事件
-    dispatchEvent(event: Event): void {
-        const handlers = this.handlersMap[event.code];
-        console.log(`[Event:${Codes[event.code]}]`);
-        if (handlers) {
-            for (const {handler} of handlers) {
-                handler.handleEvent(this, event.code, event.data);
-
-                this.judgeWin();
-                if (this.isEnd) {
-                    return;
-                }
-            }
-        }
-
-    }
-
-    enqueueEvent(event: Event): void {
-        this.event_queue.push(event);
-    }
-
-    clearEventQueue(): void {
-        this.event_queue = [];
-    }
-
-    hasNextEvent(): boolean {
-        return !!this.event_queue.length;
-    }
-
-    dequeueEvent(): Event | null {
-        if (!this.event_queue.length) return null;
-
-        return this.event_queue.shift() || null;
-    }
-
-    next_step(): boolean {
-        if (this.isEnd || !this.hasNextEvent()) return false;
-
-        const event = this.dequeueEvent();
-
-        if (event) {
-            this.dispatchEvent(event);
-        }
-        return !this.isEnd && true;
     }
 
     process(): boolean {

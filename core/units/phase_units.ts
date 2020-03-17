@@ -19,7 +19,7 @@ export const phaseGameStartRunWayCompute = (game: Game, _: object) :boolean=> {
 };
 
 export const phaseSenki = (game: Game, _: object):boolean => {
-    game.enqueueTask(phaseTurnBeforeStart, {}, '回合开始'); // 进入先机阶段
+    game.enqueueTask(phaseTurnBeforeStart, {}, '回合开始前'); // 进入先机阶段
     return true;
 };
 

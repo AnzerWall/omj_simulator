@@ -20,6 +20,8 @@ export default class Entity implements IHandler {
     effects: Effect[]; // 附加效果，影响基础属性
     hp: number; // 生命值
     shield: number; // 护盾
+    id: number;
+    name: string;
 
 
     constructor() {
@@ -31,6 +33,8 @@ export default class Entity implements IHandler {
         this.tags = [];
         this.hp = 1;
         this.shield = 0;
+        this.id = 0;
+        this.name = '<Unknown>'
         forEach(values(BattleProperties), key => {
             this.setProperty(key, 0);
         });
@@ -104,6 +108,13 @@ export default class Entity implements IHandler {
         this.team_id = team_id;
     }
 
+    setId(id: number) {
+        this.id = id;
+    }
+
+    setName(name: string) {
+        this.name = name;
+    }
     handleEvent(game: Game, code: Codes, data: object): void {
     }
 

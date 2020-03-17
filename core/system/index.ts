@@ -3,5 +3,5 @@ import Event from './event';
 import Game from './game';
 import IHandler from './ihandler';
 import Entity from './entity'
-
-export { Codes, Event, Game, IHandler, Entity };
+import EntityData from './entity-data'
+export { Codes, Event, Game, IHandler, Entity, EntityData };

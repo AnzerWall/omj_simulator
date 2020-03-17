@@ -33,6 +33,12 @@ export default class Runway {
         this.frozenTable = new Map<number, boolean>();
     }
 
+    reset() {
+        this.distanceTable.clear();
+        this.velocityFunctions.clear();
+        this.frozenTable.clear();
+    }
+
     addEntity(id: number,velocityFunction: () => number ) {
         this.distanceTable.set(id, 0);
         this.velocityFunctions.set(id, velocityFunction);

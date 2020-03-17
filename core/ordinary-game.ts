@@ -6,8 +6,9 @@ function sleep(ms: number): void {
 }
 export default class OrdinaryGame extends Game {
     run() {
-        while (this.next_step()) {
+        while (this.process()) {
             sleep(100);
         }
+        console.log('游戏结束.');
     }
 }

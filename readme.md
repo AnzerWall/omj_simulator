@@ -46,10 +46,7 @@ npm run serve
 
 # 鸣谢
 
-[六星满级面板数据](https://nga.178.com/read.php?tid=14788831)
-[阴阳师式神AI全解](https://bbs.nga.cn/read.php?tid=16541728)
-阴阳师百鬼研究中心: 284220173
+[六星满级面板数据](https://nga.178.com/read.php?tid=14788831) 
+[阴阳师式神AI全解](https://bbs.nga.cn/read.php?tid=16541728) 
+阴阳师百鬼研究中心: 284220173 
 
-# 加个好友呗
-
-秋之枫-小鳥遊遠

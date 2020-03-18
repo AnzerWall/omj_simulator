@@ -5,20 +5,19 @@
                 :rowKey="record => record.name"
                 :dataSource="data"
         >
-            <span slot="name" slot-scope="name, record">  <a-avatar :src=" '/avator/'+ record.id + '.png'" />    {{name}}</span>
+            <span slot="name" slot-scope="name, record">  <a-avatar :src=" '/avator/'+ record.no + '.png'" />    {{name}}</span>
         </a-table>
     </div>
 </template>
 
 <script>
-    import { cloneDeep, sortBy } from 'lodash'
-    import  _HeroData from '../../core/fixtures/heros.json'
+    import  { HeroTable }  from '../../core/heroes'
+    import {BattleProperties} from "../../core/fixtures/hero-property-names"
 
     const columns = [
         {
             title: '编号',
-            dataIndex: 'id',
-            sorter: true,
+            dataIndex: 'no',
         },
         {
             title: '式神',
@@ -26,6 +25,10 @@
             key: 'name',
             dataIndex: 'name',
             scopedSlots: { customRender: 'name' },
+        },
+        {
+            title: '技能已实现',
+            dataIndex: 'ok',
         },
         {
             title: '生命',
@@ -54,11 +57,26 @@
     ];
     export default {
         data() {
+            const heros = [];
+
+            HeroTable.forEach(Hero => {
+                heros.push(new Hero())
+            })
             return {
-                data: sortBy(cloneDeep(_HeroData), 'id').map(data => {
-                    data.critical = data.cri * 100 + '%';
-                    data['cri_dmg'] = data.cri_dmg * 100 + '%';
-                    return data;
+                data: heros.map(hero => {
+
+                    return {
+                        no: hero.no,
+                        name: hero.name,
+                        hp: hero.getComputedProperty(BattleProperties.MAX_HP),
+                        atk: hero.getComputedProperty(BattleProperties.ATK),
+                        def: hero.getComputedProperty(BattleProperties.DEF),
+                        spd: hero.getComputedProperty(BattleProperties.SPD),
+                        cri: hero.getComputedProperty(BattleProperties.CRI) * 100 + '%',
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        cri_dmg: hero.getComputedProperty(BattleProperties.CRI_DMG) * 100 + '%',
+                        ok: hero.hasTag('simple') ? '否': '是',
+                    };
                 }),
                 columns,
             }

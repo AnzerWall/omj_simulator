@@ -65,11 +65,10 @@
 
         const keys = sampleSize(ids, 5); // 为每个队伍分配5个队员
 
-        for (const entityId of keys) {
+        for (const no of keys) {
             entities.push({
-                no: id,
-                // eslint-disable-next-line @typescript-eslint/camelcase
-                team_id: teamId,
+                no,
+                teamId,
             });
         }
         entities[0].no = 304;

@@ -31,7 +31,7 @@ const routes = [
   },
   {
     path: '/hero',
-    name: 'Predict',
+    name: 'Hero',
     component: Hero,
   },
 ];

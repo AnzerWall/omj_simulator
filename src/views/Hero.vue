@@ -5,13 +5,13 @@
                 :rowKey="record => record.name"
                 :dataSource="data"
         >
-            <span slot="name" slot-scope="name, record">  <a-avatar :src=" '/avator/'+ record.no + '.png'" />    {{name}}</span>
+            <span slot="name" slot-scope="name, record">  <a-avatar :src=" '/avator/'+ record.no + '.png'"/>    {{name}}</span>
         </a-table>
     </div>
 </template>
 
 <script>
-    import  { HeroTable }  from '../../core/heroes'
+    import {HeroTable} from '../../core/heroes'
     import {BattleProperties} from "../../core/fixtures/hero-property-names"
 
     const columns = [
@@ -24,7 +24,7 @@
             width: '20%',
             key: 'name',
             dataIndex: 'name',
-            scopedSlots: { customRender: 'name' },
+            scopedSlots: {customRender: 'name'},
         },
         {
             title: '技能已实现',
@@ -75,7 +75,7 @@
                         cri: hero.getComputedProperty(BattleProperties.CRI) * 100 + '%',
                         // eslint-disable-next-line @typescript-eslint/camelcase
                         cri_dmg: hero.getComputedProperty(BattleProperties.CRI_DMG) * 100 + '%',
-                        ok: hero.hasTag('simple') ? '否': '是',
+                        ok: hero.hasTag('simple') ? '否' : '是',
                     };
                 }),
                 columns,

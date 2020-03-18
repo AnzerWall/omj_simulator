@@ -2,7 +2,8 @@
     <a-layout id="app">
         <a-layout-sider :trigger="null" collapsible v-model="collapsed">
             <div class="logo">{{collapsed ? 'OS' : 'Onmyoji Simulator'}}</div>
-            <a-menu class="site-menu" theme="dark" mode="inline" :defaultSelectedKeys="['1']" @select="onSelectMenu" :selectedKeys="selectedKeys">
+            <a-menu class="site-menu" theme="dark" mode="inline" :defaultSelectedKeys="['1']" @select="onSelectMenu"
+                    :selectedKeys="selectedKeys">
                 <a-menu-item key="/">
                     <a-icon type="home"/>
                     <span>首页</span>
@@ -52,13 +53,13 @@
             };
         },
         methods: {
-            onSelectMenu({ selectedKeys }) {
+            onSelectMenu({selectedKeys}) {
                 if (selectedKeys && selectedKeys.length) {
                     this.$router.push(selectedKeys[0])
                 }
             }
         },
-        computed:{
+        computed: {
             selectedKeys() {
                 return [this.$route.path]
             }

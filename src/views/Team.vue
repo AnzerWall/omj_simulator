@@ -49,7 +49,7 @@
         },
         methods: {
             handleChange(teamId, index, no) {
-              this.$store.commit('UPDATE_TEAM_MEMBER', {teamId, index, no});
+                this.$store.commit('UPDATE_TEAM_MEMBER', {teamId, index, no});
             }
         }
     }

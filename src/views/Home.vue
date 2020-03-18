@@ -1,25 +1,25 @@
 <template>
-  <div class="home">
-    {{readme}}
-  </div>
+    <div class="home">
+        {{readme}}
+    </div>
 </template>
 
 <script>
 
-export default {
-  data() {
-    return {
-      readme: '玩得开心',
-    }
-  }
-};
+    export default {
+        data() {
+            return {
+                readme: '玩得开心',
+            }
+        }
+    };
 </script>
 <style>
-  .home {
+    .home {
 
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    padding: 20px;
-  }
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        padding: 20px;
+    }
 </style>

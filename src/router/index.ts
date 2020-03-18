@@ -9,37 +9,37 @@ import Hero from '../views/Hero.vue';
 Vue.use(VueRouter);
 
 const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home,
-  },
-  {
-    path: '/team',
-    name: 'Team',
-    component: Team,
-  },
-  {
-    path: '/debug',
-    name: 'Debug',
-    component: Debug,
-  },
-  {
-    path: '/predict',
-    name: 'Predict',
-    component: Predict,
-  },
-  {
-    path: '/hero',
-    name: 'Hero',
-    component: Hero,
-  },
+    {
+        path: '/',
+        name: 'Home',
+        component: Home,
+    },
+    {
+        path: '/team',
+        name: 'Team',
+        component: Team,
+    },
+    {
+        path: '/debug',
+        name: 'Debug',
+        component: Debug,
+    },
+    {
+        path: '/predict',
+        name: 'Predict',
+        component: Predict,
+    },
+    {
+        path: '/hero',
+        name: 'Hero',
+        component: Hero,
+    },
 ];
 
 const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
-  routes,
+    mode: 'history',
+    base: process.env.BASE_URL,
+    routes,
 });
 
 export default router;

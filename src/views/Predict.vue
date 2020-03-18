@@ -2,17 +2,21 @@
     <div class="predict">
         <div>注意本项目尚在开发中，必须保证下面列表中所有式神均已实现ai和技能才有参考价值</div>
         <div style="margin-bottom: 20px;">
-            测试次数:      <a-input-number  :min="1" :max="1000" v-model="count" /> <a-button @click="getWinner" :loading="!!total">预测</a-button>{{total ? '   剩余计算次数' + total : ''}}   队伍1赢{{winner0}}次({{Math.floor(winner0/count*100)}}%) 队伍2赢{{winner1}}次({{Math.floor(winner1/count*100)}}%)
+            测试次数:
+            <a-input-number :min="1" :max="1000" v-model="count"/>
+            <a-button @click="getWinner" :loading="!!total">预测</a-button>
+            {{total ? ' 剩余计算次数' + total : ''}} 队伍1赢{{winner0}}次({{Math.floor(winner0/count*100)}}%)
+            队伍2赢{{winner1}}次({{Math.floor(winner1/count*100)}}%)
         </div>
-            <a-table
-                    :columns="columns"
-                    :rowKey="record => record.name"
-                    :dataSource="data"
-                    size="small"
-                    :pagination="false"
-            >
-                <span slot="name" slot-scope="name, record">  <a-avatar :src=" '/avator/'+ record.no + '.png'"/>    {{name}}</span>
-            </a-table>
+        <a-table
+                :columns="columns"
+                rowKey="id"
+                :dataSource="data"
+                size="small"
+                :pagination="false"
+        >
+            <span slot="name" slot-scope="name, record">  <a-avatar :src=" '/avator/'+ record.no + '.png'"/>    {{name}}</span>
+        </a-table>
 
     </div>
 </template>
@@ -69,10 +73,11 @@
         },
     ];
 
-    const heros = [];
+    const heros = new Map();
 
     HeroTable.forEach(Hero => {
-        heros.push(new Hero())
+        const hero = new Hero()
+        heros.set(hero.no, hero)
     })
 
     export default {
@@ -80,8 +85,12 @@
             const list = [];
 
             [0, 1].forEach(teamId => {
-                heros.forEach(hero => {
+                for(let index = 0; index < 5; index++) {
+                    const no = this.$store.state['team' + teamId][index].no;
+                    const hero = heros.get(no);
+
                     const data = {
+                        id: teamId + '_' + hero.no + index,
                         no: hero.no,
                         name: hero.name,
                         hp: hero.getComputedProperty(BattleProperties.MAX_HP),
@@ -92,13 +101,11 @@
                         // eslint-disable-next-line @typescript-eslint/camelcase
                         cri_dmg: hero.getComputedProperty(BattleProperties.CRI_DMG) * 100 + '%',
                         ok: hero.hasTag('simple') ? '否' : '是',
+                        teamId,
                     };
-                    if (this.$store.state['team' + teamId].find(d => hero.no === d.no)) {
-                        data.teamId = '队伍' + (teamId + 1);
-                        list.push(data);
-                    }
+                    list.push(data);
+                }
 
-                })
             })
 
             return {
@@ -120,10 +127,10 @@
                     this.total--
                     const game = new Game(this.$store.state.team0.concat(this.$store.state.team1));
                     // eslint-disable-next-line no-empty
-                    while(game.process()) {
+                    while (game.process()) {
                     }
-                    if (game.winner === 0) this.winner0 ++;
-                    else  if (game.winner === 1) this.winner1 ++;
+                    if (game.winner === 0) this.winner0++;
+                    else if (game.winner === 1) this.winner1++;
                     else this.error++;
                     setTimeout(fn, 10);
                 }

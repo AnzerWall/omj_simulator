@@ -55,27 +55,8 @@
 <script>
     import * as PIXI from 'pixi.js';
     import Game from '../../core/system/game'
-    import datas from '../../core/fixtures/heros.json';
-    import {sampleSize, map, filter, forEach, values} from 'lodash';
+    import {forEach, values} from 'lodash';
     import {BattleProperties} from "../../core/fixtures/hero-property-names"
-
-    const ids = filter(map(datas, 'id'), d => !!d);
-    const entities = [];
-    [0, 1].forEach(teamId => {
-
-        const keys = sampleSize(ids, 5); // 为每个队伍分配5个队员
-
-        for (const no of keys) {
-            entities.push({
-                no,
-                teamId,
-            });
-        }
-        entities[0].no = 304;
-    });
-
-
-    const game = new Game(entities);
 
     export default {
         data() {
@@ -86,7 +67,8 @@
             }
         },
         mounted() {
-          this.syncData();
+            this.game = new Game(this.$store.state.team0.concat(this.$store.state.team1));
+            this.syncData();
         },
         methods: {
             syncData() {
@@ -95,7 +77,7 @@
                 this.tasks = [];
                 this.microTasks = [];
 
-                game.entities.forEach(entity => {
+                this.game.entities.forEach(entity => {
                     const data = {
                         no: entity.no,
                         name: entity.name,
@@ -111,7 +93,7 @@
                         this.team2.push(data)
                     }
                 });
-                game.microTasks.concat([['', '----', '----']]).concat(game.tasks).forEach(task => {
+                this.game.microTasks.concat([['', '----', '----']]).concat(this.game.tasks).forEach(task => {
                     this.tasks.push({
                         hint: task[2],
                         data: JSON.stringify(task[1]),
@@ -120,7 +102,7 @@
 
             },
             step() {
-                game.process();
+                this.game.process();
                 this.syncData();
             }
         }

@@ -1,5 +1,144 @@
 <template>
     <div class="predict">
-        <h1>This is an predict page</h1>
+        <div>注意本项目尚在开发中，必须保证下面列表中所有式神均已实现ai和技能才有参考价值</div>
+        <div style="margin-bottom: 20px;">
+            测试次数:      <a-input-number  :min="1" :max="1000" v-model="count" /> <a-button @click="getWinner" :loading="!!total">预测</a-button>{{total ? '   剩余计算次数' + total : ''}}   队伍1赢{{winner0}}次({{Math.floor(winner0/count*100)}}%) 队伍2赢{{winner1}}次({{Math.floor(winner1/count*100)}}%)
+        </div>
+            <a-table
+                    :columns="columns"
+                    :rowKey="record => record.name"
+                    :dataSource="data"
+                    size="small"
+                    :pagination="false"
+            >
+                <span slot="name" slot-scope="name, record">  <a-avatar :src=" '/avator/'+ record.no + '.png'"/>    {{name}}</span>
+            </a-table>
+
     </div>
 </template>
+<script>
+    import Game from '../../core/system/game'
+    import {forEach, values} from 'lodash';
+    import {BattleProperties} from "../../core/fixtures/hero-property-names"
+    import {HeroTable} from '../../core/heroes'
+    import Vue from 'vue'
+
+    const columns = [
+        {
+            title: '编号',
+            dataIndex: 'no',
+        },
+        {
+            title: '式神',
+            width: '20%',
+            key: 'name',
+            dataIndex: 'name',
+            scopedSlots: {customRender: 'name'},
+        },
+        {
+            title: '队伍编号',
+            dataIndex: 'teamId',
+        },
+        {
+            title: '已实现',
+            dataIndex: 'ok',
+        },
+        {
+            title: '生命',
+            dataIndex: 'hp',
+        },
+        {
+            title: '攻击',
+            dataIndex: 'atk',
+        },
+        {
+            title: '防御',
+            dataIndex: 'def',
+        },
+        {
+            title: '速度',
+            dataIndex: 'spd',
+        },
+        {
+            title: '暴击',
+            dataIndex: 'cri',
+        },
+        {
+            title: '暴击伤害',
+            dataIndex: 'cri_dmg',
+        },
+    ];
+
+    const heros = [];
+
+    HeroTable.forEach(Hero => {
+        heros.push(new Hero())
+    })
+
+    export default {
+        data() {
+            const list = [];
+
+            [0, 1].forEach(teamId => {
+                heros.forEach(hero => {
+                    const data = {
+                        no: hero.no,
+                        name: hero.name,
+                        hp: hero.getComputedProperty(BattleProperties.MAX_HP),
+                        atk: hero.getComputedProperty(BattleProperties.ATK),
+                        def: hero.getComputedProperty(BattleProperties.DEF),
+                        spd: hero.getComputedProperty(BattleProperties.SPD),
+                        cri: hero.getComputedProperty(BattleProperties.CRI) * 100 + '%',
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        cri_dmg: hero.getComputedProperty(BattleProperties.CRI_DMG) * 100 + '%',
+                        ok: hero.hasTag('simple') ? '否' : '是',
+                    };
+                    if (this.$store.state['team' + teamId].find(d => hero.no === d.no)) {
+                        data.teamId = '队伍' + (teamId + 1);
+                        list.push(data);
+                    }
+
+                })
+            })
+
+            return {
+                count: 100,
+                winner0: 0,
+                winner1: 0,
+                error: 0,
+                data: list,
+                columns,
+                total: 0,
+            }
+        },
+        methods: {
+            getWinner() {
+                this.winner0 = this.winner1 = this.process = 0;
+                this.total = this.count;
+                const fn = () => {
+                    if (!this.total) return;
+                    this.total--
+                    const game = new Game(this.$store.state.team0.concat(this.$store.state.team1));
+                    // eslint-disable-next-line no-empty
+                    while(game.process()) {
+                    }
+                    if (game.winner === 0) this.winner0 ++;
+                    else  if (game.winner === 1) this.winner1 ++;
+                    else this.error++;
+                    setTimeout(fn, 10);
+                }
+                setTimeout(fn, 10);
+
+            }
+        }
+
+    }
+</script>
+<style>
+    .predict {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        padding: 20px;
+    }
+</style>

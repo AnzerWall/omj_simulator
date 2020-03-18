@@ -1,7 +1,7 @@
 import {sample} from 'lodash';
 
-const eps: number = 1e-6; // 精度
-const GOAL: number = 10000; // 行动条终点
+const eps = 1e-6; // 精度
+const GOAL = 10000; // 行动条终点
 const oo = 1e10; // 无限大
 
 function feq(a: number, b: number): boolean {

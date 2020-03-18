@@ -1,14 +1,7 @@
 <template>
     <div class="debug" ref="container">
         <a-button @click="step" :block="false" style="margin-bottom: 20px;" >下一步</a-button>
-        <a-table :dataSource="microTasks" style="margin-bottom: 20px;" size="small">
-            <a-table-column title="提示" dataIndex="hint" />
-            <a-table-column title="数据" dataIndex="data" >
-                <template slot-scope="data">
-                    <json-tree :raw="data" :level="1"></json-tree>
-                </template>
-            </a-table-column>
-        </a-table>
+
         <a-table :dataSource="tasks" style="margin-bottom: 20px;" size="small">
             <a-table-column title="提示" dataIndex="hint" />
             <a-table-column title="数据" dataIndex="data" >
@@ -90,7 +83,6 @@
             return {
                 team1: [],
                 team2: [],
-                microTasks: [],
                 tasks: [],
             }
         },
@@ -120,18 +112,13 @@
                         this.team2.push(data)
                     }
                 });
-                game.microTasks.forEach(task => {
-                    this.microTasks.push({
-                        hint: task[2],
-                        data: JSON.stringify(task[1]),
-                    })
-                });
-                game.tasks.forEach(task => {
+                game.microTasks.concat([['', '----', '----']]).concat(game.tasks).forEach(task => {
                     this.tasks.push({
                         hint: task[2],
                         data: JSON.stringify(task[1]),
                     })
                 });
+
             },
             step() {
                 game.process();

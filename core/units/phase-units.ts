@@ -4,17 +4,17 @@ import {EventCodes} from '../fixtures/events';
 
 export const phaseGameStart = (game: Game, _: object): boolean => {
     game.dispatch(EventCodes.GAME_START);
-    game.enqueueTask(() => {
+    game.addProcessor(() => {
         game.runway.compute();
         return true;
     },{}, '[PHASE_GAME_START] compute runway');
     game.dispatch(EventCodes.SENKI);
-    game.enqueueTask(() => {
+    game.addProcessor(() => {
         game.current_entity = game.runway.getNext() || 0;
         game.turn++;
         return true;
     },{}, '[PHASE_GAME_START] set current entity');
-    game.enqueueTask(phaseTurn, {}, '[PHASE_TURN]'); // 进入先机阶段
+    game.addProcessor(phaseTurn, {}, '[PHASE_TURN]'); // 进入先机阶段
     return true;
 };
 
@@ -26,7 +26,7 @@ export const phaseRunWay = (game: Game, _: object): boolean => {
     game.current_entity = game.runway.computeNext() || 0;
     game.turn++;
 
-    game.enqueueTask(phaseTurn, {}, '[PHASE_TURN]');
+    game.addProcessor(phaseTurn, {}, '[PHASE_TURN]');
     return true;
 };
 
@@ -40,7 +40,7 @@ export const phaseTurn = (game: Game, _: object): boolean => {
     console.log(`[TURN_${game.turn}] Turn Entity: ${currentEntity.name}(${currentEntity.team_id})`);
     game.dispatch(EventCodes.TURN_START, {});
     game.dispatch(EventCodes.ACTION_START, {});
-    game.enqueueTask(() => {
+    game.addProcessor(() => {
         game.entities.forEach(entity => {
             entity.buffs.forEach(buff => {
                 if (buff.countDown <= 0) return;
@@ -58,7 +58,7 @@ export const phaseTurn = (game: Game, _: object): boolean => {
 
        return true;
     }, {}, '[PHASE_TURN] process buff');
-    game.enqueueTask(() => {
+    game.addProcessor(() => {
 
         if (currentEntity.no) {
             const enemies = game.getEnemies(game.current_entity);
@@ -69,7 +69,7 @@ export const phaseTurn = (game: Game, _: object): boolean => {
         }
         game.dispatch(EventCodes.ACTION_END, {});
         game.dispatch(EventCodes.TURN_END, {});
-        game.enqueueTask(phaseRunWay, {}, '[PHASE_RUNWAY]');
+        game.addProcessor(phaseRunWay, {}, '[PHASE_RUNWAY]');
         return true;
     }, {}, '[PHASE_TURN] action');
 

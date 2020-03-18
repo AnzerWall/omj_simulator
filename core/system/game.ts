@@ -5,7 +5,7 @@ import Runway from './runway';
 import EntityData from './entity-data';
 import {BattleProperties} from '../fixtures/hero-property-names';
 import {HeroTable} from '../heroes';
-import * as PhaseUnits from '../units/phase_units';
+import * as PhaseUnits from '../units/phase-units';
 import {EventCodes, EventData, EventRange} from '../fixtures/events';
 import Skill from './skill';
 import Attack, {AttackTargetInfo} from './attack';
@@ -77,7 +77,7 @@ export default class Game {
             this.fields[entity.team_id].push(entity.entity_id);
         });
 
-        this.enqueueTask(PhaseUnits.phaseGameStart, {}, '[PHASE_GAME_START] Init');
+        this.addProcessor(PhaseUnits.phaseGameStart, {}, '[PHASE_GAME_START] Init');
     }
 
     process(): boolean {
@@ -102,13 +102,10 @@ export default class Game {
         return false;
     }
 
-    enqueueMicroTask(processor: (game: Game, data: object) => boolean, data: EventData = {}, hint: string = '') {
+    addProcessor(processor: (game: Game, data: object) => boolean, data: EventData = {}, hint: string = '') {
         this.microTasks.push([processor, data, hint]);
     }
 
-    enqueueTask(processor: (game: Game, data: object) => boolean, data: EventData = {}, hint: string = '') {
-        this.tasks.push([processor, data, hint]);
-    }
 
     dispatch(code: EventCodes, data: EventData = {}): number {
         const event_entity = this.getEntity(data.event_entity_id || 0);
@@ -171,7 +168,7 @@ export default class Game {
         });
 
         forEach(units, (unit) => {
-            this.enqueueMicroTask(unit.processor, Object.assign({skill_entity_id: unit.skill_entity_id, skill_no: unit.skill_no}, data), unit.hint);
+            this.addProcessor(unit.processor, Object.assign({skill_entity_id: unit.skill_entity_id, skill_no: unit.skill_no}, data), unit.hint);
         });
 
         return count;
@@ -311,12 +308,12 @@ export default class Game {
                 default:
                     return false;
             }
-            game.enqueueMicroTask(processTarget, data, `[ACTION_attack] ${data.step1}-${data.step2}`);
+            game.addProcessor(processTarget, data, `[ACTION_attack] ${data.step1}-${data.step2}`);
             return true;
         }
 
         if (a.targetsInfo.length) {
-            this.enqueueMicroTask(processTarget, {attack: a, step1: 0, step2: 0}, '[ACTION_attack] 0-0');
+            this.addProcessor(processTarget, {attack: a, step1: 0, step2: 0}, '[ACTION_attack] 0-0');
         }
         return true;
     }
@@ -327,7 +324,7 @@ export default class Game {
         if (!target) return false;
         if (target.dead) return true; // 死了就不要鞭尸了
 
-        this.enqueueMicroTask(() => {
+        this.addProcessor(() => {
             const remainHp = Math.max(target.hp + v, 0);
             const isDead = remainHp <= 0;
             console.log(`${source ? `[ACTION_update_hp] ${source.name}(${source.team_id})` : 'NoSource'}->${target.name}(${target.team_id})  ${target.hp}${v}=${remainHp}`, isDead && '【Dead】');
@@ -358,7 +355,7 @@ export default class Game {
     action_add_buff(source_id: number, target_id: number, buff: Buff): boolean {
         const target = this.getEntity(target_id);
         if (!target) return false;
-        this.enqueueMicroTask((game: Game) => {
+        this.addProcessor((game: Game) => {
             target.addBuff(buff);
             game.dispatch(EventCodes.BUFF_GET, { buff, event_entity_id: source_id, event_target_id: target_id});
             return true;
@@ -370,7 +367,7 @@ export default class Game {
         const target = this.getEntity(target_id);
         if (!target) return false;
 
-        this.enqueueMicroTask((game: Game) => {
+        this.addProcessor((game: Game) => {
             target.removeBuff(buff);
             game.dispatch(EventCodes.BUFF_REMOVE, { buff, event_entity_id: source_id, event_target_id: target_id});
             return true;

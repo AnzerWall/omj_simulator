@@ -4,7 +4,7 @@ import Mana from './mana';
 import Runway from './runway';
 import EntityData from './entity-data';
 import {BattleProperties} from '../fixtures/hero-property-names';
-import { HeroTable } from '../heroes';
+import {HeroTable} from '../heroes';
 import * as PhaseUnits from '../units/phase_units';
 
 type Unit = [(game: Game, data: object) => boolean, object, string];

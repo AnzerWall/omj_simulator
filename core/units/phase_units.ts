@@ -19,7 +19,6 @@ export const phaseRunWay = (game: Game, _: object): boolean => {
     game.judgeWin();
     if (game.isEnd) return false;
 
-
     game.current_entity = game.runway.computeNext() || 0;
     game.turn++;
 
@@ -43,7 +42,6 @@ export const phaseTurn = (game: Game, _: object): boolean => {
         }
 
     }
-
 
     game.enqueueTask(phaseRunWay, {}, '计算行动条');
     return true;

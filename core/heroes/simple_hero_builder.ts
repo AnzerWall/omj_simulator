@@ -18,7 +18,7 @@ import {Entity} from '../system';
 import {BattleProperties} from '../fixtures/hero-property-names';
 import {NormalAttack} from './common/normal_attack';
 
-export default function build(data: any): {new(): Entity; } {
+export default function build(data: any): { new(): Entity; } {
     class SimpleHero extends Entity {
         constructor() {
             super();
@@ -31,8 +31,9 @@ export default function build(data: any): {new(): Entity; } {
             this.no = data.id;
             this.name = data.name;
             this.hp = data.hp;
-            this.addSkill(new NormalAttack())
+            this.addSkill(new NormalAttack());
         }
     }
+
     return SimpleHero;
 }

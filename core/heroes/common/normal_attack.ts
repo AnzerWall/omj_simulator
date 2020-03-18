@@ -5,7 +5,8 @@ export class NormalAttack implements Skill {
     no: number;
     passive: boolean;
     rate: number;
-    constructor(rate:number = 1.25) {
+
+    constructor(rate: number = 1.25) {
         this.no = 1;
         this.passive = false;
         this.handlers = [];
@@ -21,7 +22,7 @@ export class NormalAttack implements Skill {
     }
 
     use(game: Game, source_entity_id: number, selected_entity_id: number): boolean {
-        game.action_normal_attack(source_entity_id, selected_entity_id, this.rate)
+        game.action_normal_attack(source_entity_id, selected_entity_id, this.rate);
         return true;
     }
 }

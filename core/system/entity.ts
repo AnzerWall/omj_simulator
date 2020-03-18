@@ -52,6 +52,7 @@ export default class Entity {
     addSkill(skill: Skill) {
         this.skills.push(skill);
     }
+
     addTags(tag: string) {
         if (!this.hasTag(tag)) {
             this.tags.push(tag);

@@ -5,7 +5,7 @@ const XLSX = require("xlsx");
 const path = require("path");
 const fs = require("fs");
 
-const workbook = XLSX.readFile(path.join(__dirname, "阴阳师式神信息表V3.1.6.xlsx"));
+const workbook = XLSX.readFile(path.join(__dirname, "阴阳师式神信息表V3.2.1.xlsx"));
 const first_sheet_name = workbook.SheetNames[0];
 const worksheet = workbook.Sheets[first_sheet_name];
 

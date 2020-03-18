@@ -55,11 +55,11 @@
     "hp_pt": 109,
     "def_pt": 109,
     "total_pt": 370,
-    "name_jp": "",
+    "name_jp": "オロチ",
     "name_en": "",
-    "name_roma": "",
-    "name_kana": "",
-    "id": 0
+    "name_roma": "orochi",
+    "name_kana": "おろち",
+    "id": 325
   },
   {
     "index": 4,
@@ -1671,10 +1671,10 @@
     "hp_pt": 105,
     "def_pt": 111,
     "total_pt": 300,
-    "name_jp": "",
+    "name_jp": "天井下り",
     "name_en": "",
-    "name_roma": "",
-    "name_kana": "",
+    "name_roma": "tenjoukudari",
+    "name_kana": "てんじょうくだり",
     "id": 323
   },
   {

@@ -36,7 +36,7 @@ export default class Game {
         teamId: number;
         lv?: number;
         equipments?: number[];
-    }[], seed = 0) {
+    }[], seed = Math.random()) {
         this.rules = {};
         this.isEnd = false;
         this.winner = -1;

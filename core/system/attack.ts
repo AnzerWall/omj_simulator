@@ -3,7 +3,7 @@ import Game from './game';
 export class AttackTargetInfo {
     targetId: number;
 
-    base: ((game: Game, source_id: number, target_id: number) => number) | string; // 基础数值来源
+    base: ((game: Game, sourceId: number, targetId: number) => number) | string; // 基础数值来源
     rate: number;
     FR: number;
 
@@ -33,8 +33,8 @@ export class AttackTargetInfo {
     isCri: boolean; // 是否暴击
     noSource: boolean;
 
-    constructor(target_id: number) {
-        this.targetId = target_id;
+    constructor(targetId: number) {
+        this.targetId = targetId;
         this.isIndirectDamage = false;
         this.isRealDamage = false;
         this.isCriticalDamage = false;

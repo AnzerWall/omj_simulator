@@ -6,8 +6,13 @@ import EntityData from './entity-data';
 import {BattleProperties} from '../fixtures/hero-property-names';
 import {HeroTable} from '../heroes';
 import * as PhaseUnits from '../units/phase_units';
+import {EventCodes, EventData, EventRange} from '../fixtures/events';
+import Skill from './skill';
+import Attack, {AttackTargetInfo} from './attack';
+import {MersenneTwister19937, Random} from 'random-js';
+import Buff from './buff';
 
-type Unit = [(game: Game, data: object) => boolean, object, string];
+type Unit = [(game: Game, data: EventData) => boolean, object, string];
 
 export default class Game {
     rules: object; // 规则表
@@ -16,7 +21,7 @@ export default class Game {
 
     datas: EntityData[];
 
-    seed: number | null;
+    seed: number;
     manas: Mana[]; // 鬼火信息
     runway: Runway; // 行动条位置
     microTasks: Unit[];
@@ -27,6 +32,7 @@ export default class Game {
     entities: Map<number, Entity>; // 实体列表
     isEnd: boolean; // 是否游戏结束
     winner: number; // 获胜者id
+    random: Random;
 
     constructor(datas: EntityData[], seed: number = 0) {
         this.rules = {};
@@ -45,6 +51,7 @@ export default class Game {
         this.microTasks = [];
         this.datas = datas;
         this.seed = seed;
+        this.random = new Random(MersenneTwister19937.seed(seed));
         this._init();
     }
 
@@ -70,7 +77,7 @@ export default class Game {
             this.fields[entity.team_id].push(entity.entity_id);
         });
 
-        this.enqueueTask(PhaseUnits.phaseGameStart, {}, '游戏开始');
+        this.enqueueTask(PhaseUnits.phaseGameStart, {}, '[PHASE_GAME_START] Init');
     }
 
     process(): boolean {
@@ -87,7 +94,7 @@ export default class Game {
 
             const [processor, data, hint] = unit;
 
-            console.log('处理', hint);
+            console.log(hint);
 
             return processor(this, data);
         }
@@ -95,12 +102,79 @@ export default class Game {
         return false;
     }
 
-    enqueueMicroTask(processor: (game: Game, data: object) => boolean, data: object = {}, hint: string = '') {
+    enqueueMicroTask(processor: (game: Game, data: object) => boolean, data: EventData = {}, hint: string = '') {
         this.microTasks.push([processor, data, hint]);
     }
 
-    enqueueTask(processor: (game: Game, data: object) => boolean, data: object = {}, hint: string = '') {
+    enqueueTask(processor: (game: Game, data: object) => boolean, data: EventData = {}, hint: string = '') {
         this.tasks.push([processor, data, hint]);
+    }
+
+    dispatch(code: EventCodes, data: EventData = {}): number {
+        const event_entity = this.getEntity(data.event_entity_id || 0);
+        let count = 0;
+        const units: {
+            processor: (game: Game, data: object) => boolean,
+            hint: string,
+            priority: number,
+            skill_entity_id: number,
+            skill_no: number,
+        } [] = [];
+
+        this.entities.forEach(entity => {
+            forEach(entity.skills, (skill: Skill) => {
+
+                forEach(skill.handlers, handler => {
+                    if (handler.code === code) {
+                        let ok = false;
+                        switch (handler.range) {
+                            case EventRange.NONE:
+                                ok = true;
+                                break;
+                            case EventRange.SELF:
+                                if (data.event_entity_id === entity.entity_id) {
+                                    ok = true;
+                                }
+                                break;
+                            case EventRange.TEAM:
+                                if (data.event_entity_id && event_entity && event_entity.team_id === entity.team_id) {
+                                    ok = true;
+                                }
+                                break;
+                            case EventRange.ENEMY:
+                                if (data.event_entity_id && event_entity && (1 - event_entity.team_id) === entity.team_id) {
+                                    ok = true;
+                                }
+                                break;
+                            case EventRange.ALL:
+                                ok = true;
+                                break;
+                            default:
+                                break;
+                        }
+                        if (ok) {
+                            units.push({
+                                processor: handler.handle.bind(this),
+                                hint: `[EVENT_${EventCodes[code]}] entity_id = ${entity.entity_id} team_id = ${entity.team_id} skill_no = ${skill.no} ${JSON.stringify(data)}`,
+                                priority: handler.priority,
+                                skill_entity_id: entity.entity_id,
+                                skill_no: skill.no,
+                            });
+                        }
+                    }
+                });
+            });
+        });
+
+        units.sort((a, b) => {
+            return a.priority - b.priority;
+        });
+
+        forEach(units, (unit) => {
+            this.enqueueMicroTask(unit.processor, Object.assign({skill_entity_id: unit.skill_entity_id, skill_no: unit.skill_no}, data), unit.hint);
+        });
+
+        return count;
     }
 
     judgeWin() {
@@ -124,10 +198,6 @@ export default class Game {
         }
     }
 
-    getRandom(): number {
-        return Math.random();
-    }
-
     getEntity(entity_id: number): Entity | null {
         return this.entities.get(entity_id) || null;
     }
@@ -148,24 +218,168 @@ export default class Game {
         return ret;
     }
 
-    action_normal_attack(source: number, target: number, rate: number = 1) {
-        const sourceEntity = this.getEntity(source);
-        const targetEntity = this.getEntity(target);
 
-        if (!sourceEntity || !targetEntity) return false;
+    action_attack(a: Attack): boolean {
+        function processTarget(game: Game, data: EventData): boolean {
+            if (isNil(data.attack) || isNil(data.step1) || isNil(data.step2)) return false;
+            const attack = data.attack;
 
-        const damage = sourceEntity.getComputedProperty('atk') * rate;
-        const remainHp = Math.max(targetEntity.hp - damage, 0);
-        const isDead = remainHp <= 0;
+            const source = game.getEntity(attack.source_id);
+            if (!source) return false;
 
-        console.log(`队伍${sourceEntity.team_id}的${sourceEntity.name} 对 队伍${targetEntity.team_id}的${targetEntity.name} 造成${damage}点伤害，其${targetEntity.hp}->${remainHp}`, isDead && '【死亡】');
+            const targetInfo: AttackTargetInfo = attack.targetsInfo[data.step1];
+            if (!targetInfo) return false;
 
-        targetEntity.hp = remainHp;
-        targetEntity.dead = isDead;
-        if (isDead) {
-            this.runway.freeze(targetEntity.entity_id);
+            const target = game.getEntity(targetInfo.target_id);
+            if (!target) return false;
+
+            switch (data.step2) {
+                // 数据准备
+                case 0: {
+                    targetInfo.cri = source.getComputedProperty(BattleProperties.CRI);
+                    targetInfo.cri_dmg = source.getComputedProperty(BattleProperties.CRI_DMG);
+                    targetInfo.damageDealtBuff = source.getComputedProperty(BattleProperties.DMG_DEALT_B) + 1;
+                    targetInfo.damageDealtDebuff = source.getComputedProperty(BattleProperties.DMG_DEALT_D) + 1;
+
+                    targetInfo.targetDamageTakenBuff = target.getComputedProperty(BattleProperties.DMG_TAKEN_B) + 1;
+                    targetInfo.targetDamageTakenDebuff = target.getComputedProperty(BattleProperties.DMG_TAKEN_D) + 1;
+                    targetInfo.targetDefence = target.getComputedProperty(BattleProperties.DEF);
+                    targetInfo.damage = typeof targetInfo.base === 'string' ?
+                        source.getComputedProperty(targetInfo.base) :
+                        targetInfo.base(game, attack.source_id, targetInfo.target_id);
+
+                    game.dispatch(EventCodes.BEFORE_ATTACK, {attack, event_entity_id: attack.source_id}); // 攻击前
+                    data.step2 = 1;
+                    break;
+                }
+                // 受到攻击处理
+                case 1: {
+                    game.dispatch(EventCodes.ATTACK, {attack, event_entity_id: attack.source_id}); // 攻击时
+                    game.dispatch(EventCodes.TAKEN_ATTACK, {attack, event_entity_id: targetInfo.target_id}); // 被攻击时
+
+                    if (targetInfo.shouldComputeCri) {
+                        targetInfo.isCri = targetInfo.cri < game.random.real(0, 1) || targetInfo.isCri;
+                        if (targetInfo.isCri) {
+                            data.step2 = 2;
+                        } else {
+                            data.step2 = 3;
+                        }
+                    } else {
+                        data.step2 = 3;
+                    }
+                    break;
+                }
+                // 暴击处理
+                case 2: {
+                    targetInfo.isCriDamage = true;
+                    game.dispatch(EventCodes.CRI, {attack, event_entity_id: attack.source_id}); // 暴击时
+                    data.step2 = 3;
+                    break;
+                }
+                // 伤害处理步骤
+                case 3: {
+                    const FR = game.random.real(1 - targetInfo.FR, 1 + targetInfo.FR); // 伤害浮动系数
+                    const atk = targetInfo.damage * targetInfo.rate * (targetInfo.isCri ? targetInfo.cri_dmg : 1) * 300; // 伤害公式攻击部
+                    const def = targetInfo.targetDefence + 300; // 伤害公式防御部
+                    const rate = (targetInfo.damageDealtBuff / targetInfo.damageDealtDebuff) *
+                        (targetInfo.targetDamageTakenBuff / targetInfo.targetDamageTakenDebuff); // 减伤增伤易伤等计算
+
+                    targetInfo.finalDamage = atk / def * rate * FR;
+                    //TODO: 计算盾的抵消伤害
+
+                    game.dispatch(EventCodes.DAMAGE, {attack, event_entity_id: attack.source_id}); // 造成伤害
+                    game.dispatch(EventCodes.TAKEN_DAMAGE, {attack, event_entity_id: targetInfo.target_id}); // 收到伤害时
+
+                    data.step2 = 4;
+                    break;
+                }
+                // 伤害结算步骤
+                case 4: {
+                    game.action_update_hp(targetInfo.noSource ? 0 : attack.source_id, targetInfo.target_id, -targetInfo.finalDamage);
+                    data.step2 = 5;
+                    break;
+                }
+                case 5: {
+                    if (attack.targetsInfo.length > data.step1 + 1) {
+                        data.step1 = data.step1 + 1;
+                        data.step2 = 0;
+                    } else {
+                        return true;
+                    }
+                    break;
+                }
+                default:
+                    return false;
+            }
+            game.enqueueMicroTask(processTarget, data, `[ACTION_attack] ${data.step1}-${data.step2}`);
+            return true;
         }
 
+        if (a.targetsInfo.length) {
+            this.enqueueMicroTask(processTarget, {attack: a, step1: 0, step2: 0}, '[ACTION_attack] 0-0');
+        }
+        return true;
     }
+
+    action_update_hp(source_id: number, target_id: number, v: number, reason: number = 0): boolean {
+        const source = this.getEntity(source_id);
+        const target = this.getEntity(target_id);
+        if (!target) return false;
+        if (target.dead) return true; // 死了就不要鞭尸了
+
+        this.enqueueMicroTask(() => {
+            const remainHp = Math.max(target.hp + v, 0);
+            const isDead = remainHp <= 0;
+            console.log(`${source ? `[ACTION_update_hp] ${source.name}(${source.team_id})` : 'NoSource'}->${target.name}(${target.team_id})  ${target.hp}${v}=${remainHp}`, isDead && '【Dead】');
+            target.hp = remainHp;
+            target.dead = isDead;
+            if (isDead) {
+                this.runway.freeze(target.entity_id);
+            }
+            return true;
+        }, {}, '[ACTION_update_hp]');
+        return true;
+
+    }
+
+    action_use_skill(no: number, source_id: number, selected_id: number): boolean {
+        const source = this.getEntity(source_id);
+        if (!source) return false;
+
+        const skill = source.skills.find(s => s.no === no);
+        if (!skill) return false;
+
+        if (skill.check && !skill.check(this, source_id)) return false;
+        const cost = typeof skill.cost === 'number' ? skill.cost : skill.cost(this, source_id);
+        // TODO 鬼火
+        return skill.use ? skill.use(this, source_id, selected_id) : false;
+    }
+
+    action_add_buff(source_id: number, target_id: number, buff: Buff): boolean {
+        const target = this.getEntity(target_id);
+        if (!target) return false;
+        this.enqueueMicroTask((game: Game) => {
+            target.addBuff(buff);
+            game.dispatch(EventCodes.BUFF_GET, { buff, event_entity_id: source_id, event_target_id: target_id});
+            return true;
+        }, {}, '[ACTION_add_buff]');
+        return true;
+    }
+
+    action_remove_buff(source_id: number, target_id: number, buff: Buff): boolean {
+        const target = this.getEntity(target_id);
+        if (!target) return false;
+
+        this.enqueueMicroTask((game: Game) => {
+            target.removeBuff(buff);
+            game.dispatch(EventCodes.BUFF_REMOVE, { buff, event_entity_id: source_id, event_target_id: target_id});
+            return true;
+        }, {}, '[ACTION_remove_buff]');
+        return true;
+    }
+    // action_dead(source_id: number, target_id: number, reason: number): boolean {
+    //     const source = this.getEntity(source_id);
+    //     const target = this.getEntity(target_id);
+    // }
 
 }

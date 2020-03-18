@@ -32,11 +32,11 @@ npm run serve
 - [x] Runway(行动条)  
 - [x] Team(队伍) 
 - [ ] Equipment(基础御魂) 
-- [ ] Buff(buff机制) 
-- [ ] Skill(技能机智) 
+- [x] Buff(buff机制) 
+- [x] Skill(技能机智) 
 - [x] Entity(实体) 
 - [x] Hero(式神) 
-- [ ] Event(事件机制) 
+- [x] Event(事件机制) 
 
 ## 基于式神逻辑逐步补充机制属性事件等
 后面出新式神由于数据来源帖子未更新，暂时不在todo列表里

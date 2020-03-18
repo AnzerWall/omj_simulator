@@ -15,6 +15,7 @@ const entities: EntityData[] = [];
             team_id,
         });
     }
+    entities[0].no = 304;
 });
 
 const game = new Game(entities);

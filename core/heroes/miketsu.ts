@@ -4,32 +4,16 @@ import Game from '../system/game';
 import {EventCodes, EventData, EventRange} from '../fixtures/events';
 import Buff, {Effect} from '../system/buff';
 
-class KoJuKai implements Buff {
-    canDispel: boolean;
-    canRemove: boolean;
-    countDown: number;
-    enchantment: boolean;
-    maxCount: number;
-    name: string;
-    sourceId: number;
-    isStamp: boolean;
-    countDownBySource: boolean;
-    effects: Effect[];
-
+class KoJuKai extends Buff {
     constructor(sourceId: number) {
-        this.canDispel = false;
-        this.canRemove = false;
+        super();
         this.countDown = 1;
         this.countDownBySource = true;
         this.enchantment = true;
         this.maxCount = 1;
         this.name = '狐狩界';
-
         this.sourceId = sourceId;
-        this.isStamp = false;
-        this.effects = [];
     }
-
 }
 
 const skill1: Skill = {

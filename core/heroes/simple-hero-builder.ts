@@ -16,7 +16,7 @@
 // }
 import {Entity} from '../system';
 import {BattleProperties} from '../fixtures/hero-property-names';
-import {NormalAttack} from './common/normal_attack';
+import {NormalAttack} from './common/normal-attack';
 
 export default function build(data: any): { new(): Entity; } {
     class SimpleHero extends Entity {

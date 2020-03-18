@@ -1,10 +1,10 @@
-import Miketsu from './miketsu/hero';
+import Miketsu from './miketsu';
 import {Entity} from '../system';
 import datas from '../fixtures/heros.json';
 import {forEach} from 'lodash';
-import build from './simple_hero_builder';
+import build from './simple-hero-builder';
 
-type EntityClass = { new(): Entity; }
+type EntityClass = { new(): Entity };
 
 export const HeroTable: Map<number, EntityClass> = new Map<number, EntityClass>();
 

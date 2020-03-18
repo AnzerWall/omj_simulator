@@ -65,7 +65,7 @@
 
         const keys = sampleSize(ids, 5); // 为每个队伍分配5个队员
 
-        for (const id of keys) {
+        for (const entityId of keys) {
             entities.push({
                 no: id,
                 // eslint-disable-next-line @typescript-eslint/camelcase
@@ -105,10 +105,10 @@
                     forEach(values(BattleProperties), key => {
                         data[key] = `${entity.getComputedProperty(key)}`
                     });
-                   if (entity.team_id === 0) {
+                   if (entity.teamId === 0) {
                        this.team1.push(data)
                    }
-                    if (entity.team_id === 1) {
+                    if (entity.teamId === 1) {
                         this.team2.push(data)
                     }
                 });

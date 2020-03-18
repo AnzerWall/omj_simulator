@@ -1,43 +1,43 @@
-import {Entity, Skill} from '../../system';
-import {BattleProperties} from '../../fixtures/hero-property-names';
-import Handler from '../../system/handler';
-import Game from '../../system/game';
-import {EventCodes, EventData, EventRange} from '../../fixtures/events';
-import Buff, {Effect, Operator} from '../../system/buff';
+import {Entity, Skill} from '../system';
+import {BattleProperties} from '../fixtures/hero-property-names';
+import Game from '../system/game';
+import {EventCodes, EventData, EventRange} from '../fixtures/events';
+import Buff, {Effect} from '../system/buff';
 
 class KoJuKai implements Buff {
-    can_dispel: boolean;
-    can_remove: boolean;
+    canDispel: boolean;
+    canRemove: boolean;
     countDown: number;
     enchantment: boolean;
     maxCount: number;
     name: string;
-    source_entity_id: number;
-    stamp: boolean;
+    sourceId: number;
+    isStamp: boolean;
     countDownBySource: boolean;
     effects: Effect[];
-    constructor(source_entity_id: number) {
-        this.can_dispel = false;
-        this.can_remove = false;
+
+    constructor(sourceId: number) {
+        this.canDispel = false;
+        this.canRemove = false;
         this.countDown = 1;
         this.countDownBySource = true;
         this.enchantment = true;
         this.maxCount = 1;
         this.name = '狐狩界';
 
-        this.source_entity_id = source_entity_id;
-        this.stamp = false;
+        this.sourceId = sourceId;
+        this.isStamp = false;
         this.effects = [];
     }
 
-
 }
+
 const skill1: Skill = {
     no: 1,
     handlers: [],
     passive: false,
     cost: 0,
-    use(game: Game, source_entity_id: number, selected_entity_id: number): boolean {
+    use(game: Game, sourceId: number, selectedId: number): boolean {
         return true;
     },
 };
@@ -46,8 +46,8 @@ const skill2: Skill = {
     handlers: [{
         // 先机：释放狐狩界
         handle(game: Game, data: EventData): boolean {
-            if (!data.skill_entity_id) return false;
-            return game.action_use_skill(2, data.skill_entity_id, data.skill_entity_id);
+            if (!data.skillOwnerId) return false;
+            return game.actionUseSkill(2, data.skillOwnerId, data.skillOwnerId);
         },
         code: EventCodes.SENKI,
         range: EventRange.NONE,
@@ -55,17 +55,17 @@ const skill2: Skill = {
     }],
     passive: false,
     cost: 3,
-    use(game: Game, source_entity_id: number, selected_entity_id: number): boolean {
-        if (!source_entity_id) return false;
-        return game.action_add_buff(source_entity_id, source_entity_id, new KoJuKai(source_entity_id));
+    use(game: Game, sourceId: number, selectedId: number): boolean {
+        if (!sourceId) return false;
+        return game.actionAddBuff(sourceId, sourceId, new KoJuKai(sourceId));
     },
 };
 const skill3: Skill = {
     no: 3,
     handlers: [],
     passive: false,
-    cost:3,
-    use(game: Game, source_entity_id: number, selected_entity_id: number): boolean {
+    cost: 3,
+    use(game: Game, sourceId: number, selectedId: number): boolean {
         return true;
     },
 };

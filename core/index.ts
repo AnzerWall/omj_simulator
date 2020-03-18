@@ -12,7 +12,7 @@ const entities: EntityData[] = [];
     for (const id of keys) {
         entities.push({
             no: id,
-            team_id,
+            teamId: team_id,
         });
     }
     entities[0].no = 304;

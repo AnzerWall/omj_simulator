@@ -1,7 +1,7 @@
 import Game from './game';
 
 export class AttackTargetInfo {
-    target_id: number;
+    targetId: number;
 
     base: ((game: Game, source_id: number, target_id: number) => number) | string; // 基础数值来源
     rate: number;
@@ -9,7 +9,7 @@ export class AttackTargetInfo {
 
     isIndirectDamage: boolean; // 是否是间接伤害
     isRealDamage: boolean; // 是否是真实伤害
-    isCriDamage: boolean; // 是否是暴击伤害
+    isCriticalDamage: boolean; // 是否是暴击伤害
     shouldComputeCri: boolean; // 是否触发暴击
 
     noTriggerEquipment: boolean; // 不触发御魂
@@ -18,8 +18,8 @@ export class AttackTargetInfo {
     isSingleDamage: boolean; // 是否是单体伤害
     isGroupDamage: boolean; // 是否是群体伤害
 
-    cri: number; // 暴击率
-    cri_dmg: number; // 暴击伤害
+    critical: number; // 暴击率
+    criticalDamage: number; // 暴击伤害
 
     damageDealtBuff: number; // 造成伤害增加
     damageDealtDebuff: number; // 造成伤害减少
@@ -34,10 +34,10 @@ export class AttackTargetInfo {
     noSource: boolean;
 
     constructor(target_id: number) {
-        this.target_id = target_id;
+        this.targetId = target_id;
         this.isIndirectDamage = false;
         this.isRealDamage = false;
-        this.isCriDamage = false;
+        this.isCriticalDamage = false;
         this.shouldComputeCri = false;
 
         this.noTriggerEquipment = false;
@@ -46,8 +46,8 @@ export class AttackTargetInfo {
         this.isSingleDamage = false;
         this.isGroupDamage = false;
 
-        this.cri = 0;
-        this.cri_dmg = 1.5;
+        this.critical = 0;
+        this.criticalDamage = 1.5;
 
         this.damageDealtBuff = 1;
         this.damageDealtDebuff = 1;
@@ -66,5 +66,5 @@ export class AttackTargetInfo {
 
 export default interface Attack {
     targetsInfo: AttackTargetInfo[]; // 目标
-    source_id: number;
+    sourceId: number;
 }

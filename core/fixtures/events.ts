@@ -40,13 +40,13 @@ export enum EventRange {
 }
 
 export interface EventData {
-    event_entity_id?: number;
-    event_target_id?: number;
-    skill_entity_id?: number;
-    skill_no?: number;
+    eventId?: number;
+    targetId?: number;
+    skillOwnerId?: number;
+    skillNo?: number;
     attack?: Attack;
-    step1?: number,
-    step2?: number,
-    buff?: Buff,
+    step1?: number;
+    step2?: number;
+    buff?: Buff;
 }
 

@@ -1,20 +1,17 @@
-import Codes from './codes';
 import Game from './game';
 import Buff, {Effect, Operator} from './buff';
 
 import {isNil, filter, find} from 'lodash';
-// @ts-ignore
-import util from 'util';
 import {BattleProperties, BattleStatus} from "../fixtures/hero-property-names";
 import {values, forEach} from 'lodash';
 import Skill from './skill';
 
-let entity_counter = 0;
+let entityCounter = 0;
 export default class Entity {
     no: number;
 
-    entity_id: number;
-    team_id: number; // 队伍id
+    entityId: number;
+    teamId: number; // 队伍id
 
     tags: string[]; // 实体标志，用于识别实体
 
@@ -28,10 +25,10 @@ export default class Entity {
     skills: Skill[];
 
     constructor() {
-        this.entity_id = ++entity_counter;
+        this.entityId = ++entityCounter;
         this.properties = new Map();
         this.buffs = [];
-        this.team_id = 0;
+        this.teamId = 0;
         this.tags = [];
         this.hp = 1;
         this.shield = 0;
@@ -95,7 +92,7 @@ export default class Entity {
         const origin = this.properties.get(name);
         if (isNil(origin)) return 0;
         const effects: Effect[] = this.buffs.reduce((list: Effect[], buff: Buff) => {
-            return list.concat(buff.effects.filter(e => e.property_name === name));
+            return list.concat(buff.effects.filter(e => e.propertyName === name));
         }, []); // 过滤出影响该属性的effect
 
         return effects.reduce((current, e: Effect) => {
@@ -119,8 +116,8 @@ export default class Entity {
         this.properties.set(name, value);
     }
 
-    setTeam(team_id: number) {
-        this.team_id = team_id;
+    setTeam(teamId: number) {
+        this.teamId = teamId;
     }
 
     setName(name: string) {
@@ -128,14 +125,14 @@ export default class Entity {
     }
 
     // 触发技能
-    useSkill(game: Game, no: number, selected_entity_id: number): boolean {
+    useSkill(game: Game, no: number, selectedId: number): boolean {
         const skill = this.skills.find(s => s.no === no);
 
         if (!skill) return false;
-        if (skill.check && !skill.check(game, this.entity_id)) return false;
-        const cost = typeof skill.cost === 'number' ? skill.cost : skill.cost(game, this.entity_id);
+        if (skill.check && !skill.check(game, this.entityId)) return false;
+        const cost = typeof skill.cost === 'number' ? skill.cost : skill.cost(game, this.entityId);
         // TODO 鬼火
-        return skill.use ? skill.use(game, this.entity_id, selected_entity_id) : false;
+        return skill.use ? skill.use(game, this.entityId, selectedId) : false;
     }
 
     filterBuff(name: string): Buff[] {
@@ -145,6 +142,7 @@ export default class Entity {
     hasBuff(buf: Buff): boolean {
         return !!find(this.buffs, buff => buff === buf);
     }
+
     hasBuffNamed(name: string): boolean {
         return !!find(this.buffs, buff => buff.name === name);
     }

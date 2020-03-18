@@ -56,7 +56,7 @@
         data() {
             return {
                 data: sortBy(cloneDeep(_HeroData), 'id').map(data => {
-                    data.cri = data.cri * 100 + '%';
+                    data.critical = data.cri * 100 + '%';
                     data['cri_dmg'] = data.cri_dmg * 100 + '%';
                     return data;
                 }),

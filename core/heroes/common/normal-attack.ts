@@ -7,34 +7,28 @@ export class NormalAttack implements Skill {
     passive: boolean;
     rate: number;
     FR: number;
+    cost: number;
 
-    constructor(rate: number = 1.25, FR: number = 0.01) {
+    constructor(rate = 1.25, FR = 0.01) {
         this.no = 1;
         this.passive = false;
         this.handlers = [];
         this.rate = rate;
         this.FR = FR;
+        this.cost = 0;
     }
 
-    check(game: Game, entity_id: number): boolean {
-        return true;
-    }
-
-    cost(game: Game, entity_id: number): number {
-        return 0;
-    }
-
-    use(game: Game, source_entity_id: number, selected_entity_id: number): boolean {
-        const t = new AttackTargetInfo(selected_entity_id);
+    use(game: Game, sourceId: number, selectedId: number): boolean {
+        const t = new AttackTargetInfo(selectedId);
         t.isSingleDamage = true;
         t.shouldComputeCri = true;
         t.FR = this.FR;
         t.rate = this.rate;
         const attack: Attack = {
-            source_id: source_entity_id,
+            sourceId: sourceId,
             targetsInfo: [t],
         };
-        game.action_attack(attack);
+        game.actionAttack(attack);
         return true;
     }
 }

@@ -5,7 +5,7 @@ import Runway from './runway';
 import EntityData from './entity-data';
 import {BattleProperties} from '../fixtures/hero-property-names';
 import {HeroTable} from '../heroes';
-import * as PhaseUnits from '../units/phase-units';
+import * as PhaseUnits from './phase-units';
 import {EventCodes, EventData, EventRange} from '../fixtures/events';
 import Skill from './skill';
 import Attack, {AttackTargetInfo} from './attack';
@@ -26,7 +26,7 @@ export default class Game {
     runway: Runway; // 行动条位置
     microTasks: Unit[];
     tasks: Unit[];
-    current_entity: number; // 当前回合实体
+    currentId: number; // 当前回合实体
     fields: number[][]; // 场上位置
     turn: number; // 当前回合
     entities: Map<number, Entity>; // 实体列表
@@ -34,7 +34,7 @@ export default class Game {
     winner: number; // 获胜者id
     random: Random;
 
-    constructor(datas: EntityData[], seed: number = 0) {
+    constructor(datas: EntityData[], seed = 0) {
         this.rules = {};
         this.isEnd = false;
         this.winner = -1;
@@ -42,7 +42,7 @@ export default class Game {
         this.entities = new Map<number, Entity>();
         this.fields = [[], []];
 
-        this.current_entity = 0;
+        this.currentId = 0;
         this.output = [];
 
         this.runway = new Runway();
@@ -58,7 +58,7 @@ export default class Game {
     _init() {
         forEach(this.datas, data => {
 
-            if (data.team_id < 0 || data.team_id > 1) {
+            if (data.teamId < 0 || data.teamId > 1) {
                 console.warn('存在无效实体数据，队伍id无效', data);
                 return;
             }
@@ -69,12 +69,12 @@ export default class Game {
             }
             const entity = new Hero();
 
-            entity.setTeam(data.team_id);
+            entity.setTeam(data.teamId);
 
-            console.log(`【${data.team_id}】${entity.name}(${entity.no})`);
-            this.entities.set(entity.entity_id, entity);
-            this.runway.addEntity(entity.entity_id, () => (entity.getComputedProperty('spd') || 0));
-            this.fields[entity.team_id].push(entity.entity_id);
+            console.log(`【${data.teamId}】${entity.name}(${entity.no})`);
+            this.entities.set(entity.entityId, entity);
+            this.runway.addEntity(entity.entityId, () => (entity.getComputedProperty('spd') || 0));
+            this.fields[entity.teamId].push(entity.entityId);
         });
 
         this.addProcessor(PhaseUnits.phaseGameStart, {}, '[PHASE_GAME_START] Init');
@@ -102,20 +102,19 @@ export default class Game {
         return false;
     }
 
-    addProcessor(processor: (game: Game, data: object) => boolean, data: EventData = {}, hint: string = '') {
+    addProcessor(processor: (game: Game, data: object) => boolean, data: EventData = {}, hint = '') {
         this.microTasks.push([processor, data, hint]);
     }
 
-
     dispatch(code: EventCodes, data: EventData = {}): number {
-        const event_entity = this.getEntity(data.event_entity_id || 0);
+        const eventEntity = this.getEntity(data.eventId || 0);
         let count = 0;
         const units: {
-            processor: (game: Game, data: object) => boolean,
-            hint: string,
-            priority: number,
-            skill_entity_id: number,
-            skill_no: number,
+            processor: (game: Game, data: object) => boolean;
+            hint: string;
+            priority: number;
+            skillOwnerId: number;
+            skillNo: number;
         } [] = [];
 
         this.entities.forEach(entity => {
@@ -129,17 +128,17 @@ export default class Game {
                                 ok = true;
                                 break;
                             case EventRange.SELF:
-                                if (data.event_entity_id === entity.entity_id) {
+                                if (data.eventId === entity.entityId) {
                                     ok = true;
                                 }
                                 break;
                             case EventRange.TEAM:
-                                if (data.event_entity_id && event_entity && event_entity.team_id === entity.team_id) {
+                                if (data.eventId && eventEntity && eventEntity.teamId === entity.teamId) {
                                     ok = true;
                                 }
                                 break;
                             case EventRange.ENEMY:
-                                if (data.event_entity_id && event_entity && (1 - event_entity.team_id) === entity.team_id) {
+                                if (data.eventId && eventEntity && (1 - eventEntity.teamId) === entity.teamId) {
                                     ok = true;
                                 }
                                 break;
@@ -152,11 +151,12 @@ export default class Game {
                         if (ok) {
                             units.push({
                                 processor: handler.handle.bind(this),
-                                hint: `[EVENT_${EventCodes[code]}] entity_id = ${entity.entity_id} team_id = ${entity.team_id} skill_no = ${skill.no} ${JSON.stringify(data)}`,
+                                hint: `[EVENT_${EventCodes[code]}] entity_id = ${entity.entityId} team_id = ${entity.teamId} skill_no = ${skill.no} ${JSON.stringify(data)}`,
                                 priority: handler.priority,
-                                skill_entity_id: entity.entity_id,
-                                skill_no: skill.no,
+                                skillOwnerId: entity.entityId,
+                                skillNo: skill.no,
                             });
+                            count++;
                         }
                     }
                 });
@@ -168,7 +168,10 @@ export default class Game {
         });
 
         forEach(units, (unit) => {
-            this.addProcessor(unit.processor, Object.assign({skill_entity_id: unit.skill_entity_id, skill_no: unit.skill_no}, data), unit.hint);
+            this.addProcessor(unit.processor, Object.assign({
+                skillOwnerId: unit.skillOwnerId,
+                skillNo: unit.skillNo
+            }, data), unit.hint);
         });
 
         return count;
@@ -178,8 +181,8 @@ export default class Game {
         const entityCounter: [number, number] = [0, 0];
         this.entities.forEach(entity => {
             if (entity.no && // 重要实体
-                [0, 1].includes(entity.team_id) && !entity.dead) {
-                entityCounter[entity.team_id] = entityCounter[entity.team_id] + 1;
+                [0, 1].includes(entity.teamId) && !entity.dead) {
+                entityCounter[entity.teamId] = entityCounter[entity.teamId] + 1;
             }
         });
 
@@ -195,19 +198,19 @@ export default class Game {
         }
     }
 
-    getEntity(entity_id: number): Entity | null {
-        return this.entities.get(entity_id) || null;
+    getEntity(entityId: number): Entity | null {
+        return this.entities.get(entityId) || null;
     }
 
-    getEnemies(entity_id: number): Entity[] {
-        const entity = this.getEntity(entity_id);
+    getEnemies(entityId: number): Entity[] {
+        const entity = this.getEntity(entityId);
         if (!entity) return [];
-        const teamId = entity.team_id;
+        const teamId = entity.teamId;
 
         const ret: Entity[] = [];
 
         this.entities.forEach((e: Entity) => {
-            if (e.team_id !== teamId && !e.dead) {
+            if (e.teamId !== teamId && !e.dead) {
                 ret.push(e);
             }
         });
@@ -215,26 +218,25 @@ export default class Game {
         return ret;
     }
 
-
-    action_attack(a: Attack): boolean {
+    actionAttack(a: Attack): boolean {
         function processTarget(game: Game, data: EventData): boolean {
             if (isNil(data.attack) || isNil(data.step1) || isNil(data.step2)) return false;
             const attack = data.attack;
 
-            const source = game.getEntity(attack.source_id);
+            const source = game.getEntity(attack.sourceId);
             if (!source) return false;
 
             const targetInfo: AttackTargetInfo = attack.targetsInfo[data.step1];
             if (!targetInfo) return false;
 
-            const target = game.getEntity(targetInfo.target_id);
+            const target = game.getEntity(targetInfo.targetId);
             if (!target) return false;
 
             switch (data.step2) {
                 // 数据准备
                 case 0: {
-                    targetInfo.cri = source.getComputedProperty(BattleProperties.CRI);
-                    targetInfo.cri_dmg = source.getComputedProperty(BattleProperties.CRI_DMG);
+                    targetInfo.critical = source.getComputedProperty(BattleProperties.CRI);
+                    targetInfo.criticalDamage = source.getComputedProperty(BattleProperties.CRI_DMG);
                     targetInfo.damageDealtBuff = source.getComputedProperty(BattleProperties.DMG_DEALT_B) + 1;
                     targetInfo.damageDealtDebuff = source.getComputedProperty(BattleProperties.DMG_DEALT_D) + 1;
 
@@ -243,19 +245,19 @@ export default class Game {
                     targetInfo.targetDefence = target.getComputedProperty(BattleProperties.DEF);
                     targetInfo.damage = typeof targetInfo.base === 'string' ?
                         source.getComputedProperty(targetInfo.base) :
-                        targetInfo.base(game, attack.source_id, targetInfo.target_id);
+                        targetInfo.base(game, attack.sourceId, targetInfo.targetId);
 
-                    game.dispatch(EventCodes.BEFORE_ATTACK, {attack, event_entity_id: attack.source_id}); // 攻击前
+                    game.dispatch(EventCodes.BEFORE_ATTACK, {attack, eventId: attack.sourceId}); // 攻击前
                     data.step2 = 1;
                     break;
                 }
                 // 受到攻击处理
                 case 1: {
-                    game.dispatch(EventCodes.ATTACK, {attack, event_entity_id: attack.source_id}); // 攻击时
-                    game.dispatch(EventCodes.TAKEN_ATTACK, {attack, event_entity_id: targetInfo.target_id}); // 被攻击时
+                    game.dispatch(EventCodes.ATTACK, {attack, eventId: attack.sourceId}); // 攻击时
+                    game.dispatch(EventCodes.TAKEN_ATTACK, {attack, eventId: targetInfo.targetId}); // 被攻击时
 
                     if (targetInfo.shouldComputeCri) {
-                        targetInfo.isCri = targetInfo.cri < game.random.real(0, 1) || targetInfo.isCri;
+                        targetInfo.isCri = targetInfo.critical < game.random.real(0, 1) || targetInfo.isCri;
                         if (targetInfo.isCri) {
                             data.step2 = 2;
                         } else {
@@ -268,15 +270,15 @@ export default class Game {
                 }
                 // 暴击处理
                 case 2: {
-                    targetInfo.isCriDamage = true;
-                    game.dispatch(EventCodes.CRI, {attack, event_entity_id: attack.source_id}); // 暴击时
+                    targetInfo.isCriticalDamage = true;
+                    game.dispatch(EventCodes.CRI, {attack, eventId: attack.sourceId}); // 暴击时
                     data.step2 = 3;
                     break;
                 }
                 // 伤害处理步骤
                 case 3: {
                     const FR = game.random.real(1 - targetInfo.FR, 1 + targetInfo.FR); // 伤害浮动系数
-                    const atk = targetInfo.damage * targetInfo.rate * (targetInfo.isCri ? targetInfo.cri_dmg : 1) * 300; // 伤害公式攻击部
+                    const atk = targetInfo.damage * targetInfo.rate * (targetInfo.isCri ? targetInfo.criticalDamage : 1) * 300; // 伤害公式攻击部
                     const def = targetInfo.targetDefence + 300; // 伤害公式防御部
                     const rate = (targetInfo.damageDealtBuff / targetInfo.damageDealtDebuff) *
                         (targetInfo.targetDamageTakenBuff / targetInfo.targetDamageTakenDebuff); // 减伤增伤易伤等计算
@@ -284,15 +286,15 @@ export default class Game {
                     targetInfo.finalDamage = atk / def * rate * FR;
                     //TODO: 计算盾的抵消伤害
 
-                    game.dispatch(EventCodes.DAMAGE, {attack, event_entity_id: attack.source_id}); // 造成伤害
-                    game.dispatch(EventCodes.TAKEN_DAMAGE, {attack, event_entity_id: targetInfo.target_id}); // 收到伤害时
+                    game.dispatch(EventCodes.DAMAGE, {attack, eventId: attack.sourceId}); // 造成伤害
+                    game.dispatch(EventCodes.TAKEN_DAMAGE, {attack, eventId: targetInfo.targetId}); // 收到伤害时
 
                     data.step2 = 4;
                     break;
                 }
                 // 伤害结算步骤
                 case 4: {
-                    game.action_update_hp(targetInfo.noSource ? 0 : attack.source_id, targetInfo.target_id, -targetInfo.finalDamage);
+                    game.actionUpdateHp(targetInfo.noSource ? 0 : attack.sourceId, targetInfo.targetId, -targetInfo.finalDamage);
                     data.step2 = 5;
                     break;
                 }
@@ -318,20 +320,20 @@ export default class Game {
         return true;
     }
 
-    action_update_hp(source_id: number, target_id: number, v: number, reason: number = 0): boolean {
-        const source = this.getEntity(source_id);
-        const target = this.getEntity(target_id);
+    actionUpdateHp(sourceId: number, targetId: number, v: number, reason = 0): boolean {
+        const source = this.getEntity(sourceId);
+        const target = this.getEntity(targetId);
         if (!target) return false;
         if (target.dead) return true; // 死了就不要鞭尸了
 
         this.addProcessor(() => {
             const remainHp = Math.max(target.hp + v, 0);
             const isDead = remainHp <= 0;
-            console.log(`${source ? `[ACTION_update_hp] ${source.name}(${source.team_id})` : 'NoSource'}->${target.name}(${target.team_id})  ${target.hp}${v}=${remainHp}`, isDead && '【Dead】');
+            console.log(`${source ? `[ACTION_update_hp] ${source.name}(${source.teamId})` : 'NoSource'}->${target.name}(${target.teamId})  ${target.hp}${v}=${remainHp}`, isDead && '【Dead】');
             target.hp = remainHp;
             target.dead = isDead;
             if (isDead) {
-                this.runway.freeze(target.entity_id);
+                this.runway.freeze(target.entityId);
             }
             return true;
         }, {}, '[ACTION_update_hp]');
@@ -339,41 +341,42 @@ export default class Game {
 
     }
 
-    action_use_skill(no: number, source_id: number, selected_id: number): boolean {
-        const source = this.getEntity(source_id);
+    actionUseSkill(no: number, sourceId: number, selectedId: number): boolean {
+        const source = this.getEntity(sourceId);
         if (!source) return false;
 
         const skill = source.skills.find(s => s.no === no);
         if (!skill) return false;
 
-        if (skill.check && !skill.check(this, source_id)) return false;
-        const cost = typeof skill.cost === 'number' ? skill.cost : skill.cost(this, source_id);
+        if (skill.check && !skill.check(this, sourceId)) return false;
+        const cost = typeof skill.cost === 'number' ? skill.cost : skill.cost(this, sourceId);
         // TODO 鬼火
-        return skill.use ? skill.use(this, source_id, selected_id) : false;
+        return skill.use ? skill.use(this, sourceId, selectedId) : false;
     }
 
-    action_add_buff(source_id: number, target_id: number, buff: Buff): boolean {
-        const target = this.getEntity(target_id);
+    actionAddBuff(sourceId: number, targetId: number, buff: Buff): boolean {
+        const target = this.getEntity(targetId);
         if (!target) return false;
         this.addProcessor((game: Game) => {
             target.addBuff(buff);
-            game.dispatch(EventCodes.BUFF_GET, { buff, event_entity_id: source_id, event_target_id: target_id});
+            game.dispatch(EventCodes.BUFF_GET, {buff, eventId: sourceId, targetId: targetId});
             return true;
         }, {}, '[ACTION_add_buff]');
         return true;
     }
 
-    action_remove_buff(source_id: number, target_id: number, buff: Buff): boolean {
-        const target = this.getEntity(target_id);
+    actionRemoveBuff(sourceId: number, targetId: number, buff: Buff): boolean {
+        const target = this.getEntity(targetId);
         if (!target) return false;
 
         this.addProcessor((game: Game) => {
             target.removeBuff(buff);
-            game.dispatch(EventCodes.BUFF_REMOVE, { buff, event_entity_id: source_id, event_target_id: target_id});
+            game.dispatch(EventCodes.BUFF_REMOVE, {buff, eventId: sourceId, targetId: targetId});
             return true;
         }, {}, '[ACTION_remove_buff]');
         return true;
     }
+
     // action_dead(source_id: number, target_id: number, reason: number): boolean {
     //     const source = this.getEntity(source_id);
     //     const target = this.getEntity(target_id);

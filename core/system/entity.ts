@@ -1,15 +1,17 @@
 import Codes from './codes';
-import IHandler from './ihandler';
 import Game from './game';
-import Effect, { Operator } from './effect';
-import { isNil } from 'lodash';
+import Effect, {Operator} from './effect';
+import {isNil} from 'lodash';
 // @ts-ignore
 import util from 'util';
 import {BattleProperties, BattleStatus} from "../fixtures/hero-property-names";
-import { values, forEach } from 'lodash';
-let entity_counter = 0;
+import {values, forEach} from 'lodash';
+import Skill from './skill';
 
-export default class Entity implements IHandler {
+let entity_counter = 0;
+export default class Entity {
+    no: number;
+
     entity_id: number;
     team_id: number; // 队伍id
 
@@ -19,10 +21,10 @@ export default class Entity implements IHandler {
     effects: Effect[]; // 附加效果，影响基础属性
     hp: number; // 生命值
     shield: number; // 护盾
-    id: number;
     name: string;
     dead: boolean;
-
+    lv: number; // 等级
+    skills: Skill[];
 
     constructor() {
         this.entity_id = ++entity_counter;
@@ -32,9 +34,12 @@ export default class Entity implements IHandler {
         this.tags = [];
         this.hp = 1;
         this.shield = 0;
-        this.id = 0;
+        this.no = 0;
         this.name = '<Unknown>';
         this.dead = false;
+        this.lv = 40;
+        this.skills = [];
+
         forEach(values(BattleProperties), key => {
             this.setProperty(key, 0);
         });
@@ -44,6 +49,9 @@ export default class Entity implements IHandler {
         this.setProperty(BattleProperties.MAX_HP, 1);
     }
 
+    addSkill(skill: Skill) {
+        this.skills.push(skill);
+    }
     addTags(tag: string) {
         if (!this.hasTag(tag)) {
             this.tags.push(tag);
@@ -54,7 +62,7 @@ export default class Entity implements IHandler {
         const index = this.tags.indexOf(tag);
 
         if (index !== -1) {
-            this.tags.splice(index,1);
+            this.tags.splice(index, 1);
         }
     }
 
@@ -65,6 +73,7 @@ export default class Entity implements IHandler {
     addEffect(effect: Effect) {
         this.effects.push(effect);
     }
+
     removeEffect(effect: Effect) {
         const index = this.effects.indexOf(effect);
 
@@ -73,14 +82,12 @@ export default class Entity implements IHandler {
         }
     }
 
-    getProperty(name: string):number {
+    getProperty(name: string): number {
         const origin = this.properties.get(name);
 
         if (isNil(origin)) return 0;
         return origin;
     }
-
-
 
     getComputedProperty(name: string): number {
         const origin = this.properties.get(name);
@@ -112,19 +119,19 @@ export default class Entity implements IHandler {
         this.team_id = team_id;
     }
 
-    setId(id: number) {
-        this.id = id;
-    }
-
     setName(name: string) {
         this.name = name;
     }
-    handleEvent(game: Game, code: Codes, data: object): void {
-    }
 
     // 触发技能
-    skill(no: number, target: Entity): boolean {
-        return true;
+    useSkill(game: Game, no: number, selected_entity_id: number): boolean {
+        const skill = this.skills.find(s => s.no === no);
+
+        if (!skill) return false;
+        if (!skill.check(game, this.entity_id)) return false;
+        if (skill.cost(game, this.entity_id) < 0) return false;
+
+        return skill.use(game, this.entity_id, selected_entity_id);
     }
 
 }

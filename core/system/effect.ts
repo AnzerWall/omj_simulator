@@ -1,5 +1,9 @@
-export default class Effect {
-    constructor(public property_name: string, public op: Operator, public value: number) {}
+import Game from './game';
+
+export default interface Effect {
+    property_name: string;
+    op: Operator;
+    value: number;
 }
 
 export const enum Operator {

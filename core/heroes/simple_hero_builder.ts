@@ -15,11 +15,11 @@
 //     "total_pt": 300
 // }
 import {Entity} from '../system';
-import { BattleProperties } from '../fixtures/hero-property-names';
+import {BattleProperties} from '../fixtures/hero-property-names';
+import {NormalAttack} from './common/normal_attack';
 
-export default function build (data: any) {
-    return class SimpleHero extends Entity {
-        id: number;
+export default function build(data: any): {new(): Entity; } {
+    class SimpleHero extends Entity {
         constructor() {
             super();
             this.setProperty(BattleProperties.MAX_HP, data.hp);
@@ -28,8 +28,11 @@ export default function build (data: any) {
             this.setProperty(BattleProperties.SPD, data.spd);
             this.setProperty(BattleProperties.CRI, data.cri);
             this.setProperty(BattleProperties.CRI_DMG, data.cri_dmg);
-            this.id = data.id || (data.index + 10000);
-            this.addTags('simple_hero');
+            this.no = data.id;
+            this.name = data.name;
+            this.hp = data.hp;
+            this.addSkill(new NormalAttack())
         }
-    };
+    }
+    return SimpleHero;
 }

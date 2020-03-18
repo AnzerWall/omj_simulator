@@ -32,7 +32,7 @@ npm run serve
 - [x] Runway(行动条)  
 - [x] Team(队伍) 
 - [ ] Equipment(基础御魂) 
-- [ ] Buff(buff机制) 
+- [x] Buff(buff机制) 
 - [x] Entity(实体) 
 - [x] Hero(式神) 
 - [x] Event(事件机制) 

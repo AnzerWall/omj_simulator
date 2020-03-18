@@ -2,7 +2,6 @@ import {forEach, isNil} from 'lodash';
 import Entity from './entity';
 import Mana from './mana';
 import Runway from './runway';
-import EntityData from './entity-data';
 import {BattleProperties} from '../fixtures/hero-property-names';
 import {HeroTable} from '../heroes';
 import * as PhaseUnits from './phase-units';
@@ -19,8 +18,6 @@ export default class Game {
 
     output: object[]; // 游戏记录
 
-    datas: EntityData[];
-
     seed: number;
     manas: Mana[]; // 鬼火信息
     runway: Runway; // 行动条位置
@@ -34,7 +31,12 @@ export default class Game {
     winner: number; // 获胜者id
     random: Random;
 
-    constructor(datas: EntityData[], seed = 0) {
+    constructor(datas: {
+        no: number;
+        teamId: number;
+        lv?: number;
+        equipments?: number[];
+    }[], seed = 0) {
         this.rules = {};
         this.isEnd = false;
         this.winner = -1;
@@ -49,14 +51,11 @@ export default class Game {
         this.manas = [new Mana(4), new Mana(4)];
         this.tasks = [];
         this.microTasks = [];
-        this.datas = datas;
         this.seed = seed;
         this.random = new Random(MersenneTwister19937.seed(seed));
-        this._init();
-    }
 
-    _init() {
-        forEach(this.datas, data => {
+
+        forEach(datas, data => {
 
             if (data.teamId < 0 || data.teamId > 1) {
                 console.warn('存在无效实体数据，队伍id无效', data);
@@ -79,6 +78,7 @@ export default class Game {
 
         this.addProcessor(PhaseUnits.phaseGameStart, {}, '[PHASE_GAME_START] Init');
     }
+
 
     process(): boolean {
         if (this.seed === null) return false;

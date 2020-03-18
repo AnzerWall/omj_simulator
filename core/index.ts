@@ -1,10 +1,9 @@
 import Game from './ordinary-game';
-import {EntityData} from './system';
 import datas from './fixtures/heros.json';
 import {sampleSize, map, filter} from 'lodash';
 
 const ids = filter(map(datas, 'id'), d => !!d);
-const entities: EntityData[] = [];
+const entities: any[] = [];
 [0, 1].forEach(team_id => {
 
     const keys = sampleSize(ids, 5); // 为每个队伍分配5个队员

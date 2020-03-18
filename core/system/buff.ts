@@ -36,5 +36,7 @@ export default class Buff {
     // 控制效果
     control: Control = Control.NONE;
 
+    // 对应图标
+    icon: string = '';
 }
 

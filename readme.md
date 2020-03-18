@@ -44,6 +44,10 @@ npm run serve
 1. 式神基础逻辑(0/139)   
 2. 式神AI(0/139)
 
+## 杂务
+
+- [ ] [Buff关联图标](https://bbs.nga.cn/read.php?tid=14455689&rand=14)
+    
 # 鸣谢
 
 [六星满级面板数据](https://nga.178.com/read.php?tid=14788831) 

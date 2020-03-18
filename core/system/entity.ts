@@ -147,4 +147,6 @@ export default class Entity {
         return !!find(this.buffs, buff => buff.name === name);
     }
 
+
+
 }

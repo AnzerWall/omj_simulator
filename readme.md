@@ -19,6 +19,9 @@ npm i
 ```shell
 npm run serve
 ```
+## 预览
+
+![preview](./public/preview.png)
 
 # Roadmap
 目前可以做到：    如果全式神40级不带御魂分列两队，无任何技能纯普攻不带效果对A的胜率预测

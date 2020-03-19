@@ -29,85 +29,86 @@ import {Reasons} from '../../fixtures/reasons';
  **/
 
 class ChanChanChanBuff extends Buff {
-  constructor(sourceId: number) {
-    super(sourceId);
-    this.canDispel = true;
-    this.canRemove = true;
-    this.name = '锵锵锵';
-    this.maxCount = 1;
-    this.visible = true;
+    constructor(sourceId: number) {
+        super(sourceId);
+        this.canDispel = true;
+        this.canRemove = true;
+        this.name = '锵锵锵';
+        this.maxCount = 1;
+        this.visible = true;
 
-    // 维持一个回合
-    this.countDownBySource = true;
-    this.countDown = 1;
+        // 维持一个回合
+        this.countDownBySource = true;
+        this.countDown = 1;
 
-    // 【增益, 状态】 提升15%暴击
-    this.isAffectProperty = true;
-    this.isBuff = true;
+        // 【增益, 状态】 提升15%暴击
+        this.isAffectProperty = true;
+        this.isBuff = true;
 
-    this.effects = [{
-      propertyName: BattleProperties.CRI,
-      op: Operator.ADD,
-      value: 0.15
-    }]
+        this.effects = [{
+            propertyName: BattleProperties.CRI,
+            op: Operator.ADD,
+            value: 0.15
+        }];
 
-  }
+    }
 }
 
 const skill2: Skill = {
-  no: 2,
-  handlers: [],
-  passive: false,
-  cost: 0,
-  name: '锵锵锵',
-  use(game: Game, sourceId: number, selectedId: number): boolean {
-    const source = game.getEntity(sourceId);
-    if (!source) return false;
+    no: 2,
+    handlers: [],
+    passive: false,
+    cost: 0,
+    name: '锵锵锵',
+    use(game: Game, sourceId: number, selectedId: number): boolean {
+        const source = game.getEntity(sourceId);
+        if (!source) return false;
 
-    const entities = game.getTeamEntities(source.teamId);
-    entities.forEach(e => {
-      game.actionAddBuff(sourceId, e.entityId, new ChanChanChanBuff(sourceId), Reasons.SKILL);
-    });
+        const entities = game.getTeamEntities(source.teamId);
+        entities.forEach(e => {
+            game.actionAddBuff(sourceId, e.entityId, new ChanChanChanBuff(sourceId), Reasons.SKILL);
+        });
 
-    return true;
-  },
+        return true;
+    },
 };
 export default class AmoNoJakuKi extends Entity {
-  static no = 406;
-  constructor() {
-    super();
-    this.setProperty(BattleProperties.ATK, 2412);
-    this.setProperty(BattleProperties.MAX_HP, 10253.8);
-    this.setProperty(BattleProperties.DEF, 396.9);
-    this.setProperty(BattleProperties.SPD, 100);
-    this.setProperty(BattleProperties.CRI, 0);
-    this.setProperty(BattleProperties.CRI_DMG, 1.5);
-    this.no = 406;
-    this.name = '天邪鬼黄';
-    this.hp = this.getProperty(BattleProperties.MAX_HP);
-    this.rank = 'N';
-    this.addSkill(new NormalAttack('咚咚'));
-    this.addSkill(skill2);
-  }
+    static no = 406;
 
-  ai(game: Game, turn: any): boolean {
-    /**
-     天邪鬼黄
-     --技能选择
-     当所有友方单位均无锵锵锵时，使用2技能[锵锵锵]。
-     当存在友方单位拥有锵锵锵时，使用1技能[咚咚]。
-     注：锵锵锵是天邪鬼黄提供给队友的buff，提升15%暴击。
-     --目标选择
-     1技能[咚咚]：随机。
-     */
-    const entities = game.getTeamEntities(this.teamId);
-
-    if (entities.every(e => !e.hasBuffNamed('锵锵锵'))) {
-      if (game.actionUseSkill(2, this.entityId, this.entityId)) return true;
+    constructor() {
+        super();
+        this.setProperty(BattleProperties.ATK, 2412);
+        this.setProperty(BattleProperties.MAX_HP, 10253.8);
+        this.setProperty(BattleProperties.DEF, 396.9);
+        this.setProperty(BattleProperties.SPD, 100);
+        this.setProperty(BattleProperties.CRI, 0);
+        this.setProperty(BattleProperties.CRI_DMG, 1.5);
+        this.no = 406;
+        this.name = '天邪鬼黄';
+        this.hp = this.getProperty(BattleProperties.MAX_HP);
+        this.rank = 'N';
+        this.addSkill(new NormalAttack('咚咚'));
+        this.addSkill(skill2);
     }
 
-    const enemy = game.getRandomEnemy(this.entityId);
-    if (!enemy) return false;
-    return game.actionUseSkill(1, this.entityId, enemy.entityId);
-  }
+    ai(game: Game, turn: any): boolean {
+        /**
+         天邪鬼黄
+         --技能选择
+         当所有友方单位均无锵锵锵时，使用2技能[锵锵锵]。
+         当存在友方单位拥有锵锵锵时，使用1技能[咚咚]。
+         注：锵锵锵是天邪鬼黄提供给队友的buff，提升15%暴击。
+         --目标选择
+         1技能[咚咚]：随机。
+         */
+        const entities = game.getTeamEntities(this.teamId);
+
+        if (entities.every(e => !e.hasBuffNamed('锵锵锵'))) {
+            if (game.actionUseSkill(2, this.entityId, this.entityId)) return true;
+        }
+
+        const enemy = game.getRandomEnemy(this.entityId);
+        if (!enemy) return false;
+        return game.actionUseSkill(1, this.entityId, enemy.entityId);
+    }
 }

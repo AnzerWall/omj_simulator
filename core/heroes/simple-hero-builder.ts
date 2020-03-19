@@ -31,14 +31,14 @@ export default function build(data: any): { new(): Entity } {
             this.no = data.id;
             this.name = data.name;
             this.hp = data.hp;
-            this.addSkill(new NormalAttack());
+            this.addSkill(new NormalAttack('普通攻击'));
             this.addTags('simple');
         }
         ai(game: Game): boolean {
-            const enemy = game.getRandomEnemy(game.currentId);
+            const enemy = game.getRandomEnemy(this.entityId);
             if (enemy) {
-                console.log(`[SKILL]【${this.name}(${this.teamId})】use skill 1`); // 使用一技能随机攻击敌人)
-                return game.actionUseSkill(1, this.entityId, enemy.entityId)
+                game.actionUseSkill(1, this.entityId, enemy.entityId);
+
             }
             return true;
         }

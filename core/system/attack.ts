@@ -1,6 +1,7 @@
 import Game from './game';
 import {BattleProperties} from '../fixtures/hero-property-names';
 import {EventData} from '../fixtures/events';
+import {Processor} from './task';
 
 export class AttackTargetInfo {
     targetId: number;
@@ -26,7 +27,7 @@ export class AttackTargetInfo {
     isSingleDamage: boolean = false; // 是否是单体伤害
     isGroupDamage: boolean = false; // 是否是群体伤害
 
-    onComputed?: (game: Game, data: EventData) => boolean; // 完成后
+    onComputed?: Processor; // 完成后
 
     ////////////// 以下是攻击处理时用到的属性 ////////////////
     // TODO: 独立出来
@@ -48,6 +49,7 @@ export class AttackTargetInfo {
     constructor(targetId: number) {
         this.targetId = targetId;
     }
+
 }
 
 export default interface Attack {

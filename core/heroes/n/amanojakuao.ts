@@ -84,11 +84,12 @@ export default class AmoNoJakuAo extends Entity {
         const entities = game.getTeamEntities(this.teamId);
 
         if (entities.every(e => !e.hasBuffNamed('低吟'))) {
-            if (game.actionUseSkill(2, this.entityId, this.entityId)) return true;
+            if (game.actionCheckAndUseSkill(2, this.entityId, this.entityId)) return true;
         }
 
         const enemy = game.getRandomEnemy(this.entityId);
         if (!enemy) return false;
-        return game.actionUseSkill(1, this.entityId, enemy.entityId);
+        game.actionUseSkill(1, this.entityId, enemy.entityId);
+        return true;
     }
 }

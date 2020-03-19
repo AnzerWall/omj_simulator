@@ -1,5 +1,7 @@
-import Attack from '../system/attack';
+import Attack, {AttackTargetInfo} from '../system/attack';
 import Buff from '../system/buff';
+import TurnData from '../system/turn-data';
+import {Reasons} from './reasons';
 
 export enum EventCodes {
     NONE,
@@ -41,12 +43,23 @@ export enum EventRange {
 
 export interface EventData {
     eventId?: number;
+    sourceId?: number;
     targetId?: number;
+    selectedId?: number;
     skillOwnerId?: number;
     skillNo?: number;
     attack?: Attack;
     step1?: number;
     step2?: number;
     buff?: Buff;
+    turnData?: TurnData;
+    attackTargetInfo?: AttackTargetInfo;
+    precent?: number;
+    reason?: Reasons;
+    teamId?: number;
+    num?: number;
+    no?: number;
+    remainHp?: number;
+    isDead?: boolean;
 }
 

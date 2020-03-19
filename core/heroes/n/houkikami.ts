@@ -98,11 +98,12 @@ export default class HoukiKami extends Entity {
         const mana = game.getMana(this.teamId);
         if (!mana) return false;
         if (mana.num > line) {
-            if (game.actionUseSkill(2, this.entityId, enemies[0].entityId)) return true;
+            if (game.actionCheckAndUseSkill(2, this.entityId, enemies[0].entityId)) return true;
         }
 
         const enemy = game.getRandomEnemy(this.entityId);
         if (!enemy) return false;
-        return game.actionUseSkill(1, this.entityId, enemy.entityId);
+        game.actionUseSkill(1, this.entityId, enemy.entityId);
+        return true;
     }
 }

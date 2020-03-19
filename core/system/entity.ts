@@ -5,6 +5,7 @@ import {filter, find, forEach, isNil, values} from 'lodash';
 import {BattleProperties, BattleStatus} from "../fixtures/hero-property-names";
 import Skill from './skill';
 import {Control} from '../fixtures/control';
+import TurnData from './turn-data';
 
 let entityCounter = 0;
 export default class Entity {
@@ -177,7 +178,7 @@ export default class Entity {
         return !!find(this.buffs, buff => buff.name === name);
     }
 
-    ai(game: Game, turn: any): boolean {
+    ai(game: Game, turn: TurnData): boolean {
         return true;
     }
 

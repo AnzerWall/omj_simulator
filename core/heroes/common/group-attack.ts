@@ -40,7 +40,7 @@ export class GroupAttack implements Skill {
                     return at;
                 }),
             };
-            if (!game.actionAttack(attack)) return false;
+            game.actionAttack(attack)
         }
         return true;
     }

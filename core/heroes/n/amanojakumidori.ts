@@ -3,6 +3,7 @@ import {BattleProperties} from '../../fixtures/hero-property-names';
 import {NormalAttack} from '../common/normal-attack';
 import Game from '../../system/game';
 import Attack, {AttackTargetInfo} from '../../system/attack';
+import {SingleAttack} from '../common/single-attack';
 
 /**
  {
@@ -44,7 +45,7 @@ const skill2: Skill = {
                 sourceId: sourceId,
                 targetsInfo: [t],
             };
-            if (game.actionAttack(attack)) return false;
+            game.actionAttack(attack)
         }
         return true;
     },
@@ -65,7 +66,7 @@ export default class AmoNoJakuMidori extends Entity {
         this.hp = this.getProperty(BattleProperties.MAX_HP);
         this.rank = 'N';
         this.addSkill(new NormalAttack('我打'));
-        this.addSkill(skill2);
+        this.addSkill(new SingleAttack(2, '我打打打', 0.88, 2, 3));
     }
 
     ai(game: Game, turn: any): boolean {
@@ -80,12 +81,13 @@ export default class AmoNoJakuMidori extends Entity {
 
         const enemy = game.getRandomEnemy(this.entityId);
         if (!enemy) return false;
-        if (game.actionUseSkill(2, this.entityId, enemy.entityId)) return true;
+        if (game.actionCheckAndUseSkill(2, this.entityId, enemy.entityId)) return true;
 
         const entities = game.getEnemies(this.teamId).sort((a, b) => a.hp - b.hp);
         const enemy2 = entities[0];
         if (!enemy2) return false;
 
-        return game.actionUseSkill(1, this.entityId, enemy2.isHpLowerThan(0.2) ? enemy2.entityId : enemy.entityId);
+        game.actionUseSkill(1, this.entityId, enemy2.isHpLowerThan(0.2) ? enemy2.entityId : enemy.entityId);
+        return true;
     }
 }

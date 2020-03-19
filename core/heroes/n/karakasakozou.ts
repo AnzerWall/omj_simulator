@@ -83,12 +83,13 @@ export default class KaraKasaKoZou extends Entity {
 
         const enemy = game.getRandomEnemy(this.entityId);
         if (!enemy) return false;
-        if (game.actionUseSkill(2, this.entityId, enemy.entityId)) return true;
+        if (game.actionCheckAndUseSkill(2, this.entityId, enemy.entityId)) return true;
 
         const entities = game.getEnemies(this.teamId).sort((a, b) => a.hp - b.hp);
         const enemy2 = entities[0];
         if (!enemy2) return false;
 
-        return game.actionUseSkill(1, this.entityId, enemy2.isHpLowerThan(0.2) ? enemy2.entityId : enemy.entityId);
+        game.actionUseSkill(1, this.entityId, enemy2.isHpLowerThan(0.2) ? enemy2.entityId : enemy.entityId);
+        return true;
     }
 }

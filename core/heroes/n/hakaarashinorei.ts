@@ -61,6 +61,7 @@ export default class HakuArashiNoRei extends Entity {
         const enemy2 = entities[0];
         if (!enemy2) return false;
 
-        return game.actionUseSkill(1, this.entityId, enemy2.isHpLowerThan(0.2) ? enemy2.entityId : enemy.entityId);
+        game.actionUseSkill(1, this.entityId, enemy2.isHpLowerThan(0.2) ? enemy2.entityId : enemy.entityId);
+        return true;
     }
 }

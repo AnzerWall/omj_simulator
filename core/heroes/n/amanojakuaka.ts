@@ -96,8 +96,12 @@ export default class AmoNoJakuAka extends Entity {
         const enemy = game.getRandomEnemy(this.entityId);
         if (!enemy) return false;
 
-        if (game.actionUseSkill(2, this.entityId, enemy.entityId)) return true;
+        if (game.actionCheckAndUseSkill(2, this.entityId, enemy.entityId)) {
+            return true;
+        }
 
-        return game.actionUseSkill(1, this.entityId, enemy.entityId);
+        game.actionUseSkill(1, this.entityId, enemy.entityId);
+
+        return true;
     }
 }

@@ -1,4 +1,4 @@
-import Miketsu from './miketsu';
+// import Miketsu from './miketsu';
 import {Entity} from '../system';
 import datas from '../fixtures/heros.json';
 import {forEach} from 'lodash';
@@ -42,7 +42,7 @@ HeroTable.set(NuriKabe.no, NuriKabe); // 涂壁
 
 
 // SSR
-HeroTable.set(304, Miketsu); // 御馔津
+// HeroTable.set(304, Miketsu); // 御馔津
 
 
 // SP

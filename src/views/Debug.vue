@@ -3,16 +3,8 @@
         <div>队伍一鬼火:  {{mana1}}({{progress1}})  </div>
         <div>队伍二鬼火:  {{mana2}}({{progress2}}) </div>
         <a-button @click="step" :block="false" style="margin-bottom: 20px;">下一步</a-button>
-
-        <a-table :dataSource="tasks" style="margin-bottom: 20px;" size="small">
-            <a-table-column title="提示" dataIndex="hint"/>
-            <a-table-column title="数据" dataIndex="data">
-                <template slot-scope="data">
-                    <json-tree :raw="data" :level="1"></json-tree>
-                </template>
-            </a-table-column>
-        </a-table>
-        <a-table :dataSource="team1" style="margin-bottom: 20px;" rowKey="entityId" :pagination="false" size="small">
+        <json-tree :raw="tasks" :level="1"></json-tree>
+        <a-table :dataSource="team1" style="margin: 20px 0;" rowKey="entityId" :pagination="false" size="small" >
             <a-table-column title="编号" dataIndex="no"/>
             <a-table-column title="名称" dataIndex="name"/>
             <a-table-column title="生命" dataIndex="hp"/>
@@ -65,7 +57,7 @@
             return {
                 team1: [],
                 team2: [],
-                tasks: [],
+                tasks: '',
                 mana1: 0,
                 mana2: 2,
                 progress1: 0,
@@ -80,7 +72,6 @@
             syncData() {
                 this.team1 = [];
                 this.team2 = [];
-                this.tasks = [];
 
                 this.game.entities.forEach(entity => {
                     const data = {
@@ -99,17 +90,13 @@
                         this.team2.push(data)
                     }
                 });
-                this.game.microTasks.concat([['', '----', '----']]).concat(this.game.tasks).forEach(task => {
-                    this.tasks.push({
-                        hint: task[2],
-                        data: JSON.stringify(task[1]),
-                    })
-                });
+
 
                 this.mana1 = this.game.manas[0].num;
                 this.mana2 = this.game.manas[1].num;
                 this.progress1 = this.game.manas[0].progress;
                 this.progress2 = this.game.manas[1].progress;
+                this.tasks = JSON.stringify(this.game.dump());
 
             },
             step() {

@@ -40,7 +40,7 @@ export class SingleAttack implements Skill {
                 sourceId: sourceId,
                 targetsInfo: [at],
             };
-            if (!game.actionAttack(attack)) return false;
+            game.actionAttack(attack)
         }
         return true;
     }

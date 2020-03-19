@@ -4,7 +4,6 @@ import Mana from './mana';
 import Runway from './runway';
 import {BattleProperties} from '../fixtures/hero-property-names';
 import {HeroTable} from '../heroes';
-import * as PhaseUnits from './phase-units';
 import {EventCodes, EventData, EventRange} from '../fixtures/events';
 import Skill from './skill';
 import Attack, {AttackTargetInfo} from './attack';
@@ -12,15 +11,11 @@ import {MersenneTwister19937, Random} from 'random-js';
 import Buff from './buff';
 import {Reasons} from '../fixtures/reasons';
 import {Control} from '../fixtures/control';
+import Task, {Processor} from './task';
+import {attackProcessor, gameProcessor} from '../tasks';
 
 type Unit = [(game: Game, data: EventData) => boolean, object, string];
-// interface Task {
-//     step: number,
-//     children: Task[], // 任务队列
-//     processor: (game: Game, data: EventData, step: number) => number
-//     type: string,
-//     parent: Task | null,
-// }
+
 
 // const GameTask: Task = {
 //     step: 1,
@@ -54,15 +49,15 @@ export default class Game {
     winner: number; // 获胜者id
     random: Random;
 
-    // rootTask: Task;
-    // currentTask: Task;
+    rootTask: Task;
+    currentTask: Task;
 
     constructor(datas: {
         no: number;
         teamId: number;
         lv?: number;
         equipments?: number[];
-    }[], seed = Math.random()) {
+    }[], seed = Date.now()) {
         this.rules = {};
         this.isEnd = false;
         this.winner = -1;
@@ -96,47 +91,77 @@ export default class Game {
 
             entity.setTeam(data.teamId);
 
-            console.log(`【${data.teamId}】${entity.name}(${entity.no})`);
+            console.log(`【${data.teamId}】${entity.name}(${entity.no})(${entity.entityId})`);
             this.entities.set(entity.entityId, entity);
             this.runway.addEntity(entity.entityId, () => (entity.getComputedProperty('spd') || 0));
             this.fields[entity.teamId].push(entity.entityId);
         });
 
-        this.addProcessor(PhaseUnits.phaseGameStart, {}, '[PHASE_GAME_START] Init');
+        this.currentTask = this.rootTask = {
+            step: 1,
+            children: [],
+            processor: gameProcessor,
+            type: 'Game',
+            parent:  null,
+            data: {},
+            depth: 0,
+        };
     }
 
 
     process(): boolean {
         if (this.seed === null) return false;
         if (this.isEnd) return false;
-        if (this.microTasks.length) {
-            this.tasks.unshift(...this.microTasks);
-            this.microTasks = [];
+
+        // 当前任务出错
+        if (this.currentTask.step === 0) return false;
+
+        // 先处理子任务
+        if (this.currentTask.children.length) {
+            if (this.currentTask.children[0].step < 0) {
+                this.currentTask.children.shift();
+                return this.process();
+            }
+            this.currentTask = this.currentTask.children[0];
+            return this.process();
         }
 
-        if (this.tasks.length) {
-            const unit = this.tasks.shift();
-            if (!unit) return false;
 
-            const [processor, data, hint] = unit;
-
-            console.log(hint);
-
-            return processor(this, data);
+        if (this.currentTask.step > 0) {
+            // 如果当前任务进行中
+            if (this.currentTask.step === 1) this.log();
+            const step = this.currentTask.processor(this, this.currentTask.data, this.currentTask.step);
+            this.currentTask.step = step === void 0 ? -1 : step;
+            return true;
+        } else {
+            // 如果当前任务已完成
+            // 尝试退回到父亲任务节点
+            if (!this.currentTask.parent) {
+                this.isEnd = true;
+                return false;
+            }
+            this.currentTask = this.currentTask.parent;
+            return this.process();
         }
-
-        return false;
     }
 
-    addProcessor(processor: (game: Game, data: object) => boolean, data: EventData = {}, hint = '') {
-        this.microTasks.push([processor, data, hint]);
+    addProcessor(processor: Processor, data: EventData = {}, type = '') {
+        this.currentTask.children.push({
+            step: 1,
+            children: [],
+            processor,
+            type,
+            parent:this.currentTask,
+            data,
+            depth: this.currentTask.depth + 1,
+        });
     }
 
     dispatch(code: EventCodes, data: EventData = {}): number {
         const eventEntity = this.getEntity(data.eventId || 0);
         let count = 0;
         const units: {
-            processor: (game: Game, data: object) => boolean;
+            processor: Processor;
             hint: string;
             priority: number;
             skillOwnerId: number;
@@ -177,7 +202,7 @@ export default class Game {
                         if (ok) {
                             units.push({
                                 processor: handler.handle.bind(this),
-                                hint: `[EVENT_${EventCodes[code]}] entity_id = ${entity.entityId} team_id = ${entity.teamId} skill_no = ${skill.no} ${JSON.stringify(data)}`,
+                                hint: `EVENT_${EventCodes[code]}`,
                                 priority: handler.priority,
                                 skillOwnerId: entity.entityId,
                                 skillNo: skill.no,
@@ -279,240 +304,217 @@ export default class Game {
     }
 
 
-    actionAttack(a: Attack): boolean {
-        function processTarget(game: Game, data: EventData): boolean {
-            if (isNil(data.attack) || isNil(data.step1) || isNil(data.step2)) return false;
-            const attack = data.attack;
-
-            const source = game.getEntity(attack.sourceId);
-            if (!source) return false;
-
-            const targetInfo: AttackTargetInfo = attack.targetsInfo[data.step1];
-            if (!targetInfo) return false;
-
-            const target = game.getEntity(targetInfo.targetId);
-            if (!target) return false;
-
-            switch (data.step2) {
-                // 数据准备
-                case 0: {
-                    targetInfo.critical = source.getComputedProperty(BattleProperties.CRI);
-                    targetInfo.criticalDamage = source.getComputedProperty(BattleProperties.CRI_DMG);
-                    targetInfo.damageDealtBuff = source.getComputedProperty(BattleProperties.DMG_DEALT_B) + 1;
-                    targetInfo.damageDealtDebuff = source.getComputedProperty(BattleProperties.DMG_DEALT_D) + 1;
-
-                    targetInfo.targetDamageTakenBuff = target.getComputedProperty(BattleProperties.DMG_TAKEN_B) + 1;
-                    targetInfo.targetDamageTakenDebuff = target.getComputedProperty(BattleProperties.DMG_TAKEN_D) + 1;
-                    targetInfo.targetDefence = target.getComputedProperty(BattleProperties.DEF);
-                    targetInfo.damage = typeof targetInfo.base === 'string' ?
-                        source.getComputedProperty(targetInfo.base) :
-                        targetInfo.base(game, attack.sourceId, targetInfo.targetId);
-
-                    game.dispatch(EventCodes.BEFORE_ATTACK, {attack, eventId: attack.sourceId}); // 攻击前
-                    data.step2 = 1;
-                    break;
-                }
-                // 受到攻击处理
-                case 1: {
-                    game.dispatch(EventCodes.ATTACK, {attack, eventId: attack.sourceId}); // 攻击时
-                    game.dispatch(EventCodes.TAKEN_ATTACK, {attack, eventId: targetInfo.targetId}); // 被攻击时
-
-                    if (targetInfo.shouldComputeCri) {
-                        targetInfo.isCri = targetInfo.critical < game.random.real(0, 1) || targetInfo.isCri;
-                        if (targetInfo.isCri) {
-                            data.step2 = 2;
-                        } else {
-                            data.step2 = 3;
-                        }
-                    } else {
-                        data.step2 = 3;
-                    }
-                    break;
-                }
-                // 暴击处理
-                case 2: {
-                    targetInfo.isCriticalDamage = true;
-                    game.dispatch(EventCodes.CRI, {attack, eventId: attack.sourceId}); // 暴击时
-                    data.step2 = 3;
-                    break;
-                }
-                // 伤害处理步骤
-                case 3: {
-                    const FR = game.random.real(1 - targetInfo.FR, 1 + targetInfo.FR); // 伤害浮动系数
-                    const atk = targetInfo.damage * targetInfo.rate * (targetInfo.isCri ? targetInfo.criticalDamage : 1) * 300; // 伤害公式攻击部
-                    const def = targetInfo.targetDefence + 300; // 伤害公式防御部
-                    const rate = (targetInfo.damageDealtBuff / targetInfo.damageDealtDebuff) *
-                        (targetInfo.targetDamageTakenBuff / targetInfo.targetDamageTakenDebuff); // 减伤增伤易伤等计算
-
-                    targetInfo.finalDamage = atk / def * rate * FR;
-                    //TODO: 计算盾的抵消伤害
-
-                    game.dispatch(EventCodes.DAMAGE, {attack, eventId: attack.sourceId}); // 造成伤害
-                    game.dispatch(EventCodes.TAKEN_DAMAGE, {attack, eventId: targetInfo.targetId}); // 收到伤害时
-
-                    data.step2 = 4;
-                    break;
-                }
-                // 伤害结算步骤
-                case 4: {
-                    game.actionUpdateHp(targetInfo.noSource ? 0 : attack.sourceId, targetInfo.targetId, -targetInfo.finalDamage);
-                    data.step2 = 5;
-                    break;
-                }
-                // 伤害后步骤
-                case 5: {
-                    if (targetInfo.onComputed) game.addProcessor(targetInfo.onComputed, data, `[ACTION_attack] ${data.step1}-${data.step2}`);
-                    if (attack.targetsInfo.length > data.step1 + 1) {
-                        data.step1 = data.step1 + 1;
-                        data.step2 = 0;
-                    } else {
-                        return true;
-                    }
-                    break;
-                }
-                default:
-                    return false;
-            }
-            game.addProcessor(processTarget, data, `[ACTION_attack] ${data.step1}-${data.step2}`);
-            return true;
-        }
-
-        if (a.targetsInfo.length) {
-            this.addProcessor(processTarget, {attack: a, step1: 0, step2: 0}, '[ACTION_attack] 0-0');
-        }
+    actionAttack(attack: Attack) {
+        this.addProcessor(attackProcessor, { attack }, 'Attack');
         return true;
     }
 
-    actionUpdateHp(sourceId: number, targetId: number, v: number, reason: Reasons = Reasons.NOTHING): boolean {
+    actionUpdateHp(sourceId: number, targetId: number, num: number, reason: Reasons = Reasons.NOTHING): boolean {
         const source = this.getEntity(sourceId);
         const target = this.getEntity(targetId);
         if (!target) return false;
         if (target.dead) return true; // 死了就不要鞭尸了
 
-        this.addProcessor(() => {
-            const remainHp = Math.max(target.hp + v, 0);
-            const isDead = remainHp <= 0;
-            console.log(`${source ? `[ACTION_update_hp] ${source.name}(${source.teamId})` : 'NoSource'}->${target.name}(${target.teamId})  ${target.hp}${v}=${remainHp}`, isDead && '【Dead】');
-            target.hp = remainHp;
-            target.dead = isDead;
-            if (isDead) {
-                this.runway.freeze(target.entityId);
+        this.addProcessor((game: Game, data: EventData, step: number) => {
+            switch (step) {
+                case 1: {
+                    data.remainHp = Math.max(target.hp + num, 0);
+                    data.isDead = data.remainHp <= 0;
+                    game.log(`${source ? `【${source.name}(${source.teamId})】`: ''}${num < 0 ? '减少': '恢复'}【${target.name}(${target.teamId})】${Math.abs(num)}点血， 剩余${data.remainHp}`,  data.isDead ? '【死亡】' : '');
+                    return 2;
+                }
+                case 2: {
+                    if (data.remainHp === undefined || data.isDead === undefined) return 0;
+                    target.hp = data.remainHp;
+                    target.dead = data.isDead;
+                    if (data.isDead) {
+                        this.runway.freeze(target.entityId);
+                    }
+                    return -1;
+                }
             }
-            return true;
-        }, {}, '[ACTION_update_hp]');
+            return 0;
+        }, { sourceId, targetId, num, reason }, 'UpdateHp');
         return true;
 
     }
-
-    actionUseSkill(no: number, sourceId: number, selectedId: number, reason: Reasons = Reasons.NOTHING): boolean {
+    actionCheckAndUseSkill(no: number, sourceId: number, selectedId: number, reason: Reasons = Reasons.NOTHING): boolean {
         const source = this.getEntity(sourceId);
         if (!source) return false;
-
         const skill = source.skills.find(s => s.no === no);
         if (!skill) return false;
-
         if (skill.check && !skill.check(this, sourceId)) return false;
         const cost = typeof skill.cost === 'number' ? skill.cost : skill.cost(this, sourceId);
-
         if (cost > 0) {
-           if (!this.actionUpdateMana(source.entityId, source.teamId, -cost, Reasons.COST)) return false;
+            const mana = this.getMana(source.teamId);
+            if (!mana) return false;
+
+            if (cost > mana.num) return false;
         }
-        return skill.use ? skill.use(this, sourceId, selectedId) : false;
-    }
-
-    actionAddBuff(sourceId: number, targetId: number, buff: Buff, reason: Reasons = Reasons.NOTHING): boolean {
-        const target = this.getEntity(targetId);
-        if (!target) return false;
-        this.dispatch(EventCodes.BEFORE_BUFF_GET, {buff, eventId: sourceId, targetId: targetId});
-        this.addProcessor((game: Game) => {
-            target.addBuff(buff);
-            this.dispatch(EventCodes.BUFF_GET, {buff, eventId: sourceId, targetId: targetId});
-            return true;
-        }, {}, `[ACTION_add_buff] ${sourceId}->${targetId} ${ buff.name + buff.countDown ? `[${buff.countDown}]` : ''}`);
-        return true;
-    }
-    actionAddBuffP(sourceId: number, targetId: number, buff: Buff, probability: number = 1,reason: Reasons = Reasons.NOTHING): boolean {
-        const target = this.getEntity(targetId);
-        if (!target) return false;
-        const source = this.getEntity(sourceId);
-        if (!source) return false;
-        const hit = probability * (1 + source.getComputedProperty(BattleProperties.EFT_HIT)); // 基础命中×（1+效果命中）
-        const isHit = this.random.real(0, 1) < hit;
-        if (!isHit) {
-            console.log('[ACTION_add_buff_p] 未命中');
-            return true;  // 未命中
-        }
-
-
-        const res = 1 + target.getComputedProperty(BattleProperties.EFT_RES); // (1 + 效果抵抗)
-        const notRes = this.random.real(0, 1) < hit / res;
-
-        if (notRes) return this.actionAddBuff(sourceId, targetId, buff, reason); // 未抵抗
-
-        // TODO: 处理抵抗
-        this.dispatch(EventCodes.CONTROL_RES, {buff, eventId: sourceId, targetId: targetId});
-        return true;
-    }
-    actionRemoveBuff(sourceId: number, targetId: number, buff: Buff, reason: Reasons = Reasons.NOTHING): boolean {
-        const target = this.getEntity(targetId);
-        if (!target) return false;
-
-        this.dispatch(EventCodes.BEFORE_BUFF_REMOVE, {buff, eventId: sourceId, targetId: targetId});
-        this.addProcessor((game: Game) => {
-            target.removeBuff(buff);
-            game.dispatch(EventCodes.BUFF_REMOVE, {buff, eventId: sourceId, targetId: targetId});
-            return true;
-        }, {}, '[ACTION_remove_buff]');
+        this.actionUseSkill(no, sourceId, selectedId, reason);
         return true;
     }
 
-    actionUpdateMana(sourceId: number, teamId: number, num: number, reason: Reasons = Reasons.NOTHING): boolean {
-        const mana = this.manas[teamId];
-        if (!mana) return false;
-        console.log(`[ACTION_UpdateMana] teamId=${teamId}   ${num}`);
-        mana.num = mana.num + num;
-        if (mana.num < 0) mana.num = 0;
-        if (mana.num > 8) {
-            mana.num = 8;
-            this.dispatch(EventCodes.MANA_OVERFLOW);
-        }
+    actionUseSkill(no: number, sourceId: number, selectedId: number, reason: Reasons = Reasons.NOTHING) {
+        this.addProcessor((game: Game, data: EventData, step: number) => {
+            const source = this.getEntity(sourceId);
+            if (!source) return 0;
+            const selected = this.getEntity(selectedId);
+            if (!selected) return 0;
+            const skill = source.skills.find(s => s.no === no);
+            if (!skill) return 0;
+            switch (step) {
+                case 1 : {
+                    if (skill.check && !skill.check(this, sourceId)) return 0;
+                    const cost = typeof skill.cost === 'number' ? skill.cost : skill.cost(this, sourceId);
+                    game.log(`【${source.name}(${source.teamId})】对【${selected.name}(${selected.teamId})】使用技能【${skill.name}】`);
 
-        return true;
+                    if (cost > 0) {
+                        this.actionUpdateMana(source.entityId, source.teamId, -cost, Reasons.COST);
+                    }
+                    return 2;
+                }
+                case 2: {
+                    (skill.use && skill.use(this, sourceId, selectedId));
+                    return -1;
+                }
+            }
+            return 0;
+        }, { no, sourceId, selectedId, reason}, 'UseSkill');
+
     }
 
-    actionUpdateManaProgress(sourceId: number, teamId: number, num: number, reason: Reasons = Reasons.NOTHING): boolean {
-        const mana = this.manas[teamId];
-        if (!mana) return false;
+    actionAddBuff(sourceId: number, targetId: number, buff: Buff, reason: Reasons = Reasons.NOTHING) {
+        this.addProcessor((game: Game, data: EventData, step: number) => {
+            const target = this.getEntity(targetId);
+            if (!target) return 0;
+            const source = this.getEntity(sourceId);
+            switch (step) {
+                case 1: {
+                    this.dispatch(EventCodes.BEFORE_BUFF_GET, {buff, eventId: sourceId, targetId: targetId});
+                    game.log(`${source ? `【${source.name}(${source.teamId})】`: ''}对【${target.name}(${target.teamId})】添加 【${buff.name}】 Buff`,
+                        buff.countDown > 0 ? buff.countDownBySource ? '维持' : '持续' + buff.countDown + '回合' : '');
 
-        mana.progress = mana.progress + num;
-        if (mana.progress < 0) mana.progress = 0;
-        if (mana.progress > 5) mana.progress = 5;
-
-        return true;
+                    return 2;
+                }
+                case 2: {
+                    target.addBuff(buff);
+                    this.dispatch(EventCodes.BUFF_GET, {buff, eventId: sourceId, targetId: targetId});
+                    return -1;
+                }
+            }
+            return 0;
+        }, { sourceId, targetId, buff, reason}, 'AddBuff')
     }
-    actionProcessManaProgress(sourceId: number, teamId: number): boolean {
-        const mana = this.manas[teamId];
-        if (!mana) return false;
+    actionAddBuffP(sourceId: number, targetId: number, buff: Buff, num: number = 1,reason: Reasons = Reasons.NOTHING) {
+        this.addProcessor(() => {
+            const target = this.getEntity(targetId);
+            if (!target) return 0;
+            const source = this.getEntity(sourceId);
+            if (!source) return 0;
+            const hit = num * (1 + source.getComputedProperty(BattleProperties.EFT_HIT)); // 基础命中×（1+效果命中）
+            const isHit = this.random.real(0, 1) < hit;
+            if (!isHit) {
+                return -1;  // 未命中
+            }
 
+            const res = 1 + target.getComputedProperty(BattleProperties.EFT_RES); // (1 + 效果抵抗)
+            const notRes = this.random.real(0, 1) < hit / res;
 
-        if (mana.progress >= 5) {
-            mana.progress = 0;
-            mana.preProgress = Math.min(5, mana.preProgress + 1);
-            this.actionUpdateMana(0, teamId, mana.preProgress, Reasons.RULE);
-        }
+            if (notRes) {
+                this.actionAddBuff(sourceId, targetId, buff, reason);
+                return -1;
+            }
 
-        return true;
+            // TODO: 处理抵抗
+            this.dispatch(EventCodes.CONTROL_RES, {buff, eventId: sourceId, targetId: targetId});
+            return -1;
+        }, { sourceId, targetId, buff, num, reason}, 'AddBuffP')
+    }
+    actionRemoveBuff(sourceId: number, targetId: number, buff: Buff, reason: Reasons = Reasons.NOTHING) {
+        this.addProcessor((game: Game, _: EventData, step: number) => {
+            const target = this.getEntity(targetId);
+            if (!target) return 0;
+            switch (step) {
+                case 1: {
+                    this.dispatch(EventCodes.BEFORE_BUFF_REMOVE, {buff, eventId: sourceId, targetId: targetId});
+                    return 2;
+                }
+                case 2: {
+                    target.removeBuff(buff);
+                    game.dispatch(EventCodes.BUFF_REMOVE, {buff, eventId: sourceId, targetId: targetId});
+                    return -1;
+                }
+            }
+            return 0;
+        }, {}, 'RemoveBuff');
+    }
+
+    actionUpdateMana(sourceId: number, teamId: number, num: number, reason: Reasons = Reasons.NOTHING) {
+        this.addProcessor(() => {
+            const mana = this.manas[teamId];
+            if (!mana) return 0;
+            mana.num = mana.num + num;
+            if (mana.num < 0) return 0;
+            if (mana.num > 8) {
+                mana.num = 8;
+                this.dispatch(EventCodes.MANA_OVERFLOW);
+            }
+            return -1;
+        }, {sourceId, teamId, num, reason}, 'UpdateMana')
+    }
+
+    actionUpdateManaProgress(sourceId: number, teamId: number, num: number, reason: Reasons = Reasons.NOTHING) {
+        this.addProcessor(() => {
+            const mana = this.manas[teamId];
+            if (!mana) return 0;
+
+            mana.progress = mana.progress + num;
+            if (mana.progress < 0) mana.progress = 0;
+            if (mana.progress > 5) mana.progress = 5;
+            return -1;
+        }, {sourceId, teamId} , 'ProcessManaProgress');
+    }
+    actionProcessManaProgress(sourceId: number, teamId: number) {
+        this.addProcessor(() => {
+            const mana = this.manas[teamId];
+            if (!mana) return 0;
+            if (mana.progress >= 5) {
+                mana.progress = 0;
+                mana.preProgress = Math.min(5, mana.preProgress + 1);
+                this.actionUpdateMana(0, teamId, mana.preProgress, Reasons.RULE);
+            }
+
+            return -1;
+        }, {sourceId, teamId} , 'ProcessManaProgress');
     }
 
 
 
 
     // 拉条
-    actionUpdateRunwayPercent(sourceId: number, targetId: number, precent: number, reason: Reasons = Reasons.NOTHING): boolean {
-        const target = this.getEntity(targetId);
-        if (!target) return false;
+    actionUpdateRunwayPercent(sourceId: number, targetId: number, precent: number, reason: Reasons = Reasons.NOTHING) {
+        this.addProcessor((game: Game) => {
+            const target = this.getEntity(targetId);
+            if (!target) return 0;
+            return game.runway.updatePercent(targetId, precent) ? -1 : 0;
+        }, {sourceId, targetId, precent, reason} , 'UpdateRunwayPercent');
+    }
 
-        return this.runway.updatePercent(targetId, precent);
+
+    log = (...args: any[]) => {
+        console.log(' '.repeat(this.currentTask.depth) + `[${this.currentTask.type || '<Unknown>'}][step${this.currentTask.step}]`, ...args);
+    };
+
+    dump(task: Task | undefined): any {
+        if (task === undefined) task = this.rootTask;
+        return {
+            step: task.step,
+            children: task.children.map(c => this.dump(c)),
+            type: task.type,
+            parent: task.parent ? '<parent>': null,
+            data: task.data,
+        }
     }
 
 

@@ -28,6 +28,7 @@ import Game from '../../system/game';
 
  */
 export default class HakuArashiNoRei extends Entity {
+  static no = 400;
   constructor() {
     super();
     this.setProperty(BattleProperties.ATK, 2412);

@@ -72,6 +72,7 @@ const skill2: Skill = {
   },
 };
 export default class NuriKabe extends Entity {
+  static no = 409;
   constructor() {
     super();
     this.setProperty(BattleProperties.ATK, 2412);

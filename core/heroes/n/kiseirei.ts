@@ -28,6 +28,7 @@ import Game from '../../system/game';
   },
  */
 export default class KiSeiRei extends Entity {
+  static no = 401;
   constructor() {
     super();
     this.setProperty(BattleProperties.ATK, 2412);

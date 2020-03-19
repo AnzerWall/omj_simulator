@@ -93,6 +93,7 @@ const skill3: Skill = {
   },
 };
 export default class AkaJita extends Entity {
+  static no = 246;
   constructor() {
     super();
     this.setProperty(BattleProperties.ATK, 2412);

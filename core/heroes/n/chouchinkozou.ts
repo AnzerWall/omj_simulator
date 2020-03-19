@@ -30,6 +30,7 @@ import {GroupAttack} from '../common/group-attack';
  */
 
 export default class ChouChinKoZou extends Entity {
+  static no = 245;
   constructor() {
     super();
     this.setProperty(BattleProperties.ATK, 2412);

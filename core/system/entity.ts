@@ -8,6 +8,7 @@ import {Control} from '../fixtures/control';
 
 let entityCounter = 0;
 export default class Entity {
+    static no: number=0;
     no: number;
 
     entityId: number;

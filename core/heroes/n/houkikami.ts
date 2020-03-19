@@ -58,6 +58,7 @@ const skill1: Skill = {
   },
 };
 export default class HoukiKami extends Entity {
+  static no = 408;
   constructor() {
     super();
     this.setProperty(BattleProperties.ATK, 2412);

@@ -73,6 +73,7 @@ const skill2: Skill = {
   },
 };
 export default class AmoNoJakuKi extends Entity {
+  static no = 406;
   constructor() {
     super();
     this.setProperty(BattleProperties.ATK, 2412);

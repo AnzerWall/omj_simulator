@@ -53,6 +53,7 @@ class TeiGinBuff extends Buff {
 }
 
 export default class AmoNoJakuAo extends Entity {
+  static no = 407;
   constructor() {
     super();
     this.setProperty(BattleProperties.ATK, 2412);

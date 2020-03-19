@@ -54,6 +54,7 @@ const skill2: Skill = {
   },
 };
 export default class KaraKasaKoZou extends Entity {
+  static no = 403;
   constructor() {
     super();
     this.setProperty(BattleProperties.ATK, 2412);

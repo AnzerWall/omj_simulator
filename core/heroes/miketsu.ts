@@ -6,13 +6,12 @@ import Buff, {Effect} from '../system/buff';
 
 class KoJuKai extends Buff {
     constructor(sourceId: number) {
-        super();
+        super(sourceId);
         this.countDown = 1;
         this.countDownBySource = true;
         this.enchantment = true;
         this.maxCount = 1;
         this.name = '狐狩界';
-        this.sourceId = sourceId;
     }
 }
 

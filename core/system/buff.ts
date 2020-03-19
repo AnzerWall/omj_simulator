@@ -1,15 +1,17 @@
 import {Control} from '../fixtures/control';
+import Game from './game';
 
 export const enum Operator {
-    ADD,
-    SET,
-    NOTHING,
+    ADD, // 增加value
+    SET,  // 设置为value
+    RATE, // 增加 base * rate
+    NOTHING, // 啥都不做
 }
 
 export interface Effect {
     propertyName: string; // 属性名
     op: Operator; // 操作
-    value: number; // 值
+    value: number; // 值   | ((game: Game, ownerId: number)=> number)
 }
 
 export default class Buff {
@@ -17,7 +19,7 @@ export default class Buff {
     canRemove: boolean = false; // 是否可清除
     isStamp: boolean = false; // 是否是印记
     name: string =''; // buff名称 用于表示相同buff
-    maxCount: number = 0; // 最大持有数量
+    maxCount: number = 0; // 同名最大持有数量
     sourceId: number = 0; // 来源实体
 
     // 倒计时buff
@@ -38,5 +40,20 @@ export default class Buff {
 
     // 对应图标
     icon: string = '';
+
+    // 【增益, 状态】
+    // 是否是增益
+    isBuff: boolean = false;
+    // 是否是减益
+    isDebuff: boolean = false;
+    // 状态, 是否影响属性
+    isAffectProperty: boolean = false;
+
+    isHit: boolean | undefined;
+    isRes: boolean | undefined;
+    pass: boolean | undefined;
+    constructor(sourceId: number) {
+        this.sourceId = sourceId;
+    }
 }
 

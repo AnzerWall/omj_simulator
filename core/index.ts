@@ -14,7 +14,7 @@ const entities: any[] = [];
             teamId: team_id,
         });
     }
-    entities[0].no = 304;
+    entities[0].no = 405;
 });
 
 const game = new Game(entities);

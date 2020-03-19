@@ -1,66 +1,52 @@
 import Game from './game';
+import {BattleProperties} from '../fixtures/hero-property-names';
+import {EventData} from '../fixtures/events';
 
 export class AttackTargetInfo {
     targetId: number;
+    sourceId: number = 0;
+    base: ((game: Game, sourceId: number, targetId: number) => number) | string = BattleProperties.ATK; // 基础数值来源
+    limit?: ((game: Game, sourceId: number, targetId: number) => number) | number; // 不超过xxx
+    rate: number = 1; // 倍率
+    FR: number = 0.01; // 波动值
 
-    base: ((game: Game, sourceId: number, targetId: number) => number) | string; // 基础数值来源
-    rate: number;
-    FR: number;
+    isIndirectDamage: boolean = false; // 是否是间接伤害
+    isRealDamage: boolean = false; // 是否是真实伤害
+    isCriticalDamage: boolean = false; // 是否是暴击伤害
 
-    isIndirectDamage: boolean; // 是否是间接伤害
-    isRealDamage: boolean; // 是否是真实伤害
-    isCriticalDamage: boolean; // 是否是暴击伤害
-    shouldComputeCri: boolean; // 是否触发暴击
+    isNormalAttack: boolean = false; // 是否是普通攻击
 
-    noTriggerEquipment: boolean; // 不触发御魂
-    noTriggerPassive: boolean; // 不触发被动
+    shouldComputeCri: boolean = false; // 是否触发暴击
 
-    isSingleDamage: boolean; // 是否是单体伤害
-    isGroupDamage: boolean; // 是否是群体伤害
+    noShare: boolean = false; // 不可分摊
+    noTriggerEquipment: boolean = false; // 不触发御魂
+    noTriggerPassive: boolean = false; // 不触发被动
+    noSource: boolean = false; // 视为无来源伤害
 
-    critical: number; // 暴击率
-    criticalDamage: number; // 暴击伤害
+    isSingleDamage: boolean = false; // 是否是单体伤害
+    isGroupDamage: boolean = false; // 是否是群体伤害
 
-    damageDealtBuff: number; // 造成伤害增加
-    damageDealtDebuff: number; // 造成伤害减少
-    targetDamageTakenBuff: number; // 目标承受伤害增加
-    targetDamageTakenDebuff: number; // 目标承受伤害减少
+    onComputed?: (game: Game, data: EventData) => boolean; // 完成后
 
-    targetDefence: number; // 目标防御分子
+    ////////////// 以下是攻击处理时用到的属性 ////////////////
+    // TODO: 独立出来
+    critical: number = 0; // 暴击率
+    criticalDamage: number = 0; // 暴击伤害
 
-    damage: number;
-    finalDamage: number; // 最终伤害
-    isCri: boolean; // 是否暴击
-    noSource: boolean;
+    damageDealtBuff: number = 1; // 造成伤害增加
+    damageDealtDebuff: number = 1; // 造成伤害减少
+    targetDamageTakenBuff: number = 1; // 目标承受伤害增加
+    targetDamageTakenDebuff: number = 1; // 目标承受伤害减少
+
+    targetDefence: number = 0; // 目标防御分子
+    damage: number = 0;
+
+    finalDamage: number = 0; // 最终伤害
+    isCri: boolean = false; // 是否暴击
+
 
     constructor(targetId: number) {
         this.targetId = targetId;
-        this.isIndirectDamage = false;
-        this.isRealDamage = false;
-        this.isCriticalDamage = false;
-        this.shouldComputeCri = false;
-
-        this.noTriggerEquipment = false;
-        this.noTriggerPassive = false;
-
-        this.isSingleDamage = false;
-        this.isGroupDamage = false;
-
-        this.critical = 0;
-        this.criticalDamage = 1.5;
-
-        this.damageDealtBuff = 1;
-        this.damageDealtDebuff = 1;
-        this.targetDamageTakenBuff = 1;
-        this.targetDamageTakenDebuff = 1;
-        this.targetDefence = 0;
-        this.finalDamage = 0;
-        this.isCri = false;
-        this.noSource = false;
-        this.FR = 0.01;
-        this.base = 'atk';
-        this.rate = 1;
-        this.damage = 0;
     }
 }
 

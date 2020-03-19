@@ -10,8 +10,31 @@ import Skill from './skill';
 import Attack, {AttackTargetInfo} from './attack';
 import {MersenneTwister19937, Random} from 'random-js';
 import Buff from './buff';
+import {Reasons} from '../fixtures/reasons';
+import {Control} from '../fixtures/control';
 
 type Unit = [(game: Game, data: EventData) => boolean, object, string];
+// interface Task {
+//     step: number,
+//     children: Task[], // 任务队列
+//     processor: (game: Game, data: EventData, step: number) => number
+//     type: string,
+//     parent: Task | null,
+// }
+
+// const GameTask: Task = {
+//     step: 1,
+//     children: [],
+//     processor(game: Game, data: EventData, step: number): number {
+//         return 0;
+//     },
+//     type: 'Game',
+//     parent: null,
+// };
+//
+// interface Team {
+//     mana: Mana,
+// }
 
 export default class Game {
     rules: object; // 规则表
@@ -30,6 +53,9 @@ export default class Game {
     isEnd: boolean; // 是否游戏结束
     winner: number; // 获胜者id
     random: Random;
+
+    // rootTask: Task;
+    // currentTask: Task;
 
     constructor(datas: {
         no: number;
@@ -202,21 +228,56 @@ export default class Game {
         return this.entities.get(entityId) || null;
     }
 
+    getTeamEntities(teamId: number): Entity[] {
+        const ret: Entity[] = [];
+
+        this.entities.forEach((e: Entity) => {
+            if (e.teamId === teamId && !e.dead) {
+                ret.push(e);
+            }
+        });
+        return ret;
+    }
+
     getEnemies(entityId: number): Entity[] {
         const entity = this.getEntity(entityId);
         if (!entity) return [];
         const teamId = entity.teamId;
+        const isConfusion = entity.beControlledBy(Control.CONFUSION);
 
         const ret: Entity[] = [];
 
         this.entities.forEach((e: Entity) => {
-            if (e.teamId !== teamId && !e.dead) {
-                ret.push(e);
-            }
+            if (e.entityId === entityId) return; // 自己不是自己的敌人
+            if (e.dead) return; // 跳过死亡单位
+            if (e.teamId < 0 || e.teamId > 1) return; // 过滤非玩家单位
+            if (!isConfusion && e.teamId === teamId) return; // 不是混乱状态下不能打自己人
+            ret.push(e);
         });
 
         return ret;
     }
+
+    testHit(p: number): boolean {
+        return this.random.real(0, 1) <= p;
+    }
+
+    getRandomEnemy(entityId: number): Entity | null{
+        const list: Entity[] = this.getEnemies(entityId);
+        if (!list.length) return null;
+
+        return list[this.random.integer(0, list.length - 1)] || null;
+    }
+
+    canCost(teamId: number, count: number ): boolean {
+        if (teamId < 0 || teamId > 1) return false;
+
+        return this.manas[teamId].num >= count;
+    }
+    getMana(teamId: number): Mana | null {
+        return this.manas[teamId] || null;
+    }
+
 
     actionAttack(a: Attack): boolean {
         function processTarget(game: Game, data: EventData): boolean {
@@ -298,7 +359,9 @@ export default class Game {
                     data.step2 = 5;
                     break;
                 }
+                // 伤害后步骤
                 case 5: {
+                    if (targetInfo.onComputed) game.addProcessor(targetInfo.onComputed, data, `[ACTION_attack] ${data.step1}-${data.step2}`);
                     if (attack.targetsInfo.length > data.step1 + 1) {
                         data.step1 = data.step1 + 1;
                         data.step2 = 0;
@@ -320,7 +383,7 @@ export default class Game {
         return true;
     }
 
-    actionUpdateHp(sourceId: number, targetId: number, v: number, reason = 0): boolean {
+    actionUpdateHp(sourceId: number, targetId: number, v: number, reason: Reasons = Reasons.NOTHING): boolean {
         const source = this.getEntity(sourceId);
         const target = this.getEntity(targetId);
         if (!target) return false;
@@ -341,7 +404,7 @@ export default class Game {
 
     }
 
-    actionUseSkill(no: number, sourceId: number, selectedId: number): boolean {
+    actionUseSkill(no: number, sourceId: number, selectedId: number, reason: Reasons = Reasons.NOTHING): boolean {
         const source = this.getEntity(sourceId);
         if (!source) return false;
 
@@ -350,25 +413,51 @@ export default class Game {
 
         if (skill.check && !skill.check(this, sourceId)) return false;
         const cost = typeof skill.cost === 'number' ? skill.cost : skill.cost(this, sourceId);
-        // TODO 鬼火
+
+        if (cost > 0) {
+           if (!this.actionUpdateMana(source.entityId, source.teamId, -cost, Reasons.COST)) return false;
+        }
         return skill.use ? skill.use(this, sourceId, selectedId) : false;
     }
 
-    actionAddBuff(sourceId: number, targetId: number, buff: Buff): boolean {
+    actionAddBuff(sourceId: number, targetId: number, buff: Buff, reason: Reasons = Reasons.NOTHING): boolean {
         const target = this.getEntity(targetId);
         if (!target) return false;
+        this.dispatch(EventCodes.BEFORE_BUFF_GET, {buff, eventId: sourceId, targetId: targetId});
         this.addProcessor((game: Game) => {
             target.addBuff(buff);
-            game.dispatch(EventCodes.BUFF_GET, {buff, eventId: sourceId, targetId: targetId});
+            this.dispatch(EventCodes.BUFF_GET, {buff, eventId: sourceId, targetId: targetId});
             return true;
-        }, {}, '[ACTION_add_buff]');
+        }, {}, `[ACTION_add_buff] ${sourceId}->${targetId} ${ buff.name + buff.countDown ? `[${buff.countDown}]` : ''}`);
         return true;
     }
+    actionAddBuffP(sourceId: number, targetId: number, buff: Buff, probability: number = 1,reason: Reasons = Reasons.NOTHING): boolean {
+        const target = this.getEntity(targetId);
+        if (!target) return false;
+        const source = this.getEntity(sourceId);
+        if (!source) return false;
+        const hit = probability * (1 + source.getComputedProperty(BattleProperties.EFT_HIT)); // 基础命中×（1+效果命中）
+        const isHit = this.random.real(0, 1) < hit;
+        if (!isHit) {
+            console.log('[ACTION_add_buff_p] 未命中');
+            return true;  // 未命中
+        }
 
-    actionRemoveBuff(sourceId: number, targetId: number, buff: Buff): boolean {
+
+        const res = 1 + target.getComputedProperty(BattleProperties.EFT_RES); // (1 + 效果抵抗)
+        const notRes = this.random.real(0, 1) < hit / res;
+
+        if (notRes) return this.actionAddBuff(sourceId, targetId, buff, reason); // 未抵抗
+
+        // TODO: 处理抵抗
+        this.dispatch(EventCodes.CONTROL_RES, {buff, eventId: sourceId, targetId: targetId});
+        return true;
+    }
+    actionRemoveBuff(sourceId: number, targetId: number, buff: Buff, reason: Reasons = Reasons.NOTHING): boolean {
         const target = this.getEntity(targetId);
         if (!target) return false;
 
+        this.dispatch(EventCodes.BEFORE_BUFF_REMOVE, {buff, eventId: sourceId, targetId: targetId});
         this.addProcessor((game: Game) => {
             target.removeBuff(buff);
             game.dispatch(EventCodes.BUFF_REMOVE, {buff, eventId: sourceId, targetId: targetId});
@@ -377,9 +466,54 @@ export default class Game {
         return true;
     }
 
-    // action_dead(source_id: number, target_id: number, reason: number): boolean {
-    //     const source = this.getEntity(source_id);
-    //     const target = this.getEntity(target_id);
-    // }
+    actionUpdateMana(sourceId: number, teamId: number, num: number, reason: Reasons = Reasons.NOTHING): boolean {
+        const mana = this.manas[teamId];
+        if (!mana) return false;
+        console.log(`[ACTION_UpdateMana] teamId=${teamId}   ${num}`);
+        mana.num = mana.num + num;
+        if (mana.num < 0) mana.num = 0;
+        if (mana.num > 8) {
+            mana.num = 8;
+            this.dispatch(EventCodes.MANA_OVERFLOW);
+        }
+
+        return true;
+    }
+
+    actionUpdateManaProgress(sourceId: number, teamId: number, num: number, reason: Reasons = Reasons.NOTHING): boolean {
+        const mana = this.manas[teamId];
+        if (!mana) return false;
+
+        mana.progress = mana.progress + num;
+        if (mana.progress < 0) mana.progress = 0;
+        if (mana.progress > 5) mana.progress = 5;
+
+        return true;
+    }
+    actionProcessManaProgress(sourceId: number, teamId: number): boolean {
+        const mana = this.manas[teamId];
+        if (!mana) return false;
+
+
+        if (mana.progress >= 5) {
+            mana.progress = 0;
+            mana.preProgress = Math.min(5, mana.preProgress + 1);
+            this.actionUpdateMana(0, teamId, mana.preProgress, Reasons.RULE);
+        }
+
+        return true;
+    }
+
+
+
+
+    // 拉条
+    actionUpdateRunwayPercent(sourceId: number, targetId: number, precent: number, reason: Reasons = Reasons.NOTHING): boolean {
+        const target = this.getEntity(targetId);
+        if (!target) return false;
+
+        return this.runway.updatePercent(targetId, precent);
+    }
+
 
 }

@@ -2,7 +2,7 @@ export enum Control {
     NONE,
     EQUIPMENT_FORBID, // 封印御魂
     PASSIVE_FORBID, //  封印被动
-    CONFUSE, // 混乱
+    CONFUSION, // 混乱
     DIZZY, //  眩晕
     FROZEN, // 冰冻
     IMPRISONMENT, // 禁锢

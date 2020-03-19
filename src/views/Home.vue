@@ -1,5 +1,6 @@
 <template>
-    <div class="home" v-html="readme">
+    <div class="home" >
+        <div v-html="readme"></div>
     </div>
 </template>
 

@@ -6,6 +6,7 @@ export default interface Skill {
     handlers: Handler[]; // 其他handler
     passive: boolean; // 是否是被动
     text?: string;
+    name?: string;
 
     check?(game: Game, entityId: number): boolean; // 是否能使用
     cost: ((game: Game, entityId: number) => number) | number;  // 支付代价

@@ -1,5 +1,3 @@
-import {sample} from 'lodash';
-
 const eps = 1e-6; // 精度
 const GOAL = 10000; // 行动条终点
 const oo = 1e10; // 无限大
@@ -26,10 +24,12 @@ export default class Runway {
     distanceTable: Map<number, number>; // 实体在行动条上的位置
     velocityFunctions: Map<number, () => number>; // 实体的速度
     frozenTable: Map<number, boolean>; // 实体是否在行动条上冻结
-    constructor() {
+    random: () => number;
+    constructor(random = Math.random /* 指定绑定seed的random函数，用于确保对于同一seed获得的结果是一致的*/) {
         this.distanceTable = new Map<number, number>();
         this.velocityFunctions = new Map<number, () => number>();
         this.frozenTable = new Map<number, boolean>();
+        this.random = random;
     }
 
     reset() {
@@ -98,7 +98,7 @@ export default class Runway {
 
         if (!reachGoalEntities.length) return null;
 
-        const id = sample(reachGoalEntities);
+        const id = reachGoalEntities[Math.floor(this.random() * reachGoalEntities.length)];
         if (id === undefined) return null;
 
         this.distanceTable.set(id, 0);
@@ -110,19 +110,15 @@ export default class Runway {
         return this.getNext() || 0;
     }
 
-    // 拉条
-    raise(id: number, percent: number): boolean {
+    // 推拉条
+    updatePercent(id: number, percent: number): boolean {
         if (!this.distanceTable.has(id)) {
             return false;
         }
         if (this.frozenTable.get(id)) return false;
-        if (percent <= 0) return true; // 拉条小于等于0，直接成功
-        if (percent >= 1) {
-            percent = 1;
-        }
 
         const prevDistance = this.distanceTable.get(id) || 0;
-        const nextDistance = Math.min(prevDistance + (GOAL * percent), GOAL);
+        const nextDistance = Math.max(Math.min(prevDistance + (GOAL * percent), GOAL), 0);
 
         this.distanceTable.set(id, nextDistance);
         return true;

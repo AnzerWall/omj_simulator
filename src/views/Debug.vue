@@ -1,5 +1,7 @@
 <template>
     <div class="debug" ref="container">
+        <div>队伍一鬼火:  {{mana1}}({{progress1}})  </div>
+        <div>队伍二鬼火:  {{mana2}}({{progress2}}) </div>
         <a-button @click="step" :block="false" style="margin-bottom: 20px;">下一步</a-button>
 
         <a-table :dataSource="tasks" style="margin-bottom: 20px;" size="small">
@@ -10,7 +12,7 @@
                 </template>
             </a-table-column>
         </a-table>
-        <a-table :dataSource="team1" style="margin-bottom: 20px;" rowKey="no" :pagination="false" size="small">
+        <a-table :dataSource="team1" style="margin-bottom: 20px;" rowKey="entityId" :pagination="false" size="small">
             <a-table-column title="编号" dataIndex="no"/>
             <a-table-column title="名称" dataIndex="name"/>
             <a-table-column title="生命" dataIndex="hp"/>
@@ -30,7 +32,7 @@
             <a-table-column title="忽略防御百分比" dataIndex="def_neg_p"/>
             <a-table-column title="生命偷取" dataIndex="hp_steal"/>
         </a-table>
-        <a-table :dataSource="team2" rowKey="no" :pagination="false" size="small">
+        <a-table :dataSource="team2" rowKey="entityId" :pagination="false" size="small">
             <a-table-column title="编号" dataIndex="no"/>
             <a-table-column title="名称" dataIndex="name"/>
             <a-table-column title="生命" dataIndex="hp"/>
@@ -64,6 +66,10 @@
                 team1: [],
                 team2: [],
                 tasks: [],
+                mana1: 0,
+                mana2: 2,
+                progress1: 0,
+                progress2: 0,
             }
         },
         mounted() {
@@ -75,10 +81,10 @@
                 this.team1 = [];
                 this.team2 = [];
                 this.tasks = [];
-                this.microTasks = [];
 
                 this.game.entities.forEach(entity => {
                     const data = {
+                        entityId: entity.entityId,
                         no: entity.no,
                         name: entity.name,
                         hp: entity.hp.toFixed(2),
@@ -99,6 +105,11 @@
                         data: JSON.stringify(task[1]),
                     })
                 });
+
+                this.mana1 = this.game.manas[0].num;
+                this.mana2 = this.game.manas[1].num;
+                this.progress1 = this.game.manas[0].progress;
+                this.progress2 = this.game.manas[1].progress;
 
             },
             step() {

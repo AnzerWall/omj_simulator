@@ -1,10 +1,7 @@
-import Game from '../system/game';
-import {EventCodes, EventData} from '../fixtures/events';
-import {AttackTargetInfo} from '../system/attack';
-import {BattleProperties} from '../fixtures/hero-property-names';
+import {EventData, Game, EventCodes, BattleProperties} from '../';
 
 export function attackSubProcessor(game: Game, data: EventData, step: number) {
-    const { attack, attackTargetInfo: targetInfo} = data;
+    const {attack, attackTargetInfo: targetInfo} = data;
     if (!targetInfo) return 0;
     if (!attack) return 0;
 
@@ -40,7 +37,7 @@ export function attackSubProcessor(game: Game, data: EventData, step: number) {
             if (targetInfo.shouldComputeCri) {
                 targetInfo.isCri = targetInfo.critical < game.random.real(0, 1) || targetInfo.isCri;
                 if (targetInfo.isCri) {
-                    return 3
+                    return 3;
                 } else {
                     return 4;
                 }
@@ -68,27 +65,32 @@ export function attackSubProcessor(game: Game, data: EventData, step: number) {
             game.dispatch(EventCodes.DAMAGE, {attack, eventId: attack.sourceId}); // 造成伤害
             game.dispatch(EventCodes.TAKEN_DAMAGE, {attack, eventId: targetInfo.targetId}); // 收到伤害时
 
-
             return 5;
         }
         // 伤害结算步骤
         case 5: {
             game.actionUpdateHp(targetInfo.noSource ? 0 : attack.sourceId, targetInfo.targetId, -targetInfo.finalDamage);
-            return 6
+            return 6;
         }
         // 伤害后步骤
         case 6: {
-            if (targetInfo.onComputed) game.addProcessor(targetInfo.onComputed, { attack, attackTargetInfo: targetInfo }, `AttackSubComputed`); // 伤害后处理，一般处理伤害时的控制
+            if (targetInfo.onComputed) {
+                game.addProcessor(targetInfo.onComputed, {
+                    attack,
+                    attackTargetInfo: targetInfo
+                }, `AttackSubComputed`);
+            } // 伤害后处理，一般处理伤害时的控制
             return -1;
         }
     }
     return 0;
 }
-export default function attackProcessor(game: Game, { attack }: EventData, step: number): number {
+
+export default function attackProcessor(game: Game, {attack}: EventData, step: number): number {
     if (!attack) return 0;
     if (step <= 0) return 0;
     if (step > attack.targetsInfo.length) return -1;
     const info = attack.targetsInfo[step - 1];
-    game.addProcessor(attackSubProcessor, { attack, attackTargetInfo: info }, 'AttackSub');
+    game.addProcessor(attackSubProcessor, {attack, attackTargetInfo: info}, 'AttackSub');
     return step + 1;
 }

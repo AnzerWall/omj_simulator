@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "core": "ts-node core/index.ts",
+    "debug": "ts-node core/debug.ts",
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint ."
   },
   "keywords": [
     "onmyouji"
@@ -56,5 +57,39 @@
     "sass-loader": "^8.0.2",
     "typescript": "^3.2.2",
     "vue-template-compiler": "^2.6.11"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended",
+      "@vue/typescript/recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 2019
+    },
+    "rules": {
+      "no-console": "off",
+      "no-debugger": "warn",
+      "@typescript-eslint/no-inferrable-types": 0,
+      "@typescript-eslint/camelcase": 0,
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          "args": "after-used",
+          "varsIgnorePattern": "^_",
+          "ignoreRestSiblings": true,
+          "argsIgnorePattern": "^_",
+          "ignoreErr": "^ignore"
+        }
+      ]
+    },
+    "ignorePatterns": [
+      "*.d.ts",
+      "node_modules/"
+    ]
   }
 }

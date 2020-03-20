@@ -1,5 +1,4 @@
-import {Buff, Skill, Handler, Game} from '../../system';
-import {Reasons} from '../../fixtures/reasons';
+import {Buff, Skill, Handler, Game, Reasons} from '../../';
 
 export default class BuffSkill implements Skill {
     no: number;
@@ -29,4 +28,4 @@ export default class BuffSkill implements Skill {
         return true;
     }
 
-};
+}

@@ -1,10 +1,9 @@
-import {Game, Handler, Skill} from '../../system';
-import Attack, {AttackTargetInfo} from '../../system/attack';
+import {Game, Handler, Skill, AttackTargetInfo, Attack} from '../../';
 
 /**
  * 创建一个单体多段可以触发暴击的普通伤害技能
  */
-export class SingleAttack implements Skill {
+export default class SingleAttack implements Skill {
     no: number; // 技能编号
     handlers: Handler[] = []; // 其他handler
     passive: boolean = false; // 是否是被动
@@ -40,7 +39,7 @@ export class SingleAttack implements Skill {
                 sourceId: sourceId,
                 targetsInfo: [at],
             };
-            game.actionAttack(attack)
+            game.actionAttack(attack);
         }
         return true;
     }

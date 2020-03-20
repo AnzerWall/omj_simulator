@@ -27,11 +27,11 @@ heros.forEach(hero => {
         hero.name_roma = matched.__EMPTY_3 || '';
         hero.name_en = matched.__EMPTY_4 || '';
         hero.id = Number(matched.ID) || 0;
+        hero.no = Number(matched.ID) || 0;
     }
 
 });
 heros.sort((a, b) => {
     return a.id - b.id
 });
-console.log(JSON.stringify(heros, null, 2));
-fs.writeFileSync(path.join(__dirname, "../heros.json"), JSON.stringify(heros, null, 2));
+fs.writeFileSync(path.join(__dirname, "../hero-data.ts"), `export default ` + JSON.stringify(heros, null, 2));

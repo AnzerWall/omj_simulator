@@ -23,20 +23,13 @@
     </div>
 </template>
 <script>
-    import {HeroTable} from '../../core/heroes'
+    import { HeroData } from '../../core'
     import {mapState} from 'vuex'
-
-    const heros = [];
-
-    HeroTable.forEach(Hero => {
-        heros.push(new Hero())
-    })
-
 
     export default {
         data() {
             return {
-                heroList: heros.map(hero => {
+                heroList: HeroData.map(hero => {
                     return {
                         no: hero.no,
                         name: hero.name,

@@ -11,6 +11,7 @@ export default class Mana {
         this.progress = 0;
         this.preProgress = 5;
     }
+
     //
     // reset() {
     //     this.num = this.initNum;

@@ -1,7 +1,5 @@
-import {Game} from '../system';
-import {EventCodes, EventData} from '../fixtures/events';
-import { turnProcessor } from './index';
-import TurnData from '../system/turn-data';
+import {Game, EventCodes, EventData, TurnData} from '../';
+import turnProcessor from './turn';
 
 export default function gameProcessor(game: Game, data: EventData, step: number): number {
     switch (step) {
@@ -23,8 +21,7 @@ export default function gameProcessor(game: Game, data: EventData, step: number)
 
             const turnData = new TurnData(++game.turn, next.entityId);
 
-
-            game.addProcessor(turnProcessor, { turnData }, 'Turn');
+            game.addProcessor(turnProcessor, {turnData}, 'Turn');
             return 3;
         }
         default:

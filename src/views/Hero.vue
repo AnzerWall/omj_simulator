@@ -11,8 +11,7 @@
 </template>
 
 <script>
-    import {HeroTable} from '../../core/heroes'
-    import {BattleProperties} from "../../core/fixtures/hero-property-names"
+    import {HeroTable, BattleProperties} from '../../core'
 
     const columns = [
         {

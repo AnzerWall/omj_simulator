@@ -1,9 +1,6 @@
-import {Game} from '../system';
-import {EventCodes, EventData} from '../fixtures/events';
-import {Control} from '../fixtures/control';
-import {Reasons} from '../fixtures/reasons';
+import {Game, EventCodes, EventData, Control, Reasons} from '../';
 
-export default function turnProcessor(game: Game, { turnData }: EventData, step: number): number {
+export default function turnProcessor(game: Game, {turnData}: EventData, step: number): number {
     if (!turnData || !turnData.currentId) return 0;
     const currentEntity = game.getEntity(turnData.currentId);
     if (!currentEntity) return 0; // 无法找到实体
@@ -14,7 +11,7 @@ export default function turnProcessor(game: Game, { turnData }: EventData, step:
             turnData.cannotAction = currentEntity.cannotAction();
             turnData.confusion = currentEntity.beControlledBy(Control.CONFUSION);
             currentEntity.filterControlByType(Control.PROVOKE, Control.SNEER).forEach(buff => {
-                turnData.onlyAttack = [buff.sourceId]
+                turnData.onlyAttack = [buff.sourceId];
             });
             game.log(`回合${turnData.turn} ${currentEntity.name}(${currentEntity.teamId})`);
             game.dispatch(EventCodes.TURN_START, {});

@@ -21,11 +21,7 @@
     </div>
 </template>
 <script>
-    import Game from '../../core/system/game'
-    import {forEach, values} from 'lodash';
-    import {BattleProperties} from "../../core/fixtures/hero-property-names"
-    import {HeroTable} from '../../core/heroes'
-    import Vue from 'vue'
+    import {Game, HeroTable} from '../../core'
 
     const columns = [
         {
@@ -73,12 +69,6 @@
         },
     ];
 
-    const heros = new Map();
-
-    HeroTable.forEach(Hero => {
-        const hero = new Hero()
-        heros.set(hero.no, hero)
-    })
 
     export default {
         data() {
@@ -87,19 +77,19 @@
             [0, 1].forEach(teamId => {
                 for(let index = 0; index < 5; index++) {
                     const no = this.$store.state['team' + teamId][index].no;
-                    const hero = heros.get(no);
+                    const hero = HeroTable.get(no);
 
                     const data = {
                         id: teamId + '_' + hero.no + index,
                         no: hero.no,
                         name: hero.name,
-                        hp: hero.getComputedProperty(BattleProperties.MAX_HP),
-                        atk: hero.getComputedProperty(BattleProperties.ATK),
-                        def: hero.getComputedProperty(BattleProperties.DEF),
-                        spd: hero.getComputedProperty(BattleProperties.SPD),
-                        cri: hero.getComputedProperty(BattleProperties.CRI) * 100 + '%',
+                        hp: hero.hp,
+                        atk: hero.atk,
+                        def: hero.def,
+                        spd: hero.spd,
+                        cri: hero.cri * 100 + '%',
                         // eslint-disable-next-line @typescript-eslint/camelcase
-                        cri_dmg: hero.getComputedProperty(BattleProperties.CRI_DMG) * 100 + '%',
+                        cri_dmg: hero.cri_dmg * 100 + '%',
                         ok: hero.hasTag('simple') ? '否' : '是',
                         teamId,
                     };

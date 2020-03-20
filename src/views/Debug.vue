@@ -47,10 +47,9 @@
     </div>
 </template>
 <script>
-    import * as PIXI from 'pixi.js';
-    import Game from '../../core/system/game'
+    // import * as PIXI from 'pixi.js';
+    import {Game,  BattleProperties} from '../../core'
     import {forEach, values} from 'lodash';
-    import {BattleProperties} from "../../core/fixtures/hero-property-names"
 
     export default {
         data() {

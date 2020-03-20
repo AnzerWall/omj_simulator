@@ -25,6 +25,7 @@ export default class Runway {
     velocityFunctions: Map<number, () => number>; // 实体的速度
     frozenTable: Map<number, boolean>; // 实体是否在行动条上冻结
     random: () => number;
+
     constructor(random = Math.random /* 指定绑定seed的random函数，用于确保对于同一seed获得的结果是一致的*/) {
         this.distanceTable = new Map<number, number>();
         this.velocityFunctions = new Map<number, () => number>();

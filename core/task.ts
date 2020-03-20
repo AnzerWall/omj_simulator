@@ -1,6 +1,5 @@
-import {EventData} from '../fixtures/events';
+import {EventData} from './events';
 import Game from './game';
-
 
 export interface Processor {
     (game: Game, data: EventData, step: number): number | void;
@@ -12,7 +11,7 @@ export default interface Task {
     processor: Processor;
     type: string;
     parent: Task | null;
-    data: EventData,
+    data: EventData;
     depth: number;
 }
 

@@ -1,5 +1,4 @@
-import {Control} from '../fixtures/control';
-import Game from './game';
+import {Control} from './constant';
 
 export const enum Operator {
     ADD, // 增加value
@@ -18,7 +17,7 @@ export default class Buff {
     canDispel: boolean = false;  // 是否可驱散
     canRemove: boolean = false; // 是否可清除
     isStamp: boolean = false; // 是否是印记
-    name: string =''; // buff名称 用于表示相同buff
+    name: string = ''; // buff名称 用于表示相同buff
     maxCount: number = 0; // 同名最大持有数量
     sourceId: number = 0; // 来源实体
 
@@ -52,6 +51,7 @@ export default class Buff {
     isHit: boolean | undefined;
     isRes: boolean | undefined;
     pass: boolean | undefined;
+
     constructor(sourceId: number) {
         this.sourceId = sourceId;
     }

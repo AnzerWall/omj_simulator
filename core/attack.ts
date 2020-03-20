@@ -1,6 +1,5 @@
 import Game from './game';
-import {BattleProperties} from '../fixtures/hero-property-names';
-import {EventData} from '../fixtures/events';
+import {BattleProperties} from './constant';
 import {Processor} from './task';
 
 export class AttackTargetInfo {
@@ -44,7 +43,6 @@ export class AttackTargetInfo {
 
     finalDamage: number = 0; // 最终伤害
     isCri: boolean = false; // 是否暴击
-
 
     constructor(targetId: number) {
         this.targetId = targetId;

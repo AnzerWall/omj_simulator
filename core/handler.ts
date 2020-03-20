@@ -1,6 +1,6 @@
-import Game from './game';
-import {EventRange, EventCodes, EventData} from '../fixtures/events';
+import {EventRange} from './events';
 import {Processor} from './task';
+import {EventCodes} from './constant';
 
 export default interface Handler {
     handle: Processor; // 执行

@@ -2,14 +2,13 @@ import Game from './game';
 import Buff, {Effect, Operator} from './buff';
 
 import {filter, find, forEach, isNil, values} from 'lodash';
-import {BattleProperties, BattleStatus} from "../fixtures/hero-property-names";
 import Skill from './skill';
-import {Control} from '../fixtures/control';
+import {Control, BattleProperties} from './constant';
 import TurnData from './turn-data';
 
 let entityCounter = 0;
 export default class Entity {
-    static no: number=0;
+    static no: number = 0;
     no: number;
 
     entityId: number;
@@ -47,9 +46,6 @@ export default class Entity {
         forEach(values(BattleProperties), key => {
             this.setProperty(key, 0);
         });
-        forEach(values(BattleStatus), key => {
-            this.setProperty(key, 0);
-        });
         this.setProperty(BattleProperties.MAX_HP, 1);
     }
 
@@ -70,7 +66,7 @@ export default class Entity {
      */
     setData(key: string, value: string | null): boolean {
         if (value === null) {
-            return this.keyValueTable.delete(key)
+            return this.keyValueTable.delete(key);
         }
         this.keyValueTable.set(key, value);
         return true;
@@ -155,17 +151,6 @@ export default class Entity {
         this.name = name;
     }
 
-    // 触发技能
-    useSkill(game: Game, no: number, selectedId: number): boolean {
-        const skill = this.skills.find(s => s.no === no);
-
-        if (!skill) return false;
-        if (skill.check && !skill.check(game, this.entityId)) return false;
-        const cost = typeof skill.cost === 'number' ? skill.cost : skill.cost(game, this.entityId);
-        // TODO 鬼火
-        return skill.use ? skill.use(game, this.entityId, selectedId) : false;
-    }
-
     filterBuff(name: string): Buff[] {
         return filter(this.buffs, buff => buff.name === name);
     }
@@ -178,21 +163,20 @@ export default class Entity {
         return !!find(this.buffs, buff => buff.name === name);
     }
 
-    ai(game: Game, turn: TurnData): boolean {
-        return true;
-    }
+    ai: (game: Game, turnData: TurnData) => boolean = () => true;
 
     /**
      * 是否处于无法动作状态
      */
     cannotAction(): boolean {
         return this.buffs.some(buff => {
-           return buff.control === Control.FROZEN ||
-               buff.control === Control.SLEEP ||
-               buff.control === Control.DIZZY ||
-               buff.control === Control.POLYMORPH;
+            return buff.control === Control.FROZEN ||
+                buff.control === Control.SLEEP ||
+                buff.control === Control.DIZZY ||
+                buff.control === Control.POLYMORPH;
         });
     }
+
     /**
      * 是否被控制
      */

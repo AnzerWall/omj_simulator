@@ -30,6 +30,8 @@ heros.forEach(hero => {
     }
 
 });
-
+heros.sort((a, b) => {
+    return a.id - b.id
+});
 console.log(JSON.stringify(heros, null, 2));
 fs.writeFileSync(path.join(__dirname, "../heros.json"), JSON.stringify(heros, null, 2));

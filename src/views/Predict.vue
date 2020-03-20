@@ -21,7 +21,7 @@
     </div>
 </template>
 <script>
-    import {Game, HeroTable} from '../../core'
+    import {Game, HeroBuilders, BattleProperties} from '../../core'
 
     const columns = [
         {
@@ -77,19 +77,19 @@
             [0, 1].forEach(teamId => {
                 for(let index = 0; index < 5; index++) {
                     const no = this.$store.state['team' + teamId][index].no;
-                    const hero = HeroTable.get(no);
+                    const hero = HeroBuilders.get(no)();
 
                     const data = {
                         id: teamId + '_' + hero.no + index,
                         no: hero.no,
                         name: hero.name,
-                        hp: hero.hp,
-                        atk: hero.atk,
-                        def: hero.def,
-                        spd: hero.spd,
-                        cri: hero.cri * 100 + '%',
+                        hp: hero.getComputedProperty(BattleProperties.MAX_HP),
+                        atk: hero.getComputedProperty(BattleProperties.ATK),
+                        def: hero.getComputedProperty(BattleProperties.DEF),
+                        spd: hero.getComputedProperty(BattleProperties.SPD),
+                        cri: hero.getComputedProperty(BattleProperties.CRI) * 100 + '%',
                         // eslint-disable-next-line @typescript-eslint/camelcase
-                        cri_dmg: hero.cri_dmg * 100 + '%',
+                        cri_dmg: hero.getComputedProperty(BattleProperties.CRI_DMG) * 100 + '%',
                         ok: hero.hasTag('simple') ? '否' : '是',
                         teamId,
                     };

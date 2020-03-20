@@ -11,7 +11,7 @@
 </template>
 
 <script>
-    import {HeroTable, BattleProperties} from '../../core'
+    import {HeroBuilders, BattleProperties} from '../../core'
 
     const columns = [
         {
@@ -58,8 +58,8 @@
         data() {
             const heros = [];
 
-            HeroTable.forEach(Hero => {
-                heros.push(new Hero())
+            HeroBuilders.forEach(build => {
+                heros.push(build())
             })
             return {
                 data: heros.map(hero => {

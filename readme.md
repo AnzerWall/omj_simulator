@@ -94,6 +94,7 @@ npm run serve
 
 - [ ] [Buff关联图标](https://bbs.nga.cn/read.php?tid=14455689&rand=14)
 - [ ]  HP + 1问题 
+
 # 鸣谢
 
 [六星满级面板数据](https://nga.178.com/read.php?tid=14788831)
@@ -105,4 +106,5 @@ npm run serve
 [buff图标整理](https://bbs.nga.cn/read.php?tid=14455689)
 
 阴阳师百鬼研究中心(Q群:284220173)的热心群友 
-
+- 回合结算过程3.0.docx
+- 阴阳师式神信息表3.2.1.xlsx

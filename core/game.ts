@@ -1,4 +1,4 @@
-import {forEach} from 'lodash';
+import {forEach, concat} from 'lodash';
 import Entity from './entity';
 import Mana from './mana';
 import Runway from './runway';
@@ -11,22 +11,10 @@ import {MersenneTwister19937, Random} from 'random-js';
 import Buff from './buff';
 import Task, {Processor} from './task';
 import {attackProcessor, gameProcessor} from './tasks';
+import Handler from './handler';
 
 type Unit = [(game: Game, data: EventData) => boolean, object, string];
 
-// const GameTask: Task = {
-//     step: 1,
-//     children: [],
-//     processor(game: Game, data: EventData, step: number): number {
-//         return 0;
-//     },
-//     type: 'Game',
-//     parent: null,
-// };
-//
-// interface Team {
-//     mana: Mana,
-// }
 
 export default class Game {
     rules: object; // 规则表
@@ -150,74 +138,44 @@ export default class Game {
         });
     }
 
-    dispatch(code: EventCodes, data: EventData = {}): number {
-        const eventEntity = this.getEntity(data.eventId || 0);
+    addEventProcessor(code: EventCodes, entityId: number, data: EventData = {}): number {
+        const eventEntity = this.getEntity(entityId || 0);
+
         let count = 0;
         const units: {
-            processor: Processor;
-            hint: string;
-            priority: number;
-            skillOwnerId: number;
-            skillNo: number;
-        } [] = [];
-
+            handler: Handler,
+            skillOwnerId: number,
+            skillNo: number,
+        } = [];
         this.entities.forEach(entity => {
             forEach(entity.skills, (skill: Skill) => {
-
-                forEach(skill.handlers, handler => {
-                    if (handler.code === code) {
-                        let ok = false;
-                        switch (handler.range) {
-                            case EventRange.NONE:
-                                ok = true;
-                                break;
-                            case EventRange.SELF:
-                                if (data.eventId === entity.entityId) {
-                                    ok = true;
-                                }
-                                break;
-                            case EventRange.TEAM:
-                                if (data.eventId && eventEntity && eventEntity.teamId === entity.teamId) {
-                                    ok = true;
-                                }
-                                break;
-                            case EventRange.ENEMY:
-                                if (data.eventId && eventEntity && (1 - eventEntity.teamId) === entity.teamId) {
-                                    ok = true;
-                                }
-                                break;
-                            case EventRange.ALL:
-                                ok = true;
-                                break;
-                            default:
-                                break;
-                        }
-                        if (ok) {
-                            units.push({
-                                processor: handler.handle.bind(this),
-                                hint: `EVENT_${EventCodes[code]}`,
-                                priority: handler.priority,
-                                skillOwnerId: entity.entityId,
-                                skillNo: skill.no,
-                            });
-                            count++;
-                        }
+                forEach(concat(skill.handlers, skill.passiveHandlers), handler => {
+                    if (handler.code !== code) return;
+                    if (entityId && eventEntity) {
+                        if (handler.code === EventRange.SELF && data.eventId === entity.entityId) return;
+                        if (handler.code === EventRange.TEAM && eventEntity.teamId !== entity.teamId) return;
+                        if (handler.code === EventRange.ENEMY && (1 - eventEntity.teamId) !== entity.teamId) return;
                     }
+                    units.push({
+                        handler,
+                        skillOwnerId: entity.entityId,
+                        skillNo: skill.no,
+                    });
+                    count++;
                 });
             });
         });
 
         units.sort((a, b) => {
-            return a.priority - b.priority;
+            return a.handler.priority - b.handler.priority;
         });
 
         forEach(units, (unit) => {
-            this.addProcessor(unit.processor, Object.assign({
+            this.addProcessor(unit.handler.handle, Object.assign({
                 skillOwnerId: unit.skillOwnerId,
                 skillNo: unit.skillNo
-            }, data), unit.hint);
+            }, data), `EVENT_${EventCodes[code]}`);
         });
-
         return count;
     }
 
@@ -385,7 +343,7 @@ export default class Game {
             const source = this.getEntity(sourceId);
             switch (step) {
                 case 1: {
-                    this.dispatch(EventCodes.BEFORE_BUFF_GET, {buff, eventId: sourceId, targetId: targetId});
+                    this.addEventProcessor(EventCodes.BEFORE_BUFF_GET, targetId,{buff, targetId: targetId});
                     game.log(`${source ? `【${source.name}(${source.teamId})】` : ''}对【${target.name}(${target.teamId})】添加 【${buff.name}】 Buff`,
                         buff.countDown > 0 ? buff.countDownBySource ? '维持' : '持续' + buff.countDown + '回合' : '');
 
@@ -393,7 +351,7 @@ export default class Game {
                 }
                 case 2: {
                     target.addBuff(buff);
-                    this.dispatch(EventCodes.BUFF_GET, {buff, eventId: sourceId, targetId: targetId});
+                    this.addEventProcessor(EventCodes.BUFF_GET, targetId, {buff, targetId: targetId});
                     return -1;
                 }
             }
@@ -422,7 +380,7 @@ export default class Game {
             }
 
             // TODO: 处理抵抗
-            this.dispatch(EventCodes.CONTROL_RES, {buff, eventId: sourceId, targetId: targetId});
+            this.addEventProcessor(EventCodes.BUFF_RES,  targetId,{buff, targetId: targetId});
             return -1;
         }, {sourceId, targetId, buff, num, reason}, 'AddBuffP');
     }
@@ -433,12 +391,12 @@ export default class Game {
             if (!target) return 0;
             switch (step) {
                 case 1: {
-                    this.dispatch(EventCodes.BEFORE_BUFF_REMOVE, {buff, eventId: sourceId, targetId: targetId});
+                    this.addEventProcessor(EventCodes.BEFORE_BUFF_REMOVE, targetId, {buff, targetId: targetId});
                     return 2;
                 }
                 case 2: {
                     target.removeBuff(buff);
-                    game.dispatch(EventCodes.BUFF_REMOVE, {buff, eventId: sourceId, targetId: targetId});
+                    game.addEventProcessor(EventCodes.BUFF_REMOVE, targetId, {buff, targetId: targetId});
                     return -1;
                 }
             }
@@ -454,7 +412,7 @@ export default class Game {
             if (mana.num < 0) return 0;
             if (mana.num > 8) {
                 mana.num = 8;
-                this.dispatch(EventCodes.MANA_OVERFLOW);
+                this.addEventProcessor(EventCodes.MANA_OVERFLOW, 0, { sourceId, teamId, num, reason });
             }
             return -1;
         }, {sourceId, teamId, num, reason}, 'UpdateMana');

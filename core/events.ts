@@ -8,11 +8,9 @@ export enum EventRange {
     SELF,
     TEAM,
     ENEMY,
-    ALL,
 }
 
 export interface EventData {
-    eventId?: number;
     sourceId?: number;
     targetId?: number;
     selectedId?: number;

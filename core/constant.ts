@@ -23,23 +23,23 @@ export enum EventCodes {
     ACTION_END, // 行动结束后
     TURN_END, // 回合结束后
     DAMAGE, // 造成伤害后
-    ATTACK, // 攻击后
+    ATTACK, // 攻击后 eventId: 攻击的人
     TAKEN_SELECT, // 被选中后
     TAKEN_DAMAGE, // 受到伤害后
-    TAKEN_ATTACK, // 受到攻击后
-    BUFF_GET, // 获得buff后
-    BUFF_REMOVE, // 移除buff后
-    BEFORE_BUFF_GET, // 将要获得buff
-    BEFORE_BUFF_REMOVE, // 将要移除buff
+    TAKEN_ATTACK, // 受到攻击后 eventId: 被攻击的人
+    BUFF_GET, // 获得buff后 eventId: 获得buff的人
+    BUFF_REMOVE, // 移除buff后 eventId: 获得buff的人
+    BEFORE_BUFF_GET, // 将要获得buff eventId: 失去buff的人
+    BEFORE_BUFF_REMOVE, // 将要移除buff eventId: 失去buff的人
     KILL, // 击杀后
     NO_KILL, // 未击杀后
     DEAD, // 死亡后
-    CONTROL_RES, // 抵抗后
+    BUFF_RES, // 抵抗后 eventId: 谁抵抗了
     MANA_OVERFLOW, // 鬼火溢出后
     MANA_CHANGE, // 鬼火变化后
     SKILL, // 使用技能后
     UPDATE_HP, // 生命变化后
-    BEFORE_ATTACK, // 攻击处理前
+    BEFORE_ATTACK, // 攻击处理前 eventId: 发起攻击的人
     CRI, // 暴击后
 
 }

@@ -14,8 +14,8 @@ export default function turnProcessor(game: Game, {turnData}: EventData, step: n
                 turnData.onlyAttack = [buff.sourceId];
             });
             game.log(`回合${turnData.turn} ${currentEntity.name}(${currentEntity.teamId})`);
-            game.dispatch(EventCodes.TURN_START, {});
-            game.dispatch(EventCodes.ACTION_START, {});
+            game.addEventProcessor(EventCodes.TURN_START, currentEntity.entityId, {});
+            game.addEventProcessor(EventCodes.ACTION_START,currentEntity.entityId, {});
             return 2;
         }
         // 处理buff
@@ -59,8 +59,8 @@ export default function turnProcessor(game: Game, {turnData}: EventData, step: n
         }
         // 回合结束
         case 5: {
-            game.dispatch(EventCodes.ACTION_END, {});
-            game.dispatch(EventCodes.TURN_END, {});
+            game.addEventProcessor(EventCodes.ACTION_END, currentEntity.entityId,{});
+            game.addEventProcessor(EventCodes.TURN_END, currentEntity.entityId,{});
             return 6;
         }
         // 结算鬼火进度

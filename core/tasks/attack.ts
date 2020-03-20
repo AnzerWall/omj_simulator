@@ -25,14 +25,14 @@ export function attackSubProcessor(game: Game, data: EventData, step: number) {
                 source.getComputedProperty(targetInfo.base) :
                 targetInfo.base(game, attack.sourceId, targetInfo.targetId);
             game.log(`【${source.name}(${source.teamId})】攻击【${target.name}(${target.teamId})】`);
-            game.dispatch(EventCodes.BEFORE_ATTACK, {attack, eventId: attack.sourceId}); // 攻击前
+            game.addEventProcessor(EventCodes.BEFORE_ATTACK, attack.sourceId, {attack }); // 攻击前
 
             return 2;
         }
         // 受到攻击处理
         case 2: {
-            game.dispatch(EventCodes.ATTACK, {attack, eventId: attack.sourceId}); // 攻击时
-            game.dispatch(EventCodes.TAKEN_ATTACK, {attack, eventId: targetInfo.targetId}); // 被攻击时
+            game.addEventProcessor(EventCodes.ATTACK,  attack.sourceId, {attack}); // 攻击时
+            game.addEventProcessor(EventCodes.TAKEN_ATTACK, targetInfo.targetId, {attack}); // 被攻击时
 
             if (targetInfo.shouldComputeCri) {
                 targetInfo.isCri = targetInfo.critical < game.random.real(0, 1) || targetInfo.isCri;
@@ -48,7 +48,7 @@ export function attackSubProcessor(game: Game, data: EventData, step: number) {
         // 暴击处理
         case 3: {
             targetInfo.isCriticalDamage = true;
-            game.dispatch(EventCodes.CRI, {attack, eventId: attack.sourceId}); // 暴击时
+            game.addEventProcessor(EventCodes.CRI, attack.sourceId, {attack}); // 暴击时
             return 4;
         }
         // 伤害处理步骤
@@ -62,8 +62,8 @@ export function attackSubProcessor(game: Game, data: EventData, step: number) {
             targetInfo.finalDamage = atk / def * rate * FR;
             //TODO: 计算盾的抵消伤害
 
-            game.dispatch(EventCodes.DAMAGE, {attack, eventId: attack.sourceId}); // 造成伤害
-            game.dispatch(EventCodes.TAKEN_DAMAGE, {attack, eventId: targetInfo.targetId}); // 收到伤害时
+            game.addEventProcessor(EventCodes.DAMAGE, attack.sourceId,{attack}); // 造成伤害
+            game.addEventProcessor(EventCodes.TAKEN_DAMAGE, attack.targetId, {attack}); // 收到伤害时
 
             return 5;
         }

@@ -17,7 +17,7 @@
     "name_jp": "煉獄茨木童子",
     "name_en": "",
     "name_roma": "rengoku ibarakidouji",
-    "name_kana": "れんごくいfaらきどうじ",
+    "name_kana": "れんごくいばらきどうじ",
     "id": 322
   },
   {
@@ -2936,5 +2936,26 @@
     "name_roma": "chouchin kozou",
     "name_kana": "ちょうちんこぞう",
     "id": 245
+  },
+  {
+    "index": 141,
+    "rank": "N",
+    "name": "灯笼鬼",
+    "atk": 2412,
+    "hp": 10253.8,
+    "def": 396.9,
+    "spd": 100,
+    "cri": 0,
+    "cri_dmg": 1.5,
+    "evolve": "-",
+    "atk_pt": 90,
+    "hp_pt": 90,
+    "def_pt": 90,
+    "total_pt": 270,
+    "name_jp": "提灯お化け",
+    "name_en": "Lantern Soul",
+    "name_roma": "chouchin obake",
+    "name_kana": "ちょうちんおばけ",
+    "id": 203
   }
 ]

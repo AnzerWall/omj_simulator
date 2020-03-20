@@ -32,9 +32,6 @@ npm run serve
 ![preview](./public/preview.png)
 
 # Roadmap
-目前可以做到：    如果全式神40级不带御魂分列两队，无任何技能纯普攻不带效果对A的胜率预测
-
-
 
 ## 当前备忘
 
@@ -46,6 +43,7 @@ npm run serve
 - [x] UI-式神数据页
 - [x] UI-队伍录入页
 - [x] UI-对战调试页(基础)
+- [ ] UI-对战调试页(pixi)
 - [x] UI-对弈竞猜预测页(对战模拟法)
 - [ ] UI-对弈竞猜预测页(机器学习法)
 - [x] Mana(鬼火机制) 
@@ -59,6 +57,11 @@ npm run serve
 - [x] Event(事件机制) 
 
 ## 式神进度
+
+目前可以做到：
+如果全式神40级不带御魂分列两队的胜率预测
+其中已完成逻辑的式神有
+
 ### 呱
 
 ### N
@@ -93,9 +96,13 @@ npm run serve
 - [ ]  HP + 1问题 
 # 鸣谢
 
-[六星满级面板数据](https://nga.178.com/read.php?tid=14788831) 
+[六星满级面板数据](https://nga.178.com/read.php?tid=14788831)
+
+[头像整理](https://bbs.nga.cn/read.php?tid=19007353)
 
 [阴阳师式神AI全解](https://bbs.nga.cn/read.php?tid=16541728) 
+
+[buff图标整理](https://bbs.nga.cn/read.php?tid=14455689)
 
 阴阳师百鬼研究中心(Q群:284220173)的热心群友 
 

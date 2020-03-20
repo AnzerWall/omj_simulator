@@ -2,7 +2,7 @@ import {Game, Handler, Skill} from '../../system';
 import Attack, {AttackTargetInfo} from '../../system/attack';
 
 /**
- * 创建一个单体多段可以触发暴击的普通伤害技能
+ * 创建一个群体多段可以触发暴击的普通伤害技能
  */
 export class GroupAttack implements Skill {
     no: number; // 技能编号

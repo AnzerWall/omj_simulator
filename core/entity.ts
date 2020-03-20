@@ -207,4 +207,8 @@ export default class Entity {
         return this.hp / this.getComputedProperty(BattleProperties.MAX_HP) <= percent;
     }
 
+    getSkill(no: number): Skill|null {
+        return this.skills.find(s => s.no === no) || null;
+    }
+
 }

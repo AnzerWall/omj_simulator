@@ -63,7 +63,7 @@ export function attackSubProcessor(game: Game, data: EventData, step: number) {
             //TODO: 计算盾的抵消伤害
 
             game.addEventProcessor(EventCodes.DAMAGE, attack.sourceId,{attack}); // 造成伤害
-            game.addEventProcessor(EventCodes.TAKEN_DAMAGE, attack.targetId, {attack}); // 收到伤害时
+            game.addEventProcessor(EventCodes.TAKEN_DAMAGE, targetInfo.targetId, {attack}); // 收到伤害时
 
             return 5;
         }

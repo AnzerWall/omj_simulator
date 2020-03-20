@@ -7,4 +7,5 @@ export default interface Handler {
     code: EventCodes; // 触发事件
     range: EventRange; // 事件范围
     priority: number; // 优先级
+    passive: boolean; // 是否是写在被动里的
 }

@@ -1,8 +1,8 @@
-import {forEach, concat} from 'lodash';
+import {forEach} from 'lodash';
 import Entity from './entity';
 import Mana from './mana';
 import Runway from './runway';
-import {BattleProperties, EventCodes, Reasons, Control} from './constant';
+import {BattleProperties, Control, EventCodes, Reasons} from './constant';
 import {HeroBuilders} from './heroes';
 import {EventData, EventRange} from './events';
 import Skill from './skill';
@@ -138,23 +138,23 @@ export default class Game {
         });
     }
 
-    addEventProcessor(code: EventCodes, entityId: number, data: EventData = {}): number {
-        const eventEntity = this.getEntity(entityId || 0);
+    addEventProcessor(code: EventCodes, eventId: number, data: EventData = {}): number {
+        const eventEntity = this.getEntity(eventId || 0);
 
         let count = 0;
         const units: {
-            handler: Handler,
-            skillOwnerId: number,
-            skillNo: number,
-        } = [];
+            handler: Handler;
+            skillOwnerId: number;
+            skillNo: number;
+        } [] = [];
         this.entities.forEach(entity => {
             forEach(entity.skills, (skill: Skill) => {
-                forEach(concat(skill.handlers, skill.passiveHandlers), handler => {
+                forEach(skill.handlers, handler => {
                     if (handler.code !== code) return;
-                    if (entityId && eventEntity) {
-                        if (handler.code === EventRange.SELF && data.eventId === entity.entityId) return;
-                        if (handler.code === EventRange.TEAM && eventEntity.teamId !== entity.teamId) return;
-                        if (handler.code === EventRange.ENEMY && (1 - eventEntity.teamId) !== entity.teamId) return;
+                    if (eventId && eventEntity) {
+                        if (handler.range === EventRange.SELF && eventId === entity.entityId) return;
+                        if (handler.range === EventRange.TEAM && eventEntity.teamId !== entity.teamId) return;
+                        if (handler.range === EventRange.ENEMY && (1 - eventEntity.teamId) !== entity.teamId) return;
                     }
                     units.push({
                         handler,
@@ -170,12 +170,22 @@ export default class Game {
             return a.handler.priority - b.handler.priority;
         });
 
-        forEach(units, (unit) => {
+        this.addProcessor((game: Game, _, step: number) => {
+            if (step <= 0) return 0;
+            if (step > units.length) return -1;
+            const unit = units[step - 1];
+            const entity = this.getEntity(unit.skillOwnerId);
+            if (!entity) return 0;
+            if (unit.handler.passive && entity.beControlledBy(Control.PASSIVE_FORBID)) return step + 1; // 被封印被动跳过处理
+
+            this.log(`${entity.name}(${entity.entityId})的${unit.skillNo}技能事件触发`);
             this.addProcessor(unit.handler.handle, Object.assign({
                 skillOwnerId: unit.skillOwnerId,
                 skillNo: unit.skillNo
-            }, data), `EVENT_${EventCodes[code]}`);
-        });
+            }, data), `EventProcess(${EventCodes[code]})`);
+
+            return step + 1;
+        }, data, `Event(${EventCodes[code]})`);
         return count;
     }
 
@@ -187,7 +197,6 @@ export default class Game {
                 entityCounter[entity.teamId] = entityCounter[entity.teamId] + 1;
             }
         });
-
         if (entityCounter[0] === 0 && entityCounter[1] >= 0) {
             this.isEnd = true;
             this.winner = 1;

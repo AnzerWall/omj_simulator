@@ -1,14 +1,4 @@
-import {
-    Buff,
-    Operator,
-    Skill,
-    Game,
-    BattleProperties,
-    AttackTargetInfo,
-    Attack,
-    EventData,
-    Reasons
-} from '../../';
+import {AttackInfo, AttackParams, BattleProperties, Buff, EventData, Game, Operator, Reasons, Skill} from '../../';
 import NormalAttack from '../common/normal-attack';
 import BuffSkill from '../common/buff-skill';
 
@@ -54,22 +44,18 @@ export const akajita_skill3: Skill = {
         const entities = game.getTeamEntities(selected.teamId);
 
         for (let i = 0; i < 2; i++) {
-            const attack: Attack = {
-                sourceId: sourceId,
-                targetsInfo: entities.map(e => {
-                    const at = new AttackTargetInfo(e.entityId);
-                    at.rate = 0.72;
-                    at.shouldComputeCri = true;
-                    at.isGroupDamage = true;
-                    at.onComputed = function (game: Game, data: EventData): void { // 造成伤害时
+            const attackInfos: AttackInfo[] = entities.map(e => {
+                return new AttackInfo(e.entityId, {
+                    rate: 0.72,
+                    params: [AttackParams.SHOULD_COMPUTE_CRI, AttackParams.GROUP],
+                    completedProcessor:  function (game: Game, data: EventData): void { // 造成伤害时
                         if (game.testHit(0.3) && data.targetId) {
                             game.actionUpdateRunwayPercent(sourceId, data.targetId, -1, Reasons.SKILL);
                         }
-                    };
-                    return at;
-                }),
-            };
-            if (!game.actionAttack(attack)) return false;
+                    },
+                });
+            });
+            if (!game.actionAttack(attackInfos)) return false;
 
         }
         return true;

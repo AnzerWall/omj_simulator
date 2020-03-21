@@ -41,7 +41,28 @@ export enum EventCodes {
     UPDATE_HP, // 生命变化后
     BEFORE_ATTACK, // 攻击处理前 eventId: 发起攻击的人
     CRI, // 暴击后
+}
+export enum AttackParams {
+    SHOULD_COMPUTE_CRI= 'shouldComputeCri', //计算暴击
 
+    INDIRECT = 'Indirect', // 是否是间接伤害
+    REAL = 'Real', // 是否是真实伤害
+    CRITICAL = 'Critical', // 是否是暴击伤害
+
+    NORMAL_ATTACK = 'NormalAttack',  // 是否是普通攻击
+    SINGLE = 'Single',
+    GROUP = 'Group',
+
+    IGNORE_SOURCE = 'IgnoreSource',
+
+    NO_SHARE  = 'NoShare', // 不可分摊
+    NO_SHIELD  = 'NoShield', // 忽略护盾
+
+    NO_TARGET_EQUIPMENT = 'NoTargetEquipment', // 不触发目标御魂
+    NO_TARGET_PASSIVE = 'NoTargetPassive', // 不触发目标御魂
+
+    NO_SOURCE_EQUIPMENT = 'NoSourceEquipment', // 不触发御魂
+    NO_SOURCE_PASSIVE = 'NoSourcePassive' // 不触发御魂
 }
 
 // 式神可变属性

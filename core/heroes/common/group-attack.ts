@@ -1,4 +1,4 @@
-import {Game, Handler, Skill, AttackTargetInfo, Attack} from '../../';
+import {AttackInfo, AttackParams, Game, Handler, Skill} from '../../';
 
 /**
  * 创建一个群体多段可以触发暴击的普通伤害技能
@@ -28,18 +28,12 @@ export default class GroupAttack implements Skill {
         const entities = game.getTeamEntities(selected.teamId);
 
         for (let i = 0; i < this.times; i++) {
-
-            const attack: Attack = {
-                sourceId: sourceId,
-                targetsInfo: entities.map(e => {
-                    const at = new AttackTargetInfo(e.entityId);
-                    at.rate = this.rate;
-                    at.shouldComputeCri = true;
-                    at.isGroupDamage = true;
-                    return at;
-                }),
-            };
-            game.actionAttack(attack);
+            const infos = entities.map(e => new AttackInfo(e.entityId, {
+                sourceId,
+                rate: this.rate,
+                params: [AttackParams.SHOULD_COMPUTE_CRI, AttackParams.GROUP],
+            }));
+            game.actionAttack(infos);
         }
         return true;
     }

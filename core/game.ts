@@ -1,4 +1,4 @@
-import {forEach} from 'lodash';
+import {forEach, isArray} from 'lodash';
 import Entity from './entity';
 import Mana from './mana';
 import Runway from './runway';
@@ -6,7 +6,7 @@ import {BattleProperties, Control, EventCodes, Reasons} from './constant';
 import {HeroBuilders} from './heroes';
 import {EventData, EventRange} from './events';
 import Skill from './skill';
-import Attack from './attack';
+import {AttackInfo} from './attack';
 import {MersenneTwister19937, Random} from 'random-js';
 import Buff from './buff';
 import Task, {Processor} from './task';
@@ -264,8 +264,9 @@ export default class Game {
         return this.manas[teamId] || null;
     }
 
-    actionAttack(attack: Attack) {
-        this.addProcessor(attackProcessor, {attack}, 'Attack');
+    actionAttack(attackInfos: AttackInfo[] | AttackInfo) {
+        if (!isArray(attackInfos)) attackInfos = [attackInfos]
+        this.addProcessor(attackProcessor, {attackInfos}, 'Attack');
         return true;
     }
 
@@ -472,8 +473,8 @@ export default class Game {
             step: task.step,
             children: task.children.map(c => this.dump(c)),
             type: task.type,
-            parent: task.parent ? '<parent>' : null,
             data: task.data,
+            depth: task.depth,
         };
     }
 

@@ -1,4 +1,4 @@
-import {Skill, Game, BattleProperties, AttackTargetInfo, Attack} from '../../';
+import {AttackInfo, AttackParams, BattleProperties, Game, Skill} from '../../';
 import GroupAttack from '../common/group-attack';
 
 export const houkikami_skill1: Skill = {
@@ -8,27 +8,22 @@ export const houkikami_skill1: Skill = {
     cost: 0,
     name: '蓄力一攻',
     use(game: Game, sourceId: number, selectedId: number): boolean {
-        const at = new AttackTargetInfo(selectedId);
-        at.base = (game: Game, sourceId: number, targetId: number): number => {
-            const target = game.getEntity(targetId);
-            if (!target) return 0;
-            return target.getComputedProperty(BattleProperties.ATK);
-        };
-        at.limit = (game: Game, sourceId: number, _: number): number => {
-            const source = game.getEntity(sourceId);
-            if (!source) return 0;
-            return source.getComputedProperty(BattleProperties.ATK) * 1.5;
-        };
-        at.rate = 1;
-        at.shouldComputeCri = true;
-        at.isSingleDamage = true;
-        at.isNormalAttack = true;
-
-        const attack: Attack = {
-            sourceId: sourceId,
-            targetsInfo: [at],
-        };
-        return game.actionAttack(attack);
+        const at = new AttackInfo(selectedId, {
+            base:(game: Game, sourceId: number, targetId: number): number => {
+                const target = game.getEntity(targetId);
+                if (!target) return 0;
+                return target.getComputedProperty(BattleProperties.ATK);
+            },
+            limit: (game: Game, sourceId: number, _: number): number => {
+                const source = game.getEntity(sourceId);
+                if (!source) return 0;
+                return source.getComputedProperty(BattleProperties.ATK) * 1.5;
+            },
+            rate: 1,
+            params: [ AttackParams.SHOULD_COMPUTE_CRI, AttackParams.NORMAL_ATTACK, AttackParams.SINGLE]
+        });
+        game.actionAttack(at);
+        return true;
     },
 };
 export const houkikami_skill2 = new GroupAttack(2, '大扫除', 1.31, 2);

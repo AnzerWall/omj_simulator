@@ -3,9 +3,11 @@
         <div>队伍一鬼火:  {{mana1}}({{progress1}})  </div>
         <div>队伍二鬼火:  {{mana2}}({{progress2}}) </div>
         <a-button @click="step" :block="false" style="margin-bottom: 20px;">下一步</a-button>
-        <json-tree :raw="tasks" :level="1"></json-tree>
+<!--        <json-tree :raw="tasks" ></json-tree>-->
+        <div v-html="tasks"></div>
+
         <a-table :dataSource="team1" style="margin: 20px 0;" rowKey="entityId" :pagination="false" size="small" >
-            <a-table-column title="编号" dataIndex="no"/>
+            <a-table-column title="id" dataIndex="entityId"/>
             <a-table-column title="名称" dataIndex="name"/>
             <a-table-column title="生命" dataIndex="hp"/>
             <a-table-column title="最大生命" dataIndex="max_hp"/>
@@ -25,7 +27,7 @@
             <a-table-column title="生命偷取" dataIndex="hp_steal"/>
         </a-table>
         <a-table :dataSource="team2" rowKey="entityId" :pagination="false" size="small">
-            <a-table-column title="编号" dataIndex="no"/>
+            <a-table-column title="id" dataIndex="entityId"/>
             <a-table-column title="名称" dataIndex="name"/>
             <a-table-column title="生命" dataIndex="hp"/>
             <a-table-column title="最大生命" dataIndex="max_hp"/>
@@ -49,7 +51,7 @@
 <script>
     // import * as PIXI from 'pixi.js';
     import {Game,  BattleProperties} from '../../core'
-    import {forEach, values} from 'lodash';
+    import {forEach, values, isArray, some, isObject} from 'lodash';
 
     export default {
         data() {
@@ -95,7 +97,22 @@
                 this.mana2 = this.game.manas[1].num;
                 this.progress1 = this.game.manas[0].progress;
                 this.progress2 = this.game.manas[1].progress;
-                this.tasks = JSON.stringify(this.game.dump());
+                function formatData(data, depth) {
+                    return Object.keys(data).map(k => {
+                        if (isArray(data) && !some(data, isObject)) `<li>${' '.repeat(depth)}${k}: ${data.join(' ')}</li>`;
+                        if (typeof data[k] === "object") return `<li>${' '.repeat(depth)}${k}: <ul>${formatData(data[k], depth+1)}</ul></li>`;
+                        return `<li>${' '.repeat(depth)}${k}: ${data[k]}</li>`
+                    }).join('')
+                }
+                function format(t) {
+                    // return {
+                    //     name: `【${t.type} ${t.step}】`,
+                    //     data: t.data,
+                    //     children: t.children.map(format)
+                    // }
+                    return `<ul>${' '.repeat(t.depth)}【${t.type} ${t.step}】${formatData(t.data)}${t.children.map(c => `<li>${format(c)}</li>`).join('')}</ul>`
+                }
+                this.tasks = format(this.game.dump());
 
             },
             step() {

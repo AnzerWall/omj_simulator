@@ -1,4 +1,4 @@
-import Attack, {AttackTargetInfo} from './attack';
+import {AttackInfo} from './attack';
 import Buff from './buff';
 import TurnData from './turn-data';
 import {Reasons} from './constant';
@@ -14,14 +14,17 @@ export interface EventData {
     sourceId?: number;
     targetId?: number;
     selectedId?: number;
+
+
     skillOwnerId?: number;
     skillNo?: number;
-    attack?: Attack;
-    step1?: number;
-    step2?: number;
+
+
+    attackInfo?: AttackInfo;
+    attackInfos?: AttackInfo[];
+
     buff?: Buff;
     turnData?: TurnData;
-    attackTargetInfo?: AttackTargetInfo;
     precent?: number;
     reason?: Reasons;
     teamId?: number;

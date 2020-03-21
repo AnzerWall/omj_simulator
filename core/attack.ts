@@ -1,35 +1,55 @@
 import Game from './game';
-import {BattleProperties} from './constant';
+import {AttackParams, BattleProperties} from './constant';
 import {Processor} from './task';
+import { get } from 'lodash';
 
-export class AttackTargetInfo {
+type ValueFunction = (game: Game, sourceId: number, targetId: number) => number
+type AttackTargetOptions = {
+    sourceId?: number;
+    base?: ValueFunction | string;
+    rate?: number;
+    FR?: number;
+    limit?: ValueFunction | number;
+    completedProcessor?: Processor;
+    params?: AttackParams[];
+}
+export class AttackInfo {
     targetId: number;
-    sourceId: number = 0;
-    base: ((game: Game, sourceId: number, targetId: number) => number) | string = BattleProperties.ATK; // 基础数值来源
+    sourceId: number;
+    base: ((game: Game, sourceId: number, targetId: number) => number) | string; // 基础数值来源
     limit?: ((game: Game, sourceId: number, targetId: number) => number) | number; // 不超过xxx
-    rate: number = 1; // 倍率
-    FR: number = 0.01; // 波动值
+    rate: number; // 倍率
+    completedProcessor?: Processor; // 完成后触发的处理者
 
-    isIndirectDamage: boolean = false; // 是否是间接伤害
-    isRealDamage: boolean = false; // 是否是真实伤害
-    isCriticalDamage: boolean = false; // 是否是暴击伤害
+    params: AttackParams[] = [];
 
-    isNormalAttack: boolean = false; // 是否是普通攻击
+    hasParam(p: AttackParams) {
+        return this.params.includes(p);
+    }
+    addParam(p: AttackParams | null) {
+        if (p) {
+            this.params.push(p);
+        }
+        return this;
+    }
 
-    shouldComputeCri: boolean = false; // 是否触发暴击
+    constructor(targetId: number, options: AttackTargetOptions) {
+        this.targetId = targetId;
+        this.sourceId = get(options, 'sourceId', 0);
+        this.base = get(options, 'base', BattleProperties.ATK);
+        this.rate = get(options, 'rate', 1);
+        this.FR = get(options, 'FR', 0.01);
+        this.params = get(options, 'params', []);
 
-    noShare: boolean = false; // 不可分摊
-    noTriggerEquipment: boolean = false; // 不触发御魂
-    noTriggerPassive: boolean = false; // 不触发被动
-    noSource: boolean = false; // 视为无来源伤害
 
-    isSingleDamage: boolean = false; // 是否是单体伤害
-    isGroupDamage: boolean = false; // 是否是群体伤害
+        if ('completedProcessor' in options) this.completedProcessor = options.completedProcessor;
+        if ('limit' in options) this.limit = options.limit;
+    }
 
-    onComputed?: Processor; // 完成后
+    // 比较少需要指定的参数
+    FR: number; // 波动值
 
-    ////////////// 以下是攻击处理时用到的属性 ////////////////
-    // TODO: 独立出来
+    // 处理攻击的中间信息，修改影响结果
     critical: number = 0; // 暴击率
     criticalDamage: number = 0; // 暴击伤害
 
@@ -43,14 +63,4 @@ export class AttackTargetInfo {
 
     finalDamage: number = 0; // 最终伤害
     isCri: boolean = false; // 是否暴击
-
-    constructor(targetId: number) {
-        this.targetId = targetId;
-    }
-
-}
-
-export default interface Attack {
-    targetsInfo: AttackTargetInfo[]; // 目标
-    sourceId: number;
 }

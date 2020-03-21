@@ -1,4 +1,3 @@
-export {default as Attack} from './attack';
 export * from './attack';
 export {default as Buff} from './buff';
 export * from './buff';

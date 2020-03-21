@@ -8,7 +8,7 @@ import {EventData, EventRange} from './events';
 import Skill from './skill';
 import {AttackInfo} from './attack';
 import {MersenneTwister19937, Random} from 'random-js';
-import Buff from './buff';
+import Buff, {Effect, EffectTypes} from './buff';
 import Task, {Processor} from './task';
 import {attackProcessor, gameProcessor} from './tasks';
 import Handler from './handler';
@@ -37,6 +37,8 @@ export default class Game {
     rootTask: Task;
     currentTask: Task;
 
+    globalEntity: Entity;
+
     constructor(datas: {
         no: number;
         teamId: number;
@@ -59,6 +61,7 @@ export default class Game {
         this.microTasks = [];
         this.seed = seed;
         this.random = new Random(MersenneTwister19937.seed(seed));
+        this.globalEntity = new Entity();
 
         forEach(datas, data => {
             if (data.teamId < 0 || data.teamId > 1) {
@@ -76,7 +79,7 @@ export default class Game {
 
             console.log(`【${data.teamId}】${entity.name}(${entity.no})(${entity.entityId})`);
             this.entities.set(entity.entityId, entity);
-            this.runway.addEntity(entity.entityId, () => (entity.getComputedProperty('spd') || 0));
+            this.runway.addEntity(entity.entityId, () => (this.getComputedProperty(entity.entityId,'spd') || 0));
             this.fields[entity.teamId].push(entity.entityId);
         });
 
@@ -139,7 +142,7 @@ export default class Game {
     }
 
     addEventProcessor(code: EventCodes, eventId: number, data: EventData = {}): number {
-        const eventEntity = this.getEntity(eventId || 0);
+        const eventEntity = eventId === 0 ? null :this.getEntity(eventId);
 
         let count = 0;
         const units: {
@@ -175,7 +178,6 @@ export default class Game {
             if (step > units.length) return -1;
             const unit = units[step - 1];
             const entity = this.getEntity(unit.skillOwnerId);
-            if (!entity) return 0;
             if (unit.handler.passive && entity.beControlledBy(Control.PASSIVE_FORBID)) return step + 1; // 被封印被动跳过处理
 
             this.log(`${entity.name}(${entity.entityId})的${unit.skillNo}技能事件触发`);
@@ -209,8 +211,11 @@ export default class Game {
         }
     }
 
-    getEntity(entityId: number): Entity | null {
-        return this.entities.get(entityId) || null;
+    getEntity(entityId: number): Entity {
+        if (entityId === -1) return this.globalEntity;
+        const ret = this.entities.get(entityId);
+        if (!ret)  throw new Error(`Cannot found entity, id = ${entityId}`);
+        return ret;
     }
 
     getTeamEntities(teamId: number): Entity[] {
@@ -226,7 +231,6 @@ export default class Game {
 
     getEnemies(entityId: number): Entity[] {
         const entity = this.getEntity(entityId);
-        if (!entity) return [];
         const teamId = entity.teamId;
         const isConfusion = entity.beControlledBy(Control.CONFUSION);
 
@@ -254,14 +258,42 @@ export default class Game {
         return list[this.random.integer(0, list.length - 1)] || null;
     }
 
+    getComputedProperty(entity_id: number, name: string): number {
+        const entity = this.getEntity(entity_id);
+        const origin = entity.properties.get(name);
+        if (origin === undefined) throw new Error(`Cannot found property in entity which id=${entity_id} named by ${name}`);
+        const effects: Effect[] = entity.buffs.concat(this.globalEntity.buffs).reduce((list: Effect[], buff: Buff) => {
+            if (!buff.hasParam(BuffParams.AFFECT_PROPERTY)) return list;
+            if (!buff.effect) return list;
+            if (buff.effect.propertyName !==name) return list;
+            return [...list, buff.effect];
+        }, []); // 过滤出影响该属性的effect
+
+        return effects.reduce((current, e: Effect) => {
+            switch (e.effectType) {
+                case EffectTypes.FIXED:
+                    return current + e.value;
+                case EffectTypes.SET:
+                    return e.value;
+                case EffectTypes.ADD_RATE:
+                    return current + origin * e.value;
+                case EffectTypes.NOTHING:
+                default:
+                    return current;
+            }
+        }, origin);
+    }
+    
     canCost(teamId: number, count: number): boolean {
         if (teamId < 0 || teamId > 1) return false;
 
         return this.manas[teamId].num >= count;
     }
 
-    getMana(teamId: number): Mana | null {
-        return this.manas[teamId] || null;
+    getMana(teamId: number): Mana {
+        if (!this.manas[teamId]) throw new Error('Cannot get mana by teamId = ' + teamId);
+
+        return this.manas[teamId];
     }
 
     actionAttack(attackInfos: AttackInfo[] | AttackInfo) {
@@ -302,8 +334,7 @@ export default class Game {
 
     actionCheckAndUseSkill(no: number, sourceId: number, selectedId: number, reason: Reasons = Reasons.NOTHING): boolean {
         const source = this.getEntity(sourceId);
-        if (!source) return false;
-        const skill = source.skills.find(s => s.no === no);
+        const skill = source.getSkill(no);
         if (!skill) return false;
         if (skill.check && !skill.check(this, sourceId)) return false;
         const cost = typeof skill.cost === 'number' ? skill.cost : skill.cost(this, sourceId);
@@ -320,11 +351,8 @@ export default class Game {
     actionUseSkill(no: number, sourceId: number, selectedId: number, reason: Reasons = Reasons.NOTHING) {
         this.addProcessor((game: Game, data: EventData, step: number) => {
             const source = this.getEntity(sourceId);
-            if (!source) return 0;
             const selected = this.getEntity(selectedId);
-            if (!selected) return 0;
-            const skill = source.skills.find(s => s.no === no);
-            if (!skill) return 0;
+            const skill = source.getSkill(no);
             switch (step) {
                 case 1 : {
                     if (skill.check && !skill.check(this, sourceId)) return 0;
@@ -348,9 +376,9 @@ export default class Game {
 
     actionAddBuff(targetId: number, buff: Buff, reason: Reasons = Reasons.NOTHING) {
         this.addProcessor((game: Game, data: EventData, step: number) => {
-            const target = this.getEntity(targetId);
-            if (!target) return 0;
+            const target = this.getEntity(targetId) ;
             const source = this.getEntity(buff.sourceId);
+
             switch (step) {
                 // 命中计算
                 case 1: {
@@ -358,10 +386,10 @@ export default class Game {
                     if (buff.hasParam(BuffParams.SHOULD_COMPUTE_PROBABILITY)) return 2; // 不需要计算概率
                     if (typeof buff.probability !== 'number') return 0;
 
-                    const p = buff.probability * (1 + source.getComputedProperty(BattleProperties.EFT_HIT)); // 基础命中×（1+效果命中）
+                    const p = buff.probability * (1 + game.getComputedProperty(source.entityId, BattleProperties.EFT_HIT)); // 基础命中×（1+效果命中）
                     const isHit = this.testHit(p);
                     if (!isHit) return -1; // 未命中
-                    const res = 1 + target.getComputedProperty(BattleProperties.EFT_RES); // (1 + 效果抵抗)
+                    const res = 1 + game.getComputedProperty(target.entityId, BattleProperties.EFT_RES); // (1 + 效果抵抗)
                     const notRes = this.testHit(p / res);
 
                     if (!notRes) { // 抵抗了
@@ -388,7 +416,6 @@ export default class Game {
     actionRemoveBuff(targetId: number, buff: Buff, reason: Reasons = Reasons.NOTHING) {
         this.addProcessor((game: Game, _: EventData, step: number) => {
             const target = this.getEntity(targetId);
-            if (!target) return 0;
             switch (step) {
                 case 1: {
                     this.addEventProcessor(EventCodes.BEFORE_BUFF_REMOVE, targetId, {buff, targetId: targetId});
@@ -445,12 +472,10 @@ export default class Game {
     }
 
     // 拉条
-    actionUpdateRunwayPercent(sourceId: number, targetId: number, precent: number, reason: Reasons = Reasons.NOTHING) {
+    actionUpdateRunwayPercent(sourceId: number, targetId: number, percent: number, reason: Reasons = Reasons.NOTHING) {
         this.addProcessor((game: Game) => {
-            const target = this.getEntity(targetId);
-            if (!target) return 0;
-            return game.runway.updatePercent(targetId, precent) ? -1 : 0;
-        }, {sourceId, targetId, precent, reason}, 'UpdateRunwayPercent');
+            return game.runway.updatePercent(targetId, percent) ? -1 : 0;
+        }, {sourceId, targetId, percent, reason}, 'UpdateRunwayPercent');
     }
 
     log = (...args: any[]) => {

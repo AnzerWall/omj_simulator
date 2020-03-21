@@ -19,7 +19,6 @@ export default class BuffSkill implements Skill {
 
     use(game: Game, sourceId: number, _: number): boolean {
         const source = game.getEntity(sourceId);
-        if (!source) return false;
 
         const entities = game.getTeamEntities(source.teamId);
         entities.forEach(e => {

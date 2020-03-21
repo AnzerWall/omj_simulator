@@ -3,7 +3,6 @@ import {BuffParams, Control, EventCodes, EventData, Game, Reasons} from '../';
 export default function turnProcessor(game: Game, {turnData}: EventData, step: number): number {
     if (!turnData || !turnData.currentId) return 0;
     const currentEntity = game.getEntity(turnData.currentId);
-    if (!currentEntity) return 0; // 无法找到实体
 
     switch (step) {
         // 开始阶段

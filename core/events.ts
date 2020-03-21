@@ -25,7 +25,7 @@ export interface EventData {
 
     buff?: Buff;
     turnData?: TurnData;
-    precent?: number;
+    percent?: number;
     reason?: Reasons;
     teamId?: number;
     num?: number;

@@ -82,7 +82,7 @@
                         hp: entity.hp.toFixed(2),
                     }
                     forEach(values(BattleProperties), key => {
-                        data[key] = `${entity.getComputedProperty(key)}`
+                        data[key] = `${entity.getProperty(key)}`
                     });
                     if (entity.teamId === 0) {
                         this.team1.push(data)

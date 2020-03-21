@@ -1,5 +1,5 @@
 import Game from './game';
-import Buff, {Effect, EffectTypes} from './buff';
+import Buff from './buff';
 
 import {filter, find, forEach, isNil, values} from 'lodash';
 import Skill from './skill';
@@ -30,7 +30,7 @@ export default class Entity {
         this.entityId = ++entityCounter;
         this.properties = new Map();
         this.buffs = [];
-        this.teamId = 0;
+        this.teamId = -1;
         this.tags = [];
         this.hp = 1;
         this.no = 0;
@@ -111,30 +111,6 @@ export default class Entity {
         return origin;
     }
 
-    getComputedProperty(name: string): number {
-        const origin = this.properties.get(name);
-        if (isNil(origin)) return 0;
-        const effects: Effect[] = this.buffs.reduce((list: Effect[], buff: Buff) => {
-            if (!buff.hasParam(BuffParams.AFFECT_PROPERTY)) return list;
-            if (!buff.effect) return list;
-            if (buff.effect.propertyName !==name) return list;
-            return [...list, buff.effect];
-        }, []); // 过滤出影响该属性的effect
-
-        return effects.reduce((current, e: Effect) => {
-            switch (e.effectType) {
-                case EffectTypes.FIXED:
-                    return current + e.value;
-                case EffectTypes.SET:
-                    return e.value;
-                case EffectTypes.ADD_RATE:
-                    return current + origin * e.value;
-                case EffectTypes.NOTHING:
-                default:
-                    return current;
-            }
-        }, origin);
-    }
 
     hasProperty(name: string): boolean {
         return this.properties.has(name);
@@ -206,12 +182,11 @@ export default class Entity {
 
     }
 
-    isHpLowerThan(percent: number): boolean {
-        return this.hp / this.getComputedProperty(BattleProperties.MAX_HP) <= percent;
-    }
 
-    getSkill(no: number): Skill|null {
-        return this.skills.find(s => s.no === no) || null;
+    getSkill(no: number): Skill {
+        const ret = this.skills.find(s => s.no === no);
+        if(!ret) throw Error('Cannot found skill, no = ' + no);
+        return ret;
     }
 
 }

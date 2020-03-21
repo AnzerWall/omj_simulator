@@ -16,7 +16,6 @@ export const nurikabes_skill2: Skill = {
     cost: 2,
     use(game: Game, sourceId: number, _: number): boolean {
         const source = game.getEntity(sourceId);
-        if (!source) return false;
 
         const entities = game.getTeamEntities(source.teamId); // 所有队友
         entities.forEach(e => {

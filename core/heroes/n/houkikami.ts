@@ -11,13 +11,11 @@ export const houkikami_skill1: Skill = {
         const at = new AttackInfo(selectedId, {
             base:(game: Game, sourceId: number, targetId: number): number => {
                 const target = game.getEntity(targetId);
-                if (!target) return 0;
-                return target.getComputedProperty(BattleProperties.ATK);
+                return game.getComputedProperty(target.entityId, BattleProperties.ATK);
             },
             limit: (game: Game, sourceId: number, _: number): number => {
                 const source = game.getEntity(sourceId);
-                if (!source) return 0;
-                return source.getComputedProperty(BattleProperties.ATK) * 1.5;
+                return game.getComputedProperty(source.entityId, BattleProperties.ATK) * 1.5;
             },
             rate: 1,
             params: [ AttackParams.SHOULD_COMPUTE_CRI, AttackParams.NORMAL_ATTACK, AttackParams.SINGLE]

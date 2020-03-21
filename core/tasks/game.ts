@@ -15,8 +15,10 @@ export default function gameProcessor(game: Game, data: EventData, step: number)
         case 3: {
             game.judgeWin();
             if (game.isEnd) return -1;
-            const next = game.getEntity(game.runway.computeNext() || 0);
-            if (!next) return 0;
+            const nextId = game.runway.computeNext() || 0;
+            if (!nextId) return -1;
+
+            const next = game.getEntity(nextId);
             if (game.turn >= 1000) return 0; // 超时
 
             const turnData = new TurnData(++game.turn, next.entityId);

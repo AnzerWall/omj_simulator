@@ -31,7 +31,6 @@ export const akajita_skill3: Skill = {
     name: '风鼓雷',
     use(game: Game, sourceId: number, selectedId: number): boolean {
         const selected = game.getEntity(selectedId);
-        if (!selected) return false;
         const entities = game.getTeamEntities(selected.teamId);
 
         for (let i = 0; i < 2; i++) {

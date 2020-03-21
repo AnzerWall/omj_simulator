@@ -67,13 +67,13 @@
                     return {
                         no: hero.no,
                         name: hero.name,
-                        hp: hero.getComputedProperty(BattleProperties.MAX_HP),
-                        atk: hero.getComputedProperty(BattleProperties.ATK),
-                        def: hero.getComputedProperty(BattleProperties.DEF),
-                        spd: hero.getComputedProperty(BattleProperties.SPD),
-                        cri: hero.getComputedProperty(BattleProperties.CRI) * 100 + '%',
+                        hp: hero.getProperty(BattleProperties.MAX_HP),
+                        atk: hero.getProperty(BattleProperties.ATK),
+                        def: hero.getProperty(BattleProperties.DEF),
+                        spd: hero.getProperty(BattleProperties.SPD),
+                        cri: hero.getProperty(BattleProperties.CRI) * 100 + '%',
                         // eslint-disable-next-line @typescript-eslint/camelcase
-                        cri_dmg: hero.getComputedProperty(BattleProperties.CRI_DMG) * 100 + '%',
+                        cri_dmg: hero.getProperty(BattleProperties.CRI_DMG) * 100 + '%',
                         ok: hero.hasTag('simple') ? '否' : '是',
                     };
                 }),

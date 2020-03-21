@@ -5,23 +5,21 @@ export function attackSubProcessor(game: Game, data: EventData, step: number) {
     if (!attackInfo) return 0;
 
     const source = game.getEntity(attackInfo.sourceId);
-    if (!source) return 0;
     const target = game.getEntity(attackInfo.targetId);
-    if (!target) return 0;
 
     switch (step) {
         // 数据准备
         case 1: {
-            attackInfo.critical = source.getComputedProperty(BattleProperties.CRI);
-            attackInfo.criticalDamage = source.getComputedProperty(BattleProperties.CRI_DMG);
-            attackInfo.damageDealtBuff = source.getComputedProperty(BattleProperties.DMG_DEALT_B) + 1;
-            attackInfo.damageDealtDebuff = source.getComputedProperty(BattleProperties.DMG_DEALT_D) + 1;
+            attackInfo.critical = game.getComputedProperty(source.entityId, BattleProperties.CRI);
+            attackInfo.criticalDamage = game.getComputedProperty(source.entityId, BattleProperties.CRI_DMG);
+            attackInfo.damageDealtBuff = game.getComputedProperty(source.entityId, BattleProperties.DMG_DEALT_B) + 1;
+            attackInfo.damageDealtDebuff = game.getComputedProperty(source.entityId, BattleProperties.DMG_DEALT_D) + 1;
 
-            attackInfo.targetDamageTakenBuff = target.getComputedProperty(BattleProperties.DMG_TAKEN_B) + 1;
-            attackInfo.targetDamageTakenDebuff = target.getComputedProperty(BattleProperties.DMG_TAKEN_D) + 1;
-            attackInfo.targetDefence = target.getComputedProperty(BattleProperties.DEF);
+            attackInfo.targetDamageTakenBuff = game.getComputedProperty(target.entityId, BattleProperties.DMG_TAKEN_B) + 1;
+            attackInfo.targetDamageTakenDebuff = game.getComputedProperty(target.entityId, BattleProperties.DMG_TAKEN_D) + 1;
+            attackInfo.targetDefence = game.getComputedProperty(target.entityId, BattleProperties.DEF);
             attackInfo.damage = typeof attackInfo.base === 'string' ?
-                source.getComputedProperty(attackInfo.base) :
+                game.getComputedProperty(source.entityId, attackInfo.base) :
                 attackInfo.base(game, attackInfo.sourceId, attackInfo.targetId);
 
             game.log(`【${source.name}(${source.teamId})】攻击【${target.name}(${target.teamId})】`);

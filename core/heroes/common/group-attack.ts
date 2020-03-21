@@ -24,7 +24,6 @@ export default class GroupAttack implements Skill {
 
     use(game: Game, sourceId: number, selectedId: number): boolean {
         const selected = game.getEntity(selectedId);
-        if (!selected) return false;
         const entities = game.getTeamEntities(selected.teamId);
 
         for (let i = 0; i < this.times; i++) {

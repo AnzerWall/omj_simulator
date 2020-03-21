@@ -306,32 +306,32 @@ export default class Game {
         return this.manas[teamId];
     }
 
-    filterBuffByName(entity_id: number, name: string): Buff[] {
-        return filter(this.buffs,  buff => buff.ownerId === entity_id && buff.name === name);
+    filterBuffByName(ownerId: number, name: string): Buff[] {
+        return filter(this.buffs,  buff => buff.ownerId === ownerId && buff.name === name);
     }
-    filterBuffByParam(entity_id: number, ...params: BuffParams[]): Buff[] {
-        return filter(this.buffs, buff => buff.ownerId === entity_id && params.some(p => buff.params.includes(p)));
+    filterBuffByParam(ownerId: number, ...params: BuffParams[]): Buff[] {
+        return filter(this.buffs, buff => buff.ownerId === ownerId && params.some(p => buff.params.includes(p)));
     }
-    filterBuffByControl(entity_id: number, ...controls: Control[]): Buff[] {
+    filterBuffByControl(ownerId: number, ...controls: Control[]): Buff[] {
         return filter(this.buffs, buff => {
-            return buff.ownerId === entity_id && buff.params.includes(BuffParams.CONTROL) && !!buff.control && controls.includes(buff.control)
+            return buff.ownerId === ownerId && buff.params.includes(BuffParams.CONTROL) && !!buff.control && controls.includes(buff.control)
         });
     }
-    filterBuffBySource(entity_id: number, sourceId: number): Buff[] {
+    filterBuffBySource(ownerId: number, sourceId: number): Buff[] {
         return filter(this.buffs, buff => {
-            return buff.ownerId === entity_id && buff.sourceId === sourceId;
+            return buff.ownerId === ownerId && buff.sourceId === sourceId;
         });
     }
 
-    hasBuffByName(entity_id: number, name: string): boolean {
-        return some(this.buffs, buff => buff.name === name);
+    hasBuffByName(ownerId: number, name: string): boolean {
+        return some(this.buffs, buff => buff.ownerId === ownerId && buff.name === name);
     }
-    hasBuffByParam(entity_id: number, ...params: BuffParams[]): boolean {
-        return some(this.buffs, buff => params.some(p => buff.params.includes(p)));
+    hasBuffByParam(ownerId: number, ...params: BuffParams[]): boolean {
+        return some(this.buffs, buff => buff.ownerId === ownerId && params.some(p => buff.params.includes(p)));
     }
-    hasBuffByControl(entity_id: number, ...controls: Control[]): boolean {
+    hasBuffByControl(ownerId: number, ...controls: Control[]): boolean {
         return some(this.buffs, buff => {
-            return buff.params.includes(BuffParams.CONTROL) && !!buff.control && controls.includes(buff.control)
+            return buff.ownerId === ownerId &&buff.params.includes(BuffParams.CONTROL) && !!buff.control && controls.includes(buff.control)
         });
     }
 

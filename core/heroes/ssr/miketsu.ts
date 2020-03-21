@@ -155,7 +155,7 @@ export const skill3: Skill = {
     name: '燃爆·破魔箭',
     cost: 3,
     use(game: Game, sourceId: number, selectedId: number): boolean {
-        const buffs = game.filterBuffBySource(sourceId, selectedId).filter(b => ['狐狩界·防御', '狐狩界·伤害', '狐狩界·速度'].includes(b.name)); // 来源是我的灵符
+        const buffs = game.filterBuffBySource(-1, sourceId).filter(b => ['狐狩界·防御', '狐狩界·伤害', '狐狩界·速度'].includes(b.name)); // 来源是我的灵符
         const at = new AttackInfo(selectedId, {
             sourceId,
             rate: 1.95 * 0.25 * buffs.length,

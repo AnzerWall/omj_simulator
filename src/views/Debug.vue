@@ -98,8 +98,8 @@
                 this.progress1 = this.game.manas[0].progress;
                 this.progress2 = this.game.manas[1].progress;
                 function formatData(data, depth) {
+                    if (isArray(data) && !some(data, isObject)) return `<li>${' '.repeat(depth)}${data.join(' ')}</li>`;
                     return Object.keys(data).map(k => {
-                        if (isArray(data) && !some(data, isObject)) `<li>${' '.repeat(depth)}${k}: ${data.join(' ')}</li>`;
                         if (typeof data[k] === "object") return `<li>${' '.repeat(depth)}${k}: <ul>${formatData(data[k], depth+1)}</ul></li>`;
                         return `<li>${' '.repeat(depth)}${k}: ${data[k]}</li>`
                     }).join('')

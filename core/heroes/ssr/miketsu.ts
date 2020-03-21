@@ -13,7 +13,6 @@ import {
     Skill
 } from '../../';
 
-
 export const skill1: Skill = {
     no: 1,
     name: '一矢',
@@ -38,7 +37,7 @@ export const skill1: Skill = {
     use(game: Game, sourceId: number, selectedId: number): boolean {
         const at = new AttackInfo(selectedId, {
             sourceId,
-            rate: 100,
+            rate: 1,
             params: [AttackParams.SHOULD_COMPUTE_CRI, AttackParams.SINGLE, AttackParams.NORMAL_ATTACK],
         });
         game.actionAttack(at);
@@ -53,7 +52,7 @@ export const skill4: Skill = {
         const owner = game.getEntity(sourceId);
         const at = new AttackInfo(selectedId, {
             sourceId,
-            rate: 100,
+            rate: 1,
             params: [
                 AttackParams.SHOULD_COMPUTE_CRI, // 触发暴击
                 AttackParams.SINGLE, // 单体
@@ -156,6 +155,19 @@ export const skill3: Skill = {
     name: '燃爆·破魔箭',
     cost: 3,
     use(game: Game, sourceId: number, selectedId: number): boolean {
+        const buffs = game.filterBuffBySource(sourceId, selectedId).filter(b => ['狐狩界·防御', '狐狩界·伤害', '狐狩界·速度'].includes(b.name)); // 来源是我的灵符
+        const at = new AttackInfo(selectedId, {
+            sourceId,
+            rate: 1.95 * 0.25 * buffs.length,
+            params: [AttackParams.SHOULD_COMPUTE_CRI, AttackParams.SINGLE],
+        });
+        game.actionAttack(at);
+
+        // 先攻击后消耗
+        buffs.forEach(b => {
+           game.actionRemoveBuff(b, Reasons.COST);
+        });
+
         return true;
     },
 };

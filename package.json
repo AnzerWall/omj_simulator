@@ -79,7 +79,7 @@
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
-          "args": "after-used",
+          "args": "all",
           "varsIgnorePattern": "^_",
           "ignoreRestSiblings": true,
           "argsIgnorePattern": "^_",

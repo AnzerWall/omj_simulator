@@ -307,14 +307,19 @@ export default class Game {
     }
 
     filterBuffByName(entity_id: number, name: string): Buff[] {
-        return filter(this.buffs, buff => buff.name === name);
+        return filter(this.buffs,  buff => buff.ownerId === entity_id && buff.name === name);
     }
     filterBuffByParam(entity_id: number, ...params: BuffParams[]): Buff[] {
-        return filter(this.buffs, buff => params.some(p => buff.params.includes(p)));
+        return filter(this.buffs, buff => buff.ownerId === entity_id && params.some(p => buff.params.includes(p)));
     }
     filterBuffByControl(entity_id: number, ...controls: Control[]): Buff[] {
         return filter(this.buffs, buff => {
-            return buff.params.includes(BuffParams.CONTROL) && !!buff.control && controls.includes(buff.control)
+            return buff.ownerId === entity_id && buff.params.includes(BuffParams.CONTROL) && !!buff.control && controls.includes(buff.control)
+        });
+    }
+    filterBuffBySource(entity_id: number, sourceId: number): Buff[] {
+        return filter(this.buffs, buff => {
+            return buff.ownerId === entity_id && buff.sourceId === sourceId;
         });
     }
 

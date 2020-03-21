@@ -30,6 +30,9 @@ npm run serve
 ## 预览
 
 ![preview](./public/preview.png)
+
+## 技能编写示例
+
 ![preview](./public/carbon.png)
 # Roadmap
 

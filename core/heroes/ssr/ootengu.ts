@@ -31,6 +31,7 @@ export const skill2: Skill = {
     no: 2,
     name: '钢铁之羽',
     passive: true,
+    cost: 0,
     handlers: [{
         // 战斗开始：获得庇护
         handle(game: Game, data: EventData) {

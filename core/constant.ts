@@ -82,6 +82,9 @@ export enum BuffParams {
     AFFECT_PROPERTY = 'AffectProperty',  // 是否影响属性, 影响effects的计算
     SHIELD= 'Shield', //是否是护盾
     SHOULD_COMPUTE_PROBABILITY = 'ShouldComputeProbability', // 是否计算概率
+
+    RULE_HIGH_AND_DRY = 'RuleIighAndDry', // 孤立无援
+    RULE_CONTROL_IMMUNE = 'RuleControlImmune', // 免疫控制
 }
 
 // 式神可变属性

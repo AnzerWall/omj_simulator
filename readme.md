@@ -38,9 +38,9 @@ npm run serve
 
 ## 当前备忘
 
-- [ ] buff冲突覆盖机制
+- [x] buff冲突覆盖机制
 - [x] 整理输出和代码
-- [ ] 全局增加Player用于存储全局buff 结界等
+- [x] 全局增加Player用于存储全局buff 结界等
 
 ## 核心组件
 - [x] UI-式神数据页

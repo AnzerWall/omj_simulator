@@ -448,6 +448,14 @@ export default class Game {
                     return 3;
                 }
                 case 3: {
+                    if (buff.maxCount && buff.maxCount > 0 && buff.name) {
+                        const sameBuffs = this.buffs.filter(b => b.ownerId === buff.ownerId && b.name === buff.name);
+                        if (sameBuffs.length >= buff.maxCount) {
+                            const index = this.buffs.indexOf(sameBuffs[0]);
+                            if (index === -1) return -1;
+                            this.buffs.splice(index, 1);
+                        }
+                    }
                     this.buffs.push(buff);
                     this.addEventProcessor(EventCodes.BUFF_GET, buff.ownerId, {buff, targetId: buff.ownerId});
                     return -1;

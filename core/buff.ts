@@ -4,7 +4,8 @@ export const enum EffectTypes {
     FIXED, // 增加固定数值value
     SET,  // 设置为value
     ADD_RATE, // 增加倍率
-    NOTHING, // 啥都不做
+    MAX, // 取最大
+    MIN, // 取最小
 }
 
 export interface Effect {
@@ -12,6 +13,8 @@ export interface Effect {
     value: number; // 值   | ((game: Game, ownerId: number)=> number)
     effectType: EffectTypes;
 }
+let buffCounter = 0;
+
 export class BuffBuilder {
     public _buff: Buff;
     constructor(sourceId: number) {
@@ -115,7 +118,12 @@ export class BuffBuilder {
         this._buff.params.push(BuffParams.AFFECT_PROPERTY);
         return this;
     }
+    dependOn(buffId: number) {
+        this._buff.otherBuffId = buffId;
+        this._buff.params.push(BuffParams.DEPEND_ON);
+        return this;
 
+    }
 
     end(): Buff {
         return this._buff;
@@ -125,6 +133,7 @@ export class BuffBuilder {
 export default class Buff {
     name: string = ''; // buff名称 用于表示相同buff
     sourceId: number = 0; // 来源实体
+    buffId: number;
     params: BuffParams[] = [];
 
     maxCount?: number; // 同名最大持有数量, 0表示无限制
@@ -133,10 +142,12 @@ export default class Buff {
     shield?: number; // 护盾剩余吸收量 flag: SHIELD
     icon?: string; // 对应图标, 有效时显示 flag: VISIBLE
     effect?: Effect; // 对属性的影响 flag: AFFECT_PROPERTY
+    otherBuffId?: number; // 依赖于别的buff，别的buff存在时有效，计算属性时有效
     probability?: number; // 概率, 大于0时有效 flag: SHOULD_COMPUTE_PROBABILITY
 
     constructor(sourceId: number) {
         this.sourceId = sourceId;
+        this.buffId = ++buffCounter;
     }
 
     hasParam(p: BuffParams){

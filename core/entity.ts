@@ -139,6 +139,9 @@ export default class Entity {
     hasBuffNamed(name: string): boolean {
         return !!find(this.buffs, buff => buff.name === name);
     }
+    getBuffNamed(name: string): Buff | null {
+        return find(this.buffs, buff => buff.name === name) || null;
+    }
 
     ai: (game: Game, turnData: TurnData) => boolean = () => true;
 

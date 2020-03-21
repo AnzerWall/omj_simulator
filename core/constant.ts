@@ -73,6 +73,7 @@ export enum BuffParams {
     FAIRYLAND = 'fairyland', // 幻境
     BUFF = 'Buff', // 是否是增益
     DEBUFF = 'Debuff', // 是否是减益
+    DEPEND_ON = 'DependOn', // 是否是减益
 
     COUNT_DOWN = 'CountDown', // 持续xxx回合
     COUNT_DOWN_BY_SOURCE = 'CountDownBySource', // 维持xxx回合
@@ -102,6 +103,8 @@ export const BattleProperties = {
     DEF_NEG: 'def_neg', // 忽略防御
     DEF_NEG_P: 'def_neg_p', // 忽略防御百分比
     HP_STEAL: 'hp_steal', // 生命偷取
+    HEALING_DOWN: 'healing_down',
+    HEALING_UP: 'healing_up',
 };
 
 // 原因

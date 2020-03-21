@@ -30,7 +30,7 @@ npm run serve
 ## 预览
 
 ![preview](./public/preview.png)
-
+![preview](./public/carbon.png)
 # Roadmap
 
 ## 当前备忘

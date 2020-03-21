@@ -277,7 +277,10 @@ export default class Game {
                     return e.value;
                 case EffectTypes.ADD_RATE:
                     return current + origin * e.value;
-                case EffectTypes.NOTHING:
+                case EffectTypes.MAX:
+                    return Math.max(current, e.value);
+                case EffectTypes.MIN:
+                    return Math.min(current, e.value);
                 default:
                     return current;
             }

@@ -85,7 +85,8 @@
           "argsIgnorePattern": "^_",
           "ignoreErr": "^ignore"
         }
-      ]
+      ],
+      "@typescript-eslint/no-use-before-define": ["error", { "classes": false }]
     },
     "ignorePatterns": [
       "*.d.ts",

@@ -1,9 +1,9 @@
 import Game from './game';
-import Buff, {Effect, Operator} from './buff';
+import Buff, {Effect, EffectTypes} from './buff';
 
 import {filter, find, forEach, isNil, values} from 'lodash';
 import Skill from './skill';
-import {Control, BattleProperties} from './constant';
+import {BattleProperties, BuffParams, Control} from './constant';
 import TurnData from './turn-data';
 
 let entityCounter = 0;
@@ -19,7 +19,6 @@ export default class Entity {
     properties: Map<string, number>; // 基础属性，最大生命 攻击等
     buffs: Buff[]; // 附加效果，影响基础属性
     hp: number; // 生命值
-    shield: number; // 护盾
     name: string;
     dead: boolean;
     lv: number; // 等级
@@ -34,7 +33,6 @@ export default class Entity {
         this.teamId = 0;
         this.tags = [];
         this.hp = 1;
-        this.shield = 0;
         this.no = 0;
         this.name = '<Unknown>';
         this.dead = false;
@@ -117,18 +115,21 @@ export default class Entity {
         const origin = this.properties.get(name);
         if (isNil(origin)) return 0;
         const effects: Effect[] = this.buffs.reduce((list: Effect[], buff: Buff) => {
-            return list.concat(buff.effects.filter(e => e.propertyName === name));
+            if (!buff.hasParam(BuffParams.AFFECT_PROPERTY)) return list;
+            if (!buff.effect) return list;
+            if (buff.effect.propertyName !==name) return list;
+            return [...list, buff.effect];
         }, []); // 过滤出影响该属性的effect
 
         return effects.reduce((current, e: Effect) => {
-            switch (e.op) {
-                case Operator.ADD:
+            switch (e.effectType) {
+                case EffectTypes.FIXED:
                     return current + e.value;
-                case Operator.SET:
+                case EffectTypes.SET:
                     return e.value;
-                case Operator.RATE:
+                case EffectTypes.ADD_RATE:
                     return current + origin * e.value;
-                case Operator.NOTHING:
+                case EffectTypes.NOTHING:
                 default:
                     return current;
             }
@@ -192,12 +193,14 @@ export default class Entity {
      */
     beControlledBy(...controls: Control[]): boolean {
         return this.buffs.some(buff => {
+            if (!buff.hasParam(BuffParams.CONTROL) || !buff.control) return false;
             return controls.includes(buff.control);
         });
     }
 
     filterControlByType(...controls: Control[]): Buff[] {
         return this.buffs.filter(buff => {
+            if (!buff.hasParam(BuffParams.CONTROL) || !buff.control) return false;
             return controls.includes(buff.control);
         });
 

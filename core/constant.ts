@@ -50,10 +50,10 @@ export enum AttackParams {
     CRITICAL = 'Critical', // 是否是暴击伤害
 
     NORMAL_ATTACK = 'NormalAttack',  // 是否是普通攻击
-    SINGLE = 'Single',
-    GROUP = 'Group',
+    SINGLE = 'Single', // 是否是单体
+    GROUP = 'Group', // 是否是群体
 
-    IGNORE_SOURCE = 'IgnoreSource',
+    IGNORE_SOURCE = 'IgnoreSource', // 忽略来源
 
     NO_SHARE  = 'NoShare', // 不可分摊
     NO_SHIELD  = 'NoShield', // 忽略护盾
@@ -63,6 +63,24 @@ export enum AttackParams {
 
     NO_SOURCE_EQUIPMENT = 'NoSourceEquipment', // 不触发御魂
     NO_SOURCE_PASSIVE = 'NoSourcePassive' // 不触发御魂
+}
+export enum BuffParams {
+    NO_DISPEL = 'CanDispel', // 是否可驱散
+    NO_REMOVE = 'CanRemove', // 是否可清除
+
+    STAMP = 'Stamp', // 印记
+    ENCHANTMENT = 'Enchantment', // 结界
+    FAIRYLAND = 'fairyland', // 幻境
+    BUFF = 'Buff', // 是否是增益
+    DEBUFF = 'Debuff', // 是否是减益
+
+    COUNT_DOWN = 'CountDown', // 持续xxx回合
+    COUNT_DOWN_BY_SOURCE = 'CountDownBySource', // 维持xxx回合
+    VISIBLE = 'Visible', // 是否可见buff，影响icon生效
+    CONTROL = 'Control', // 是否是控制效果， 影响control的生效
+    AFFECT_PROPERTY = 'AffectProperty',  // 是否影响属性, 影响effects的计算
+    SHIELD= 'Shield', //是否是护盾
+    SHOULD_COMPUTE_PROBABILITY = 'ShouldComputeProbability', // 是否计算概率
 }
 
 // 式神可变属性

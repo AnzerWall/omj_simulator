@@ -1,6 +1,6 @@
 import {
     Buff,
-    Operator,
+    EffectTypes,
     Skill,
     Game,
     BattleProperties,
@@ -8,50 +8,27 @@ import {
 } from '../../';
 import NormalAttack from '../common/normal-attack';
 
-class KataKabeBuff extends Buff {
-    constructor(sourceId: number, def: number) {
-        super(sourceId);
-        this.canDispel = true;
-        this.canRemove = true;
-        this.name = '坚壁';
-        this.maxCount = 1;
-        this.countDown = 2;
-        this.visible = true;
 
-        // 【增益, 状态】 提升40%防御 再加上涂壁20%的初始防御
-        this.isAffectProperty = true;
-        this.isBuff = true;
-
-        this.effects = [{
-            propertyName: BattleProperties.DEF,
-            op: Operator.RATE,
-            value: 0.4
-        }, {
-            propertyName: BattleProperties.DEF,
-            op: Operator.ADD,
-            value: def * 0.2
-        }];
-
-    }
-}
-
-const skill2: Skill = {
+export const nurikabes_skill1 = new NormalAttack('地震');
+export const nurikabes_skill2: Skill = {
     no: 2,
-    handlers: [],
     name: '坚壁',
-    passive: false,
     cost: 2,
     use(game: Game, sourceId: number, _: number): boolean {
         const source = game.getEntity(sourceId);
         if (!source) return false;
 
-        const entities = game.getTeamEntities(source.teamId);
+        const entities = game.getTeamEntities(source.teamId); // 所有队友
         entities.forEach(e => {
-            game.actionAddBuff(sourceId, e.entityId, new KataKabeBuff(sourceId, source.getProperty(BattleProperties.DEF)), Reasons.SKILL);
+            const buff = Buff.build(sourceId)
+                .name('坚壁', 1)
+                .countDown(2)
+                .buff(BattleProperties.DEF, EffectTypes.FIXED, 0.2 * source.getProperty(BattleProperties.DEF) + 0.4 * e.getProperty(BattleProperties.DEF))
+                .end();
+
+            game.actionAddBuff(e.entityId, buff, Reasons.SKILL);
         });
 
         return true;
     },
 };
-export const nurikabes_skill1 = new NormalAttack('地震');
-export const nurikabes_skill2 = skill2;

@@ -2,7 +2,7 @@ import {forEach, isArray} from 'lodash';
 import Entity from './entity';
 import Mana from './mana';
 import Runway from './runway';
-import {BattleProperties, Control, EventCodes, Reasons} from './constant';
+import {BattleProperties, BuffParams, Control, EventCodes, Reasons} from './constant';
 import {HeroBuilders} from './heroes';
 import {EventData, EventRange} from './events';
 import Skill from './skill';
@@ -346,56 +346,46 @@ export default class Game {
 
     }
 
-    actionAddBuff(sourceId: number, targetId: number, buff: Buff, reason: Reasons = Reasons.NOTHING) {
+    actionAddBuff(targetId: number, buff: Buff, reason: Reasons = Reasons.NOTHING) {
         this.addProcessor((game: Game, data: EventData, step: number) => {
             const target = this.getEntity(targetId);
             if (!target) return 0;
-            const source = this.getEntity(sourceId);
+            const source = this.getEntity(buff.sourceId);
             switch (step) {
+                // 命中计算
                 case 1: {
-                    this.addEventProcessor(EventCodes.BEFORE_BUFF_GET, targetId,{buff, targetId: targetId});
-                    game.log(`${source ? `【${source.name}(${source.teamId})】` : ''}对【${target.name}(${target.teamId})】添加 【${buff.name}】 Buff`,
-                        buff.countDown > 0 ? buff.countDownBySource ? '维持' : '持续' + buff.countDown + '回合' : '');
+                    if (!source) return 0;
+                    if (buff.hasParam(BuffParams.SHOULD_COMPUTE_PROBABILITY)) return 2; // 不需要计算概率
+                    if (typeof buff.probability !== 'number') return 0;
 
+                    const p = buff.probability * (1 + source.getComputedProperty(BattleProperties.EFT_HIT)); // 基础命中×（1+效果命中）
+                    const isHit = this.testHit(p);
+                    if (!isHit) return -1; // 未命中
+                    const res = 1 + target.getComputedProperty(BattleProperties.EFT_RES); // (1 + 效果抵抗)
+                    const notRes = this.testHit(p / res);
+
+                    if (!notRes) { // 抵抗了
+                        this.addEventProcessor(EventCodes.BUFF_RES,  targetId,{buff, targetId: targetId});
+                    }
                     return 2;
                 }
                 case 2: {
+                    game.log(`${source ? `【${source.name}(${source.teamId})】` : ''}对【${target.name}(${target.teamId})】添加 【${buff.name}】 Buff`,
+                        buff.countDown ? (buff.countDown > 0 ? buff.hasParam(BuffParams.COUNT_DOWN_BY_SOURCE) ? '维持' : '持续' + buff.countDown + '回合' : '') : '');
+                    this.addEventProcessor(EventCodes.BEFORE_BUFF_GET, targetId,{buff, targetId: targetId});
+                    return 3;
+                }
+                case 3: {
                     target.addBuff(buff);
                     this.addEventProcessor(EventCodes.BUFF_GET, targetId, {buff, targetId: targetId});
                     return -1;
                 }
             }
             return 0;
-        }, {sourceId, targetId, buff, reason}, 'AddBuff');
+        }, { targetId, buff, reason}, 'AddBuff');
     }
 
-    actionAddBuffP(sourceId: number, targetId: number, buff: Buff, num: number = 1, reason: Reasons = Reasons.NOTHING) {
-        this.addProcessor(() => {
-            const target = this.getEntity(targetId);
-            if (!target) return 0;
-            const source = this.getEntity(sourceId);
-            if (!source) return 0;
-            const hit = num * (1 + source.getComputedProperty(BattleProperties.EFT_HIT)); // 基础命中×（1+效果命中）
-            const isHit = this.random.real(0, 1) < hit;
-            if (!isHit) {
-                return -1;  // 未命中
-            }
-
-            const res = 1 + target.getComputedProperty(BattleProperties.EFT_RES); // (1 + 效果抵抗)
-            const notRes = this.random.real(0, 1) < hit / res;
-
-            if (notRes) {
-                this.actionAddBuff(sourceId, targetId, buff, reason);
-                return -1;
-            }
-
-            // TODO: 处理抵抗
-            this.addEventProcessor(EventCodes.BUFF_RES,  targetId,{buff, targetId: targetId});
-            return -1;
-        }, {sourceId, targetId, buff, num, reason}, 'AddBuffP');
-    }
-
-    actionRemoveBuff(sourceId: number, targetId: number, buff: Buff, reason: Reasons = Reasons.NOTHING) {
+    actionRemoveBuff(targetId: number, buff: Buff, reason: Reasons = Reasons.NOTHING) {
         this.addProcessor((game: Game, _: EventData, step: number) => {
             const target = this.getEntity(targetId);
             if (!target) return 0;
@@ -411,7 +401,7 @@ export default class Game {
                 }
             }
             return 0;
-        }, {sourceId, targetId, buff, reason}, 'RemoveBuff');
+        }, {targetId, buff, reason}, 'RemoveBuff');
     }
 
     actionUpdateMana(sourceId: number, teamId: number, num: number, reason: Reasons = Reasons.NOTHING) {

@@ -1,4 +1,4 @@
-import {Game, EventCodes, EventData, Control, Reasons} from '../';
+import {BuffParams, Control, EventCodes, EventData, Game, Reasons} from '../';
 
 export default function turnProcessor(game: Game, {turnData}: EventData, step: number): number {
     if (!turnData || !turnData.currentId) return 0;
@@ -22,13 +22,16 @@ export default function turnProcessor(game: Game, {turnData}: EventData, step: n
         case 2: {
             game.entities.forEach(entity => {
                 entity.buffs.forEach(buff => {
+                    if (!buff.hasParam(BuffParams.COUNT_DOWN) || !buff.hasParam(BuffParams.COUNT_DOWN_BY_SOURCE)) return;
+                    if (typeof buff.countDown !== 'number') return;
+
                     if (buff.countDown <= 0) return;
                     if ((entity.entityId === currentEntity.entityId) || // 持有者是本人
-                        (buff.countDownBySource && entity.entityId === currentEntity.entityId) // 维持型buff，buff所有者是本人
+                        (buff.hasParam(BuffParams.COUNT_DOWN_BY_SOURCE) && entity.entityId === currentEntity.entityId) // 维持型buff，buff所有者是本人
                     ) {
                         buff.countDown = buff.countDown - 1;
                         if (buff.countDown <= 0) {
-                            game.actionRemoveBuff(0, entity.entityId, buff);
+                            game.actionRemoveBuff(entity.entityId, buff, Reasons.TIME_OUT);
                         }
                     }
                 });

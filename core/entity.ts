@@ -17,7 +17,6 @@ export default class Entity {
     tags: string[]; // 实体标志，用于识别实体
 
     properties: Map<string, number>; // 基础属性，最大生命 攻击等
-    buffs: Buff[]; // 附加效果，影响基础属性
     hp: number; // 生命值
     name: string;
     dead: boolean;
@@ -29,7 +28,6 @@ export default class Entity {
     constructor() {
         this.entityId = ++entityCounter;
         this.properties = new Map();
-        this.buffs = [];
         this.teamId = -1;
         this.tags = [];
         this.hp = 1;
@@ -92,17 +90,6 @@ export default class Entity {
         return this.tags.includes(tag);
     }
 
-    addBuff(buff: Buff) {
-        this.buffs.push(buff);
-    }
-
-    removeBuff(buff: Buff) {
-        const index = this.buffs.indexOf(buff);
-
-        if (index !== -1) {
-            this.buffs.splice(index, 1);
-        }
-    }
 
     getProperty(name: string): number {
         const origin = this.properties.get(name);
@@ -128,62 +115,9 @@ export default class Entity {
         this.name = name;
     }
 
-    filterBuff(name: string): Buff[] {
-        return filter(this.buffs, buff => buff.name === name);
-    }
 
-    hasBuff(buf: Buff): boolean {
-        return !!find(this.buffs, buff => buff === buf);
-    }
-
-    hasBuffNamed(name: string): boolean {
-        return !!find(this.buffs, buff => buff.name === name);
-    }
-    getBuffNamed(name: string): Buff | null {
-        return find(this.buffs, buff => buff.name === name) || null;
-    }
 
     ai: (game: Game, turnData: TurnData) => boolean = () => true;
-
-    /**
-     * 是否处于无法动作状态
-     */
-    cannotAction(): boolean {
-        return this.buffs.some(buff => {
-            return buff.control === Control.FROZEN ||
-                buff.control === Control.SLEEP ||
-                buff.control === Control.DIZZY ||
-                buff.control === Control.POLYMORPH;
-        });
-    }
-
-    /**
-     * 是否被控制
-     */
-    beControlled(): boolean {
-        return this.buffs.some(buff => {
-            return buff.control !== Control.NONE;
-        });
-    }
-
-    /**
-     * 是否被指定控制类型控制
-     * @param controls
-     */
-    beControlledBy(...controls: Control[]): boolean {
-        return this.buffs.some(buff => {
-            if (!buff.hasParam(BuffParams.CONTROL) || !buff.control) return false;
-            return controls.includes(buff.control);
-        });
-    }
-
-    filterControlByType(...controls: Control[]): Buff[] {
-        return this.buffs.filter(buff => {
-            if (!buff.hasParam(BuffParams.CONTROL) || !buff.control) return false;
-            return controls.includes(buff.control);
-        });
-
-    }
 
 
     getSkill(no: number): Skill {

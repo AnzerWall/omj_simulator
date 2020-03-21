@@ -17,8 +17,8 @@ let buffCounter = 0;
 
 export class BuffBuilder {
     public _buff: Buff;
-    constructor(sourceId: number) {
-        this._buff = new Buff(sourceId);
+    constructor(sourceId: number, owner: number) {
+        this._buff = new Buff(sourceId, owner);
     }
 
     shield(num: number) {
@@ -118,11 +118,17 @@ export class BuffBuilder {
         this._buff.params.push(BuffParams.AFFECT_PROPERTY);
         return this;
     }
-    dependOn(buffId: number) {
-        this._buff.otherBuffId = buffId;
-        this._buff.params.push(BuffParams.DEPEND_ON);
-        return this;
+    dependOn(buffIdOrEntityId: number, dependBuffName?: string) {
+        if (typeof dependBuffName === 'string') {
+            this._buff.dependEntityId = buffIdOrEntityId;
+            this._buff.dependBuffName = dependBuffName;
+            this._buff.params.push(BuffParams.DEPEND_ON);
+        } else {
+            this._buff.dependBuffId = buffIdOrEntityId;
+            this._buff.params.push(BuffParams.DEPEND_ON);
+        }
 
+        return this;
     }
 
     end(): Buff {
@@ -133,6 +139,7 @@ export class BuffBuilder {
 export default class Buff {
     name: string = ''; // buff名称 用于表示相同buff
     sourceId: number = 0; // 来源实体
+    ownerId: number = 0;
     buffId: number;
     params: BuffParams[] = [];
 
@@ -142,11 +149,16 @@ export default class Buff {
     shield?: number; // 护盾剩余吸收量 flag: SHIELD
     icon?: string; // 对应图标, 有效时显示 flag: VISIBLE
     effect?: Effect; // 对属性的影响 flag: AFFECT_PROPERTY
-    otherBuffId?: number; // 依赖于别的buff，别的buff存在时有效，计算属性时有效
+    dependBuffId?: number; // 依赖于别的buff的id，别的buff存在时有效，计算属性时有效
+
+    dependEntityId?: number; // 依赖于别的buff，与dependBuffName组合生效，别的buff存在时有效，计算属性时有效
+    dependBuffName?: string; // 依赖于别的buff，与dependBuffName组合生效，别的buff存在时有效，计算属性时有效
+
     probability?: number; // 概率, 大于0时有效 flag: SHOULD_COMPUTE_PROBABILITY
 
-    constructor(sourceId: number) {
+    constructor(sourceId: number, ownerId: number) {
         this.sourceId = sourceId;
+        this.ownerId = ownerId;
         this.buffId = ++buffCounter;
     }
 
@@ -154,8 +166,8 @@ export default class Buff {
         return this.params.includes(p);
     }
 
-    static build(sourceId: number): BuffBuilder {
-        return new BuffBuilder(sourceId);
+    static build(sourceId: number, ownerId: number): BuffBuilder {
+        return new BuffBuilder(sourceId, ownerId);
     }
 }
 

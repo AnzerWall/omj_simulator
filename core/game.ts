@@ -1,4 +1,4 @@
-import {forEach, isArray} from 'lodash';
+import {filter, forEach, isArray, some} from 'lodash';
 import Entity from './entity';
 import Mana from './mana';
 import Runway from './runway';
@@ -37,7 +37,7 @@ export default class Game {
     rootTask: Task;
     currentTask: Task;
 
-    globalEntity: Entity;
+    buffs: Buff[];
 
     constructor(datas: {
         no: number;
@@ -61,7 +61,7 @@ export default class Game {
         this.microTasks = [];
         this.seed = seed;
         this.random = new Random(MersenneTwister19937.seed(seed));
-        this.globalEntity = new Entity();
+        this.buffs = [];
 
         forEach(datas, data => {
             if (data.teamId < 0 || data.teamId > 1) {
@@ -178,7 +178,7 @@ export default class Game {
             if (step > units.length) return -1;
             const unit = units[step - 1];
             const entity = this.getEntity(unit.skillOwnerId);
-            if (unit.handler.passive && entity.beControlledBy(Control.PASSIVE_FORBID)) return step + 1; // 被封印被动跳过处理
+            if (unit.handler.passive && game.hasBuffByControl(unit.skillOwnerId, Control.PASSIVE_FORBID)) return step + 1; // 被封印被动跳过处理
 
             this.log(`${entity.name}(${entity.entityId})的${unit.skillNo}技能事件触发`);
             this.addProcessor(unit.handler.handle, Object.assign({
@@ -212,7 +212,6 @@ export default class Game {
     }
 
     getEntity(entityId: number): Entity {
-        if (entityId === -1) return this.globalEntity;
         const ret = this.entities.get(entityId);
         if (!ret)  throw new Error(`Cannot found entity, id = ${entityId}`);
         return ret;
@@ -232,7 +231,7 @@ export default class Game {
     getEnemies(entityId: number): Entity[] {
         const entity = this.getEntity(entityId);
         const teamId = entity.teamId;
-        const isConfusion = entity.beControlledBy(Control.CONFUSION);
+        const isConfusion = this.hasBuffByControl(entity.entityId, Control.CONFUSION);
 
         const ret: Entity[] = [];
 
@@ -262,11 +261,19 @@ export default class Game {
         const entity = this.getEntity(entity_id);
         const origin = entity.properties.get(name);
         if (origin === undefined) throw new Error(`Cannot found property in entity which id=${entity_id} named by ${name}`);
-        const effects: Effect[] = entity.buffs.concat(this.globalEntity.buffs).reduce((list: Effect[], buff: Buff) => {
-            if (!buff.hasParam(BuffParams.AFFECT_PROPERTY)) return list;
-            if (!buff.effect) return list;
-            if (buff.effect.propertyName !==name) return list;
-            return [...list, buff.effect];
+        const effects: Effect[] = this.buffs.reduce((list: Effect[], buff: Buff) => {
+            if (buff.ownerId !== entity_id && entity_id !== -1) return list; // 不是全局buff或者是持有的buff，忽略
+            if (!buff.hasParam(BuffParams.AFFECT_PROPERTY)) return list; // 不影响属性的buff跳过
+            if (!buff.effect) return list; // 未提供effect属性跳过
+            if (buff.effect.propertyName !== name) return list; // 不是影响该属性跳过
+            if (buff.hasParam(BuffParams.DEPEND_ON)) {
+                if (this.buffs.every(b =>
+                     b.buffId !== buff.dependBuffId && !(b.ownerId === b.dependBuffId && b.name === b.dependBuffName)  // 依赖 不存在
+                )) {
+                    return list;
+                }
+            }
+            return list.concat([buff.effect]);
         }, []); // 过滤出影响该属性的effect
 
         return effects.reduce((current, e: Effect) => {
@@ -298,6 +305,32 @@ export default class Game {
 
         return this.manas[teamId];
     }
+
+    filterBuffByName(entity_id: number, name: string): Buff[] {
+        return filter(this.buffs, buff => buff.name === name);
+    }
+    filterBuffByParam(entity_id: number, ...params: BuffParams[]): Buff[] {
+        return filter(this.buffs, buff => params.some(p => buff.params.includes(p)));
+    }
+    filterBuffByControl(entity_id: number, ...controls: Control[]): Buff[] {
+        return filter(this.buffs, buff => {
+            return buff.params.includes(BuffParams.CONTROL) && !!buff.control && controls.includes(buff.control)
+        });
+    }
+
+    hasBuffByName(entity_id: number, name: string): boolean {
+        return some(this.buffs, buff => buff.name === name);
+    }
+    hasBuffByParam(entity_id: number, ...params: BuffParams[]): boolean {
+        return some(this.buffs, buff => params.some(p => buff.params.includes(p)));
+    }
+    hasBuffByControl(entity_id: number, ...controls: Control[]): boolean {
+        return some(this.buffs, buff => {
+            return buff.params.includes(BuffParams.CONTROL) && !!buff.control && controls.includes(buff.control)
+        });
+    }
+
+
 
     actionAttack(attackInfos: AttackInfo[] | AttackInfo) {
         if (!isArray(attackInfos)) attackInfos = [attackInfos]
@@ -377,15 +410,15 @@ export default class Game {
 
     }
 
-    actionAddBuff(targetId: number, buff: Buff, reason: Reasons = Reasons.NOTHING) {
+    actionAddBuff(buff: Buff, reason: Reasons = Reasons.NOTHING) {
         this.addProcessor((game: Game, data: EventData, step: number) => {
-            const target = this.getEntity(targetId) ;
+            const target = buff.ownerId === -1 ? this.getEntity(buff.ownerId): null;
             const source = this.getEntity(buff.sourceId);
 
             switch (step) {
                 // 命中计算
                 case 1: {
-                    if (!source) return 0;
+                    if (!target) return 0;
                     if (buff.hasParam(BuffParams.SHOULD_COMPUTE_PROBABILITY)) return 2; // 不需要计算概率
                     if (typeof buff.probability !== 'number') return 0;
 
@@ -396,42 +429,47 @@ export default class Game {
                     const notRes = this.testHit(p / res);
 
                     if (!notRes) { // 抵抗了
-                        this.addEventProcessor(EventCodes.BUFF_RES,  targetId,{buff, targetId: targetId});
+                        this.addEventProcessor(EventCodes.BUFF_RES,  target.entityId,{buff, targetId: target.entityId});
                     }
                     return 2;
                 }
                 case 2: {
-                    game.log(`${source ? `【${source.name}(${source.teamId})】` : ''}对【${target.name}(${target.teamId})】添加 【${buff.name}】 Buff`,
+
+                    game.log(`${source ? `【${source.name}(${source.teamId})】` : ''}对`,
+                        target ? `【${target.name}(${target.teamId})】` : '全局',
+                        `添加 【${buff.name}】 Buff`,
                         buff.countDown ? (buff.countDown > 0 ? buff.hasParam(BuffParams.COUNT_DOWN_BY_SOURCE) ? '维持' : '持续' + buff.countDown + '回合' : '') : '');
-                    this.addEventProcessor(EventCodes.BEFORE_BUFF_GET, targetId,{buff, targetId: targetId});
+                    this.addEventProcessor(EventCodes.BEFORE_BUFF_GET, buff.ownerId,{buff, targetId: buff.ownerId});
                     return 3;
                 }
                 case 3: {
-                    target.addBuff(buff);
-                    this.addEventProcessor(EventCodes.BUFF_GET, targetId, {buff, targetId: targetId});
+                    this.buffs.push(buff);
+                    this.addEventProcessor(EventCodes.BUFF_GET, buff.ownerId, {buff, targetId: buff.ownerId});
                     return -1;
                 }
             }
             return 0;
-        }, { targetId, buff, reason}, 'AddBuff');
+        }, { buff, reason}, 'AddBuff');
     }
 
-    actionRemoveBuff(targetId: number, buff: Buff, reason: Reasons = Reasons.NOTHING) {
+    actionRemoveBuff(buff: Buff, reason: Reasons = Reasons.NOTHING) {
         this.addProcessor((game: Game, _: EventData, step: number) => {
-            const target = this.getEntity(targetId);
+            const index = this.buffs.indexOf(buff);
+            if (index === -1) return -1;
             switch (step) {
                 case 1: {
-                    this.addEventProcessor(EventCodes.BEFORE_BUFF_REMOVE, targetId, {buff, targetId: targetId});
+                    this.addEventProcessor(EventCodes.BEFORE_BUFF_REMOVE, buff.ownerId, {buff, targetId: buff.ownerId});
                     return 2;
                 }
                 case 2: {
-                    target.removeBuff(buff);
-                    game.addEventProcessor(EventCodes.BUFF_REMOVE, targetId, {buff, targetId: targetId});
+                   this.buffs.splice(index, 1);
+
+                    game.addEventProcessor(EventCodes.BUFF_REMOVE, buff.ownerId, {buff, targetId: buff.ownerId});
                     return -1;
                 }
             }
             return 0;
-        }, {targetId, buff, reason}, 'RemoveBuff');
+        }, {targetId: buff.ownerId, buff, reason}, 'RemoveBuff');
     }
 
     actionUpdateMana(sourceId: number, teamId: number, num: number, reason: Reasons = Reasons.NOTHING) {

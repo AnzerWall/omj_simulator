@@ -13,13 +13,13 @@ import NormalAttack from '../common/normal-attack';
 import BuffSkill from '../common/buff-skill';
 
 export const akajita_skill1 = new NormalAttack('海扁');
-export const akajita_skill2 = new BuffSkill(2, '鼓舞', 2, (_, sourceId) => [
-    Buff.build(sourceId)
+export const akajita_skill2 = new BuffSkill(2, '鼓舞', 2, (_, sourceId, targetId) => [
+    Buff.build(sourceId,  targetId)
         .name('鼓舞[速]')
         .countDown(2)
         .buff(BattleProperties.SPD, EffectTypes.FIXED, 15)
         .end(),
-    Buff.build(sourceId)
+    Buff.build(sourceId,  targetId)
         .name('鼓舞[暴]')
         .countDown(2)
         .buff(BattleProperties.CRI, EffectTypes.FIXED, 0.11)

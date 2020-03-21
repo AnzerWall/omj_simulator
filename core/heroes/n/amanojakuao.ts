@@ -7,8 +7,8 @@ import BuffSkill from '../common/buff-skill';
 import SingleAttack from '../common/single-attack';
 
 export const amonojakuao_skill1 = new SingleAttack(1, '乱打', 0.33, 0, 3, true);
-export const amonojakuao_skill2 = new BuffSkill(2, '低吟', 2, (_, sourceId) =>
-    Buff.build(sourceId)
+export const amonojakuao_skill2 = new BuffSkill(2, '低吟', 2, (_, sourceId, targetId) =>
+    Buff.build(sourceId, targetId)
         .countDown(1)
         .buff(BattleProperties.SPD, EffectTypes.FIXED, 40)
         .end()

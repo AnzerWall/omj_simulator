@@ -25,7 +25,7 @@ export default class BuffSkill implements Skill {
             let buffs = this.buffBuilder(game, sourceId, e.entityId);
             if (!isArray(buffs)) buffs = [buffs];
 
-            forEach(buffs, b => game.actionAddBuff(e.entityId, b, Reasons.SKILL));
+            forEach(buffs, b => game.actionAddBuff(b, Reasons.SKILL));
         });
 
         return true;

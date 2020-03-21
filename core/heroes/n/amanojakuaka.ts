@@ -8,26 +8,26 @@ export const amonojakuaka_skill2: Skill = {
     cost: 2,
     use(game: Game, sourceId: number, selectedId: number): boolean {
         const buff1 = Buff
-            .build(sourceId)
+            .build(sourceId, selectedId)
             .name('挑衅', 1)
             .control(Control.PROVOKE)
             .noDispel() // 不可驱散
             .countDown(1)
             .probability(1) // 基础概率100%
             .end();
-        const buff2 = Buff.build(sourceId)
+        const buff2 = Buff.build(sourceId, selectedId)
             .name('挑衅[增]')
             .countDown(1)
             .buff(BattleProperties.DMG_DEALT_B, EffectTypes.FIXED, 0.2)
             .end();
-        const buff3 = Buff.build(sourceId)
+        const buff3 = Buff.build(sourceId, selectedId)
             .name('挑衅[易]')
             .countDown(1)
             .debuff(BattleProperties.DMG_TAKEN_D, EffectTypes.FIXED, 0.4)
             .end();
-        game.actionAddBuff(selectedId, buff1, Reasons.SKILL);
-        game.actionAddBuff(selectedId, buff2, Reasons.SKILL);
-        game.actionAddBuff(selectedId, buff3, Reasons.SKILL);
+        game.actionAddBuff( buff1, Reasons.SKILL);
+        game.actionAddBuff( buff2, Reasons.SKILL);
+        game.actionAddBuff( buff3, Reasons.SKILL);
 
         return true;
     },

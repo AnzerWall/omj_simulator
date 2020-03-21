@@ -22,6 +22,7 @@ export default class Entity {
     skills: Skill[];
     rank: string;
     keyValueTable: Map<string, string>;
+    summonToken: boolean; // 是否是召唤物
 
     constructor() {
         this.entityId = ++entityCounter;
@@ -36,6 +37,7 @@ export default class Entity {
         this.skills = [];
         this.rank = 'X';
         this.keyValueTable = new Map<string, string>();
+        this.summonToken = false;
 
         forEach(values(BattleProperties), key => {
             this.setProperty(key, 0);

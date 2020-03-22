@@ -16,19 +16,19 @@ export default class VisibleHero extends Phaser.GameObjects.Container{
         this.setData('heroData', heroData);
         const _avatar = new Phaser.GameObjects.Sprite(scene, 0, 0, `avatar_${heroData.no}`);
         // _avatar.alpha = 0.8;
-        const border = new Phaser.GameObjects.Ellipse(scene, 0, 0, 120, 120);
-        border.strokeColor = Phaser.Display.Color.HexStringToColor('#130707').color32;
-        border.lineWidth = 2;
-        border.isStroked = true;
-        const health = this.health = new Phaser.GameObjects.Arc(scene, 0, 0, 60, 269,  271, true); // 270
+        const _border = new Phaser.GameObjects.Ellipse(scene, 0, 0, 120, 120);
+        _border.strokeColor = Phaser.Display.Color.HexStringToColor('#fff').color32;
+        _border.lineWidth = 2;
+        _border.isStroked = true;
+        const _health = this.health = new Phaser.GameObjects.Arc(scene, 0, 0, 60, 269,  271, true); // 270
         // health.height = health.width = 120;
-        health.fillColor =  Phaser.Display.Color.HexStringToColor('#ff001c').color32;
-        health.isFilled = true;
+        _health.fillColor =  Phaser.Display.Color.HexStringToColor('#be7428').color32; // ff9538
+        _health.isFilled = true;
         // health.closePath = true;
 
-        this.addAt(health, 0);
         this.addAt(_avatar, 1);
-        this.addAt(border, 2);
+        this.addAt(_health, 0);
+        this.addAt(_border, 2);
     }
 
     updateData(heroData: HeroData): void {

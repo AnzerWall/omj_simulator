@@ -17,8 +17,8 @@
 
             this.game = new Phaser.Game({
                 type:Phaser.AUTO,
-                width: 800,
-                height: 400,
+                width: 1920 / 2,
+                height: 971 / 2,
                 parent: this.$refs.container,
                 scene,
                 // transparent: true,

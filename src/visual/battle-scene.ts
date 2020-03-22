@@ -25,23 +25,28 @@ export default class BattleScene extends Phaser.Scene {
     preload() {
 
         // 加载头像
-        this.load.path = 'avatar/';
-        this.load.image('avatar_common', '99.png');
+        this.load.image('bg', 'bg.jpg');
+        this.load.image('avatar_common', 'avatar/99.png');
         this.battle.entities.forEach((e) => {
-            this.load.image(`avatar_${e.no}`, `${e.no}.png`);
+            this.load.image(`avatar_${e.no}`, `avatar/${e.no}.png`);
         });
         console.log('preload');
 
     }
 
     create(){
+        const _bg = this.add.image(this.game.canvas.width / 2, this.game.canvas.height / 2, 'bg');
+        _bg.scale = 0.5;
+
+        // _bg.scale = 0.6;
+
         const battle = this.battle;
         for(let teamId = 0; teamId <= 1; teamId++) {
             const field = battle.fields[teamId] || [];
             for(let pos = 0; pos < field.length; pos++) {
                 if (field[pos] <= 0) continue;
                 const entity = battle.getEntity(field[pos]);
-                const hero = new VisibleHero(this, 100 + pos * 140, 100 + teamId * 140,{
+                const hero = new VisibleHero(this, 100 + pos * 180, 100 + teamId * 280,{
                     hp: entity.hp,
                     shield: 0,
                     maxHp: battle.getComputedProperty(entity.entityId, BattleProperties.MAX_HP),

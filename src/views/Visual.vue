@@ -8,6 +8,7 @@
 <script>
     import Phaser from 'phaser';
     import BattleScene from "@/visual/battle-scene"
+    import { message } from 'ant-design-vue'
 
     export default {
         mounted() {
@@ -34,6 +35,9 @@
                 this.scene.battle.process();
                 while(this.scene.battle.currentTask !== this.scene.battle.rootTask &&  !this.scene.battle.isEnd) {
                     this.scene.battle.process();
+                }
+                if (this.scene.battle.isEnd) {
+                    message.info('胜利者是队伍' + (this.scene.battle.winner + 1) )
                 }
             }
         }

@@ -61,11 +61,27 @@ export const skill2: Skill = {
                 const buffs = battle.filterBuffByName(data.skillOwnerId, '庇护');
                 buffs.forEach(b => {
                     battle.actionRemoveBuff(b, Reasons.SKILL);
-
                 })
             }
         },
         code: EventCodes.TURN_START,
+        range: EventRange.SELF,
+        priority: 0,
+        passive: false,
+    }, {
+        // 庇护效果处理
+        handle(battle: Battle, data: EventData) {
+            if (data.skillOwnerId && data.addBuffProcessing) {
+                const buffs = battle.filterBuffByName(data.skillOwnerId, '庇护');
+                if (buffs.length) {
+                    data.addBuffProcessing.cancel = true; // 抵消
+                    buffs.forEach(b => {
+                        battle.actionRemoveBuff(b, Reasons.SKILL);
+                    })
+                }
+            }
+        },
+        code: EventCodes.BEFORE_BUFF_GET,
         range: EventRange.SELF,
         priority: 0,
         passive: false,

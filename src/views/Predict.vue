@@ -15,7 +15,7 @@
                 size="small"
                 :pagination="false"
         >
-            <span slot="name" slot-scope="name, record">  <a-avatar :src=" '/avator/'+ record.no + '.png'"/>    {{name}}</span>
+            <span slot="name" slot-scope="name, record">  <a-avatar :src=" '/avatar/'+ record.no + '.png'"/>    {{name}}</span>
         </a-table>
 
     </div>

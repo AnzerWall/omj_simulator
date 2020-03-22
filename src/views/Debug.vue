@@ -7,46 +7,46 @@
 <!--        <json-tree :raw="tasks" ></json-tree>-->
         <div v-html="tasks"></div>
 
-<!--        <a-table :dataSource="team1" style="margin: 20px 0;" rowKey="entityId" :pagination="false" size="small" >-->
-<!--            <a-table-column title="id" dataIndex="entityId"/>-->
-<!--            <a-table-column title="名称" dataIndex="name"/>-->
-<!--            <a-table-column title="生命" dataIndex="hp"/>-->
-<!--            <a-table-column title="最大生命" dataIndex="max_hp"/>-->
-<!--            <a-table-column title="攻击" dataIndex="atk"/>-->
-<!--            <a-table-column title="防御" dataIndex="def"/>-->
-<!--            <a-table-column title="速度" dataIndex="spd"/>-->
-<!--            <a-table-column title="暴击" dataIndex="cri"/>-->
-<!--            <a-table-column title="暴击伤害" dataIndex="cri_dmg"/>-->
-<!--            <a-table-column title="效果命中" dataIndex="eft_hit"/>-->
-<!--            <a-table-column title="效果抵抗" dataIndex="eft_res"/>-->
-<!--            <a-table-column title="伤害增加" dataIndex="dmg_dealt_buff"/>-->
-<!--            <a-table-column title="伤害降低" dataIndex="dmg_dealt_debuff"/>-->
-<!--            <a-table-column title="易伤" dataIndex="dmg_taken_buff"/>-->
-<!--            <a-table-column title="减伤" dataIndex="dmg_taken_debuff"/>-->
-<!--            <a-table-column title="忽略防御" dataIndex="def_neg"/>-->
-<!--            <a-table-column title="忽略防御百分比" dataIndex="def_neg_p"/>-->
-<!--            <a-table-column title="生命偷取" dataIndex="hp_steal"/>-->
-<!--        </a-table>-->
-<!--        <a-table :dataSource="team2" rowKey="entityId" :pagination="false" size="small">-->
-<!--            <a-table-column title="id" dataIndex="entityId"/>-->
-<!--            <a-table-column title="名称" dataIndex="name"/>-->
-<!--            <a-table-column title="生命" dataIndex="hp"/>-->
-<!--            <a-table-column title="最大生命" dataIndex="max_hp"/>-->
-<!--            <a-table-column title="攻击" dataIndex="atk"/>-->
-<!--            <a-table-column title="防御" dataIndex="def"/>-->
-<!--            <a-table-column title="速度" dataIndex="spd"/>-->
-<!--            <a-table-column title="暴击" dataIndex="cri"/>-->
-<!--            <a-table-column title="暴击伤害" dataIndex="cri_dmg"/>-->
-<!--            <a-table-column title="效果命中" dataIndex="eft_hit"/>-->
-<!--            <a-table-column title="效果抵抗" dataIndex="eft_res"/>-->
-<!--            <a-table-column title="伤害增加" dataIndex="dmg_dealt_buff"/>-->
-<!--            <a-table-column title="伤害降低" dataIndex="dmg_dealt_debuff"/>-->
-<!--            <a-table-column title="易伤" dataIndex="dmg_taken_buff"/>-->
-<!--            <a-table-column title="减伤" dataIndex="dmg_taken_debuff"/>-->
-<!--            <a-table-column title="忽略防御" dataIndex="def_neg"/>-->
-<!--            <a-table-column title="忽略防御百分比" dataIndex="def_neg_p"/>-->
-<!--            <a-table-column title="生命偷取" dataIndex="hp_steal"/>-->
-<!--        </a-table>-->
+        <a-table :dataSource="team1" style="margin: 20px 0;" rowKey="entityId" :pagination="false" size="small" >
+            <a-table-column title="id" dataIndex="entityId"/>
+            <a-table-column title="名称" dataIndex="name"/>
+            <a-table-column title="生命" dataIndex="hp"/>
+            <a-table-column title="最大生命" dataIndex="max_hp"/>
+            <a-table-column title="攻击" dataIndex="atk"/>
+            <a-table-column title="防御" dataIndex="def"/>
+            <a-table-column title="速度" dataIndex="spd"/>
+            <a-table-column title="暴击" dataIndex="cri"/>
+            <a-table-column title="暴击伤害" dataIndex="cri_dmg"/>
+            <a-table-column title="效果命中" dataIndex="eft_hit"/>
+            <a-table-column title="效果抵抗" dataIndex="eft_res"/>
+            <a-table-column title="伤害增加" dataIndex="dmg_dealt_buff"/>
+            <a-table-column title="伤害降低" dataIndex="dmg_dealt_debuff"/>
+            <a-table-column title="易伤" dataIndex="dmg_taken_buff"/>
+            <a-table-column title="减伤" dataIndex="dmg_taken_debuff"/>
+            <a-table-column title="忽略防御" dataIndex="def_neg"/>
+            <a-table-column title="忽略防御百分比" dataIndex="def_neg_p"/>
+            <a-table-column title="生命偷取" dataIndex="hp_steal"/>
+        </a-table>
+        <a-table :dataSource="team2" rowKey="entityId" :pagination="false" size="small">
+            <a-table-column title="id" dataIndex="entityId"/>
+            <a-table-column title="名称" dataIndex="name"/>
+            <a-table-column title="生命" dataIndex="hp"/>
+            <a-table-column title="最大生命" dataIndex="max_hp"/>
+            <a-table-column title="攻击" dataIndex="atk"/>
+            <a-table-column title="防御" dataIndex="def"/>
+            <a-table-column title="速度" dataIndex="spd"/>
+            <a-table-column title="暴击" dataIndex="cri"/>
+            <a-table-column title="暴击伤害" dataIndex="cri_dmg"/>
+            <a-table-column title="效果命中" dataIndex="eft_hit"/>
+            <a-table-column title="效果抵抗" dataIndex="eft_res"/>
+            <a-table-column title="伤害增加" dataIndex="dmg_dealt_buff"/>
+            <a-table-column title="伤害降低" dataIndex="dmg_dealt_debuff"/>
+            <a-table-column title="易伤" dataIndex="dmg_taken_buff"/>
+            <a-table-column title="减伤" dataIndex="dmg_taken_debuff"/>
+            <a-table-column title="忽略防御" dataIndex="def_neg"/>
+            <a-table-column title="忽略防御百分比" dataIndex="def_neg_p"/>
+            <a-table-column title="生命偷取" dataIndex="hp_steal"/>
+        </a-table>
     </div>
 </template>
 <script>

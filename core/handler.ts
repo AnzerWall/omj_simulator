@@ -1,6 +1,5 @@
-import {EventRange} from './events';
 import {Processor} from './task';
-import {EventCodes} from './constant';
+import {EventCodes, EventRange} from './constant';
 
 export default interface Handler {
     handle: Processor; // 执行

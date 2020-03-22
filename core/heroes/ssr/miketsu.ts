@@ -13,7 +13,7 @@ import {
 } from '../../';
 import {RealEventData, TurnProcessing} from "../../tasks";
 
-export const skill1: Skill = {
+export const miketsu_skill1: Skill = {
     no: 1,
     name: '一矢',
     handlers: [
@@ -44,7 +44,7 @@ export const skill1: Skill = {
         return true;
     },
 };
-export const skill4: Skill = {
+export const miketsu_skill4: Skill = {
     no: 4,
     name: '一矢·封魔',
     cost: 0,
@@ -119,7 +119,7 @@ export const skill4: Skill = {
     },
 };
 
-export const skill2: Skill = {
+export const miketsu_skill2: Skill = {
     no: 2,
     name: '狐狩界',
     handlers: [{
@@ -146,7 +146,7 @@ export const skill2: Skill = {
         return true;
     },
 };
-export const skill3: Skill = {
+export const miketsu_skill3: Skill = {
     no: 3,
     handlers: [],
     passive: false,

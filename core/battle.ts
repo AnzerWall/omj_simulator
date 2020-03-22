@@ -160,7 +160,7 @@ export default class Battle {
     }
 
     addEventProcessor(code: EventCodes, eventId: number, data?: any): number {
-        const eventEntity = eventId === 0 ? null :this.getEntity(eventId);
+        const eventEntity = eventId <= 0 ? null :this.getEntity(eventId);
         const processing: EventProcessing = new EventProcessing(code);
         this.entities.forEach(entity => {
             forEach(entity.skills, (skill: Skill) => {

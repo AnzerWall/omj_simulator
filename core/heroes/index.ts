@@ -15,6 +15,8 @@ import {amanojakuki_skill1, amanojakuki_skill2} from './n/amanojakuki';
 import {amonojakuaka_skill1, amonojakuaka_skill2} from './n/amanojakuaka';
 import {akajita_skill1, akajita_skill2, akajita_skill3} from './n/akajita';
 import {TurnProcessing} from "../tasks";
+import {miketsu_skill1, miketsu_skill2, miketsu_skill3, miketsu_skill4} from "./ssr/miketsu";
+import {ootengu_skill1, ootengu_skill2, ootengu_skill3} from "./ssr/ootengu";
 
 export const HeroTable = new Map<number, any>(map(HeroData, (data) => [data.id, data]));
 export const HeroTableByName = new Map<string, any>(map(HeroData, (data) => [data.name, data]));
@@ -105,7 +107,20 @@ HERO('涂壁', [
     nurikabes_skill2
 ]);
 
+//
 
+
+HERO('御馔津', [
+    miketsu_skill1,
+    miketsu_skill2,
+    miketsu_skill3,
+    miketsu_skill4,
+]);
+HERO('大天狗', [
+    ootengu_skill1,
+    ootengu_skill2,
+    ootengu_skill3,
+]);
 
 
 

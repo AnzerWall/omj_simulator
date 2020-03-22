@@ -3,16 +3,15 @@ import {
     Buff,
     EffectTypes,
     EventCodes,
-    EventData,
     EventRange,
     Battle,
     Reasons,
-    Skill
+    Skill, RealEventData, AddBuffProcessing
 } from '../../index';
 import NormalAttack from '../common/normal-attack';
 import GroupAttack from '../common/group-attack';
 
-export const skill1: Skill = new NormalAttack('风袭');
+export const ootengu_skill1: Skill = new NormalAttack('风袭');
 
 function buildBuff1(s: number, t: number): Buff {
     return Buff.build(s, t)
@@ -27,14 +26,14 @@ function buildBuff2(s: number, t: number): Buff {
         .effect(BattleProperties.DMG_DEALT_B, EffectTypes.FIXED , 0.01)
         .end()
 }
-export const skill2: Skill = {
+export const ootengu_skill2: Skill = {
     no: 2,
     name: '钢铁之羽',
     passive: true,
     cost: 0,
     handlers: [{
         // 战斗开始：获得庇护
-        handle(battle: Battle, data: EventData) {
+        handle(battle: Battle, data: RealEventData) {
             if (data.skillOwnerId) {
                 battle.actionAddBuff(buildBuff1(data.skillOwnerId, data.skillOwnerId), Reasons.SKILL);
             }
@@ -45,7 +44,7 @@ export const skill2: Skill = {
         passive: true,
     }, {
         // 回合结束：获得庇护
-        handle(battle: Battle, data: EventData) {
+        handle(battle: Battle, data: RealEventData) {
             if (data.skillOwnerId) {
                 battle.actionAddBuff(buildBuff1(data.skillOwnerId, data.skillOwnerId), Reasons.SKILL);
             }
@@ -56,7 +55,7 @@ export const skill2: Skill = {
         passive: true,
     }, {
         // 回合开始：失去庇护
-        handle(battle: Battle, data: EventData) {
+        handle(battle: Battle, data: RealEventData) {
             if (data.skillOwnerId) {
                 const buffs = battle.filterBuffByName(data.skillOwnerId, '庇护');
                 buffs.forEach(b => {
@@ -70,11 +69,11 @@ export const skill2: Skill = {
         passive: false,
     }, {
         // 庇护效果处理
-        handle(battle: Battle, data: EventData) {
-            if (data.skillOwnerId && data.addBuffProcessing) {
+        handle(battle: Battle, data: RealEventData) {
+            if (data.skillOwnerId && data.data) {
                 const buffs = battle.filterBuffByName(data.skillOwnerId, '庇护');
                 if (buffs.length) {
-                    data.addBuffProcessing.cancel = true; // 抵消
+                    ( data.data as AddBuffProcessing).cancel = true; // 抵消
                     buffs.forEach(b => {
                         battle.actionRemoveBuff(b, Reasons.SKILL);
                     })
@@ -87,7 +86,7 @@ export const skill2: Skill = {
         passive: false,
     },{
         // 造成伤害时: 获得雄姿英发
-        handle(battle: Battle, data: EventData) {
+        handle(battle: Battle, data: RealEventData) {
             if(battle.testHit(0.5) && data.skillOwnerId) {
                 battle.actionAddBuff(buildBuff2(data.skillOwnerId, data.skillOwnerId), Reasons.SKILL);
             }
@@ -98,4 +97,4 @@ export const skill2: Skill = {
         passive: true,
     }]
 };
-export const skill3: Skill = new GroupAttack(3,'羽刃暴风', 0.45, 3, 4);
+export const ootengu_skill3: Skill = new GroupAttack(3,'羽刃暴风', 0.45, 3, 4);

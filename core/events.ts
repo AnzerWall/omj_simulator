@@ -3,6 +3,22 @@ import Buff from './buff';
 import TurnData from './turn-data';
 import {Reasons} from './constant';
 
+export class AddBuffProcessing {
+    isHit: boolean = false;
+    isRes: boolean = false; // 是否抵抗
+    cancel: boolean = false;
+
+
+    constructor(public buff: Buff, public reason: Reasons) {
+
+    }
+}
+export class RemoveBuffProcessing {
+
+    constructor(public buff: Buff, public reason: Reasons) {
+
+    }
+}
 export enum EventRange {
     NONE,
     SELF,
@@ -22,8 +38,9 @@ export interface EventData {
 
     attackInfo?: AttackInfo;
     attackInfos?: AttackInfo[];
+    removeBuffProcessing? : RemoveBuffProcessing;
+    addBuffProcessing? : AddBuffProcessing;
 
-    buff?: Buff;
     turnData?: TurnData;
     percent?: number;
     reason?: Reasons;

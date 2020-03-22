@@ -2,15 +2,15 @@ import {filter, forEach, isArray, some} from 'lodash';
 import Entity from './entity';
 import Mana from './mana';
 import Runway from './runway';
-import {BattleProperties, BuffParams, Control, EventCodes, Reasons} from './constant';
+import { BuffParams, Control, EventCodes, Reasons} from './constant';
 import {HeroBuilders} from './heroes';
-import {EventData, EventRange} from './events';
+import {EventData, EventRange, RemoveBuffProcessing, AddBuffProcessing} from './events';
 import Skill from './skill';
 import {AttackInfo} from './attack';
 import {MersenneTwister19937, Random} from 'random-js';
-import Buff, {Effect, EffectTypes} from './buff';
+import Buff, { Effect, EffectTypes} from './buff';
 import Task, {Processor} from './task';
-import {attackProcessor, battleProcessor} from './tasks';
+import {addBuffProcessor, attackProcessor, battleProcessor, removeBuffProcessor} from './tasks';
 import Handler from './handler';
 
 
@@ -126,8 +126,8 @@ export default class Battle {
         }
     }
 
-    addProcessor(processor: Processor, data: EventData = {}, type = '') {
-        this.currentTask.children.push({
+    addProcessor(processor: Processor, data: EventData = {}, type = ''): number {
+        const task = {
             step: 1,
             children: [],
             processor,
@@ -136,7 +136,9 @@ export default class Battle {
             data,
             depth: this.currentTask.depth + 1,
             taskId: ++this.taskCounter,
-        });
+        };
+        this.currentTask.children.push(task);
+        return task.taskId;
     }
 
     addEventProcessor(code: EventCodes, eventId: number, data: EventData = {}): number {
@@ -335,7 +337,7 @@ export default class Battle {
 
 
     actionAttack(attackInfos: AttackInfo[] | AttackInfo) {
-        if (!isArray(attackInfos)) attackInfos = [attackInfos]
+        if (!isArray(attackInfos)) attackInfos = [attackInfos];
         this.addProcessor(attackProcessor, {attackInfos}, 'Attack');
         return true;
     }
@@ -423,73 +425,13 @@ export default class Battle {
     }
 
     actionAddBuff(buff: Buff, reason: Reasons = Reasons.NOTHING) {
-        this.addProcessor((battle: Battle, data: EventData, step: number) => {
-            const target = buff.ownerId === -1 ? this.getEntity(buff.ownerId): null;
-            const source = this.getEntity(buff.sourceId);
-
-            switch (step) {
-                // 命中计算
-                case 1: {
-                    if (!target) return 0;
-                    if (buff.hasParam(BuffParams.SHOULD_COMPUTE_PROBABILITY)) return 2; // 不需要计算概率
-                    if (typeof buff.probability !== 'number') return 0;
-
-                    const p = buff.probability * (1 + battle.getComputedProperty(source.entityId, BattleProperties.EFT_HIT)); // 基础命中×（1+效果命中）
-                    const isHit = this.testHit(p);
-                    if (!isHit) return -1; // 未命中
-                    const res = 1 + battle.getComputedProperty(target.entityId, BattleProperties.EFT_RES); // (1 + 效果抵抗)
-                    const notRes = this.testHit(p / res);
-
-                    if (!notRes) { // 抵抗了
-                        this.addEventProcessor(EventCodes.BUFF_RES,  target.entityId,{buff, targetId: target.entityId});
-                    }
-                    return 2;
-                }
-                case 2: {
-
-                    battle.log(`${source ? `【${source.name}(${source.teamId})】` : ''}对`,
-                        target ? `【${target.name}(${target.teamId})】` : '全局',
-                        `添加 【${buff.name}】 Buff`,
-                        buff.countDown ? (buff.countDown > 0 ? buff.hasParam(BuffParams.COUNT_DOWN_BY_SOURCE) ? '维持' : '持续' + buff.countDown + '回合' : '') : '');
-                    this.addEventProcessor(EventCodes.BEFORE_BUFF_GET, buff.ownerId,{buff, targetId: buff.ownerId});
-                    return 3;
-                }
-                case 3: {
-                    if (buff.maxCount && buff.maxCount > 0 && buff.name) {
-                        const sameBuffs = this.buffs.filter(b => b.ownerId === buff.ownerId && b.name === buff.name);
-                        if (sameBuffs.length >= buff.maxCount) {
-                            const index = this.buffs.indexOf(sameBuffs[0]);
-                            if (index === -1) return -1;
-                            this.buffs.splice(index, 1);
-                        }
-                    }
-                    this.buffs.push(buff);
-                    this.addEventProcessor(EventCodes.BUFF_GET, buff.ownerId, {buff, targetId: buff.ownerId});
-                    return -1;
-                }
-            }
-            return 0;
-        }, { buff, reason}, 'AddBuff');
+        const addBuffProcessing = new AddBuffProcessing(buff, reason);
+        this.addProcessor(addBuffProcessor, { addBuffProcessing }, 'AddBuff');
     }
 
     actionRemoveBuff(buff: Buff, reason: Reasons = Reasons.NOTHING) {
-        this.addProcessor((battle: Battle, _: EventData, step: number) => {
-            const index = this.buffs.indexOf(buff);
-            if (index === -1) return -1;
-            switch (step) {
-                case 1: {
-                    this.addEventProcessor(EventCodes.BEFORE_BUFF_REMOVE, buff.ownerId, {buff, targetId: buff.ownerId});
-                    return 2;
-                }
-                case 2: {
-                   this.buffs.splice(index, 1);
-
-                    battle.addEventProcessor(EventCodes.BUFF_REMOVE, buff.ownerId, {buff, targetId: buff.ownerId});
-                    return -1;
-                }
-            }
-            return 0;
-        }, {targetId: buff.ownerId, buff, reason}, 'RemoveBuff');
+        const removeBuffProcessing = new RemoveBuffProcessing(buff, reason);
+        this.addProcessor(removeBuffProcessor, {removeBuffProcessing}, 'RemoveBuff');
     }
 
     actionUpdateMana(sourceId: number, teamId: number, num: number, reason: Reasons = Reasons.NOTHING) {

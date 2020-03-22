@@ -1,12 +1,15 @@
 import {
+    AddBuffProcessing,
+    Battle,
     BattleProperties,
     Buff,
+    BuffParams,
     EffectTypes,
     EventCodes,
     EventRange,
-    Battle,
+    RealEventData,
     Reasons,
-    Skill, RealEventData, AddBuffProcessing
+    Skill
 } from '../../index';
 import NormalAttack from '../common/normal-attack';
 import GroupAttack from '../common/group-attack';
@@ -70,7 +73,7 @@ export const ootengu_skill2: Skill = {
     }, {
         // 庇护效果处理
         handle(battle: Battle, data: RealEventData) {
-            if (data.skillOwnerId && data.data) {
+            if (data.skillOwnerId && data.data && (data.data as AddBuffProcessing).buff.hasParam(BuffParams.CONTROL)) {
                 const buffs = battle.filterBuffByName(data.skillOwnerId, '庇护');
                 if (buffs.length) {
                     ( data.data as AddBuffProcessing).cancel = true; // 抵消

@@ -12,10 +12,12 @@ import {
     Skill
 } from '../../';
 import {RealEventData, TurnProcessing} from "../../tasks";
+import {SkillTarget} from "../../skill";
 
 export const miketsu_skill1: Skill = {
     no: 1,
     name: '一矢',
+    target:  SkillTarget.ENEMY,
     handlers: [
         {
             handle(battle: Battle, data: RealEventData) {
@@ -24,7 +26,7 @@ export const miketsu_skill1: Skill = {
                 const isHit = battle.testHit(p);
                 if (isHit) {
                     // 需要起一个伪回合？
-                    battle.actionUseSkill(4, data.skillOwnerId, data.eventId); // TODO: 混乱时随机普攻
+                    battle.actionUseSkill(4, data.skillOwnerId, data.eventId, 0); // TODO: 混乱时随机普攻
                 }
             },
             code: EventCodes.ACTION_END, // 监听行动结束事件
@@ -48,6 +50,8 @@ export const miketsu_skill4: Skill = {
     no: 4,
     name: '一矢·封魔',
     cost: 0,
+    hide: true,
+    target:  SkillTarget.ENEMY,
     use(battle: Battle, sourceId: number, selectedId: number): boolean {
         const at = Attack.build(selectedId, sourceId)
             .rate(1)
@@ -122,11 +126,12 @@ export const miketsu_skill4: Skill = {
 export const miketsu_skill2: Skill = {
     no: 2,
     name: '狐狩界',
+    target:  SkillTarget.SELF,
     handlers: [{
         // 先机：释放狐狩界
         handle(battle: Battle, data: RealEventData) {
             if (!data.skillOwnerId) return 0;
-            battle.actionUseSkill(2, data.skillOwnerId, data.skillOwnerId);
+            battle.actionUseSkill(2, data.skillOwnerId, data.skillOwnerId, 0);
             return -1;
         },
         code: EventCodes.SENKI,
@@ -152,6 +157,7 @@ export const miketsu_skill3: Skill = {
     passive: false,
     name: '燃爆·破魔箭',
     cost: 3,
+    target:  SkillTarget.ENEMY,
     use(battle: Battle, sourceId: number, selectedId: number): boolean {
         const buffs = battle.filterBuffBySource(-1, sourceId).filter(b => ['狐狩界·防御', '狐狩界·伤害', '狐狩界·速度'].includes(b.name)); // 来源是我的灵符
         const at = Attack.build(selectedId, sourceId)

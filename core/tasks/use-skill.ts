@@ -1,7 +1,7 @@
 import {Reasons, Battle} from "../";
 
 export class UseSkillProcessing {
-    constructor(public no: number, public sourceId: number, public selectedId: number, public reason: Reasons = Reasons.NOTHING) {
+    constructor(public no: number, public sourceId: number, public selectedId: number, public cost: number, public reason: Reasons = Reasons.NOTHING) {
 
     }
 }
@@ -14,12 +14,10 @@ export default function useSkillProcessor(battle: Battle, data: UseSkillProcessi
     const skill = source.getSkill(data.no);
     switch (step) {
         case 1 : {
-            if (skill.check && !skill.check(battle, data.sourceId)) return 0;
-            const cost = typeof skill.cost === 'number' ? skill.cost : skill.cost(battle, data.sourceId);
             battle.log(`【${source.name}(${source.teamId})】对【${selected.name}(${selected.teamId})】使用技能【${skill.name}】`);
 
-            if (cost > 0) {
-                // battle.actionUpdateMana(source.entityId, source.teamId, -cost, Reasons.COST);
+            if (data.cost > 0) {
+                battle.actionUpdateMana(source.entityId, source.teamId, -data.cost, Reasons.COST);
             }
             return 2;
         }

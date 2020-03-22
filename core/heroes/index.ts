@@ -17,13 +17,14 @@ import {akajita_skill1, akajita_skill2, akajita_skill3} from './n/akajita';
 import {TurnProcessing} from "../tasks";
 import {miketsu_skill1, miketsu_skill2, miketsu_skill3, miketsu_skill4} from "./ssr/miketsu";
 import {ootengu_skill1, ootengu_skill2, ootengu_skill3} from "./ssr/ootengu";
+import {AI} from "../entity";
 
 export const HeroTable = new Map<number, any>(map(HeroData, (data) => [data.id, data]));
 export const HeroTableByName = new Map<string, any>(map(HeroData, (data) => [data.name, data]));
 export const HeroBuilders = new Map<number, () => Entity>();
 export {HeroData};
 
-function build(no: number, tags: string[], ai: (battle: Battle, turnData: TurnProcessing) => boolean, ...skills: Skill[]) {
+function build(no: number, tags: string[], ai: AI, ...skills: Skill[]) {
     const data = HeroTable.get(no);
     HeroBuilders.set(no, function (): Entity {
         const entity = new Entity();
@@ -55,7 +56,7 @@ HeroTable.forEach((_, no: number) => {
     build(no, ['simple'], normalAI, new NormalAttack('普通攻击'));
 });
 
-function HERO(name: string, skills: Skill[], ai: (battle: Battle, turnData: TurnProcessing) => boolean = normalAI) {
+function HERO(name: string, skills: Skill[], ai: AI = normalAI) {
     const dd = HeroData.find(d => d.name === name.trim());
     if (!dd) throw new Error('找不到[' + name + ']');
     build(dd.id, [], ai, ...skills);

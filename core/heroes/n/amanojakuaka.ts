@@ -1,12 +1,14 @@
 import {BattleProperties, Buff, Control, EffectTypes, Battle, Reasons, Skill} from '../../';
 import NormalAttack from '../common/normal-attack';
+import {SkillTarget} from "../../skill";
 
 export const amonojakuaka_skill1 = new NormalAttack('肉弹战车');
 export const amonojakuaka_skill2: Skill = {
     no: 2,
     name: '挑衅',
     cost: 2,
-    use(battle: Battle, sourceId: number, selectedId: number): boolean {
+    target: SkillTarget.ENEMY,
+use(battle: Battle, sourceId: number, selectedId: number): boolean {
         const buff1 = Buff
             .build(sourceId, selectedId)
             .name('挑衅', 1)

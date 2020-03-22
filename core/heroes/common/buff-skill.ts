@@ -1,5 +1,6 @@
 import {Buff, Skill, Handler, Battle, Reasons} from '../../';
 import { forEach, isArray } from 'lodash';
+import {SkillTarget} from "../../skill";
 type BuffBuilder = (battle: Battle, sourceId: number, targetId: number) => Buff[] | Buff;
 export default class BuffSkill implements Skill {
     no: number;
@@ -8,13 +9,12 @@ export default class BuffSkill implements Skill {
     handlers: Handler[] = [];
     passive: boolean = false;
     buffBuilder: BuffBuilder;
-
+    target: SkillTarget =  SkillTarget.TEAM;
     constructor(no: number, name: string, cost: number, buffBuilder: BuffBuilder) {
         this.no = no;
         this.name = name;
         this.cost = cost;
         this.buffBuilder = buffBuilder;
-
     }
 
     use(battle: Battle, sourceId: number, _: number): boolean {

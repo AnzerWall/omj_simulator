@@ -1,10 +1,13 @@
 import Battle from './battle';
 import {forEach, isNil, values} from 'lodash';
-import Skill from './skill';
+import Skill, {SelectableSkill, SkillSelection} from './skill';
 import {BattleProperties} from './constant';
 import {TurnProcessing} from "./tasks";
+import {Mana} from "./index";
 
 let entityCounter = 0;
+
+export type AI = (battle: Battle, turnData: TurnProcessing, mana: Mana | null, selections: SelectableSkill[]) =>  SkillSelection| null
 export default class Entity {
     static no: number = 0;
     no: number;
@@ -117,7 +120,7 @@ export default class Entity {
 
 
 
-    ai: (battle: Battle, turnData: TurnProcessing) => boolean = () => true;
+    ai: AI = () =>({ no: 0, targetId: 0});
 
 
     getSkill(no: number): Skill {

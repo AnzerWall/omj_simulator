@@ -1,5 +1,6 @@
 import {Attack, AttackParams, BattleProperties, Battle, Skill} from '../../';
 import GroupAttack from '../common/group-attack';
+import {SkillTarget} from "../../skill";
 
 export const houkikami_skill1: Skill = {
     no: 1,
@@ -7,6 +8,7 @@ export const houkikami_skill1: Skill = {
     passive: false,
     cost: 0,
     name: '蓄力一攻',
+    target:  SkillTarget.ENEMY,
     use(battle: Battle, sourceId: number, selectedId: number): boolean {
         const at = Attack.build(selectedId, sourceId)
             .rate(1)

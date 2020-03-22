@@ -1,4 +1,5 @@
 import { Attack, AttackParams, Battle, Handler, Skill} from '../../';
+import {SkillTarget} from "../../skill";
 
 /**
  * 创建一个单体多段可以触发暴击的普通伤害技能
@@ -14,7 +15,7 @@ export default class SingleAttack implements Skill {
     times: number;
     isNormalAttack: boolean;
     FR: number;
-
+    target: SkillTarget =  SkillTarget.ENEMY
     constructor(no: number, name: string, rate: number, cost: number, times: number = 1, isNormalAttack: boolean = false, FR: number = 0.01) {
         this.no = no;
         this.name = name;

@@ -1,13 +1,18 @@
-import {Battle} from '../../index';
+import {Battle, Mana} from '../../index';
 import {TurnProcessing} from '../../tasks';
+import {SelectableSkill, SkillSelection} from "../../skill";
 
-export function normalAI(battle: Battle, turnData: TurnProcessing): boolean {
-    const enemy = battle.getRandomEnemy(turnData.currentId);
-    if (enemy) {
-        battle.actionUseSkill(1, turnData.currentId, enemy.entityId);
-
+export function normalAI(battle: Battle, turnData: TurnProcessing, mana: Mana | null, selections: SelectableSkill[]): SkillSelection| null {
+    for(const s of selections) {
+        if (s.no === 1 && s.targets.length) {
+            return {
+                no: s.no,
+                targetId: battle.getRandomOne(s.targets),
+            };
+        }
     }
-    return true;
+
+    return null;
 }
 
 // export default class AkaJita extends Entity {

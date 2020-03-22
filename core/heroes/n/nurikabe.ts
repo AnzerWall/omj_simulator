@@ -7,6 +7,7 @@ import {
     Reasons,
 } from '../../';
 import NormalAttack from '../common/normal-attack';
+import {SkillTarget} from "../../skill";
 
 
 export const nurikabes_skill1 = new NormalAttack('地震');
@@ -14,6 +15,7 @@ export const nurikabes_skill2: Skill = {
     no: 2,
     name: '坚壁',
     cost: 2,
+    target:  SkillTarget.TEAM,
     use(battle: Battle, sourceId: number, _: number): boolean {
         const source = battle.getEntity(sourceId);
 

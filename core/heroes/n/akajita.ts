@@ -11,6 +11,7 @@ import {
 import NormalAttack from '../common/normal-attack';
 import BuffSkill from '../common/buff-skill';
 import {AttackProcessing} from "../../tasks";
+import {SkillTarget} from "../../skill";
 
 export const akajita_skill1 = new NormalAttack('海扁');
 export const akajita_skill2 = new BuffSkill(2, '鼓舞', 2, (_, sourceId, targetId) => [
@@ -29,6 +30,7 @@ export const akajita_skill3: Skill = {
     no: 3,
     cost: 3,
     name: '风鼓雷',
+    target: SkillTarget.ENEMY,
     use(battle: Battle, sourceId: number, selectedId: number): boolean {
         const selected = battle.getEntity(selectedId);
         const entities = battle.getTeamEntities(selected.teamId);

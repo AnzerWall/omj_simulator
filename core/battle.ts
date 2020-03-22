@@ -240,7 +240,9 @@ export default class Battle {
     testHit(p: number): boolean {
         return this.random.real(0, 1) <= p;
     }
-
+    getRandomOne<T>(arr: T[]): T {
+        return arr[this.random.integer(0, arr.length - 1)];
+    }
     getRandomEnemy(entityId: number): Entity | null {
         const list: Entity[] = this.getEnemies(entityId);
         if (!list.length) return null;
@@ -341,8 +343,8 @@ export default class Battle {
     }
 
 
-    actionUseSkill(no: number, sourceId: number, selectedId: number, reason: Reasons = Reasons.NOTHING) {
-        this.addProcessor(useSkillProcessor, new UseSkillProcessing(no, sourceId, selectedId, reason), 'UseSkill');
+    actionUseSkill(no: number, sourceId: number, selectedId: number, cost: number, reason: Reasons = Reasons.NOTHING) {
+        this.addProcessor(useSkillProcessor, new UseSkillProcessing(no, sourceId, selectedId, cost, reason), 'UseSkill');
 
     }
 

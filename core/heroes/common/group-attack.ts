@@ -1,4 +1,5 @@
 import {Attack, AttackParams, Battle, Handler, Skill} from '../../';
+import {SkillTarget} from "../../skill";
 
 /**
  * 创建一个群体多段可以触发暴击的普通伤害技能
@@ -12,7 +13,7 @@ export default class GroupAttack implements Skill {
     rate: number;
     times: number;
     cost: number;
-
+    target: SkillTarget =  SkillTarget.ENEMY;
     constructor(no: number, name: string, rate: number, cost: number, times: number = 1) {
         this.no = no;
         this.name = name;

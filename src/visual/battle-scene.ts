@@ -10,9 +10,11 @@ type BattleData = {
 }
 export default class BattleScene extends Phaser.Scene {
     battle: Battle;
+    heros: Map<number, VisibleHero>;
     constructor(data: BattleData[]) {
         super({});
         this.battle = new Battle(data);
+        this.heros = new Map<number, VisibleHero>();
     }
 
     init() {
@@ -39,16 +41,17 @@ export default class BattleScene extends Phaser.Scene {
             for(let pos = 0; pos < field.length; pos++) {
                 if (field[pos] <= 0) continue;
                 const entity = battle.getEntity(field[pos]);
-                new VisibleHero(this, {
+                const hero = new VisibleHero(this, 100 + pos * 140, 100 + teamId * 140,{
                     hp: entity.hp,
                     shield: 0,
-                    maxHp: battle.getComputedProperty(entity.entityId, BattleProperties.ATK),
+                    maxHp: battle.getComputedProperty(entity.entityId, BattleProperties.MAX_HP),
                     isDead: entity.dead,
                     teamId: teamId,
                     entityId: entity.entityId,
-                    pos,
                     no: entity.no,
                 });
+                this.children.add(hero);
+                this.heros.set(entity.entityId, hero)
 
             }
         }
@@ -56,6 +59,34 @@ export default class BattleScene extends Phaser.Scene {
         console.log('create');
 
     }
+
+    update(_: number, __: number): void {
+
+        const battle = this.battle;
+        // let once = true;
+        battle.entities.forEach(entity => {
+           const hero = this.heros.get(entity.entityId);
+
+           if (hero) {
+               const data = {
+                   hp: entity.hp,
+                   shield: 0,
+                   maxHp: battle.getComputedProperty(entity.entityId, BattleProperties.MAX_HP),
+                   isDead: entity.dead,
+                   teamId: entity.teamId,
+                   entityId: entity.entityId,
+                   no: entity.no,
+               };
+               // if (once) {
+               //     console.log(`(${data.maxHp} - ${data.hp}) / ${data.maxHp} = ${((data.maxHp - data.hp)/ data.maxHp) * 180}`);
+               //     once = false;
+               // }
+
+               hero.updateData(data);
+           }
+        });
+    }
+
     syncData() {
         // this.team1 = [];
         // this.team2 = [];

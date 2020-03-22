@@ -12,21 +12,29 @@
     export default {
         mounted() {
             const data = this.$store.state.team0.concat(this.$store.state.team1)
-            const scene = new BattleScene(data);
+            const scene = this.scene = new BattleScene(data);
 
-            new Phaser.Game({
+            this.game = new Phaser.Game({
                 type:Phaser.AUTO,
-                width: 1000,
-                height: 700,
+                width: 800,
+                height: 400,
                 parent: this.$refs.container,
                 scene,
+                // transparent: true,
+                backgroundColor: '#fff',
             })
 
+        },
+        unmounted() {
+            this.game.destroy(true);
         },
         methods: {
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             step() {
-
+                this.scene.battle.process();
+                while(this.scene.battle.currentTask !== this.scene.battle.rootTask &&  !this.scene.battle.isEnd) {
+                    this.scene.battle.process();
+                }
             }
         }
 

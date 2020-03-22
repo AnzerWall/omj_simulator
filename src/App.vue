@@ -25,7 +25,7 @@
                     <span>式神列表</span>
                 </a-menu-item>
                 <a-menu-item key="/visual">
-                    <a-icon type="table"/>
+                    <a-icon type="fire"/>
                     <span>可视化模拟</span>
                 </a-menu-item>
             </a-menu>

@@ -17,10 +17,10 @@ export default function addBuffProcessor(battle: Battle, data: AddBuffProcessing
     switch (step) {
         // 数据准备
         case 1: {
-            battle.log(`${source ? `【${source.name}(${source.teamId})】` : ''}准备对对`,
+            battle.log(`${source ? `【${source.name}(${source.teamId})】` : ''} 准备对`,
                 target ? `【${target.name}(${target.teamId})】` : '全局',
                 `添加 【${buff.name}】 Buff`,
-                buff.countDown ? (buff.countDown > 0 ? buff.hasParam(BuffParams.COUNT_DOWN_BY_SOURCE) ? '维持' : '持续' + buff.countDown + '回合' : '') : '');
+                buff.countDown  ? (buff.hasParam(BuffParams.COUNT_DOWN_BY_SOURCE) ? '维持' : '持续') + buff.countDown + '回合'  : '');
             battle.addEventProcessor(EventCodes.BEFORE_BUFF_GET, buff.ownerId,data);
             return 2;
         }

@@ -42,7 +42,7 @@ export const skill2: Skill = {
         code: EventCodes.BATTLE_START,
         range: EventRange.NONE,
         priority: 0,
-        passive: false,
+        passive: true,
     }, {
         // 回合结束：获得庇护
         handle(battle: Battle, data: EventData) {
@@ -53,7 +53,7 @@ export const skill2: Skill = {
         code: EventCodes.TURN_END,
         range: EventRange.SELF,
         priority: 0,
-        passive: false,
+        passive: true,
     }, {
         // 回合开始：失去庇护
         handle(battle: Battle, data: EventData) {
@@ -95,7 +95,7 @@ export const skill2: Skill = {
         code: EventCodes.DAMAGE,
         range: EventRange.SELF,
         priority: 0,
-        passive: false,
+        passive: true,
     }]
 };
 export const skill3: Skill = new GroupAttack(3,'羽刃暴风', 0.45, 3, 4);

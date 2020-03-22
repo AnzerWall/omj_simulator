@@ -1,4 +1,4 @@
-import {AttackInfo, AttackParams, Battle, Handler, Skill} from '../../';
+import {Attack, AttackParams, Battle, Handler, Skill} from '../../';
 
 /**
  * 创建一个群体多段可以触发暴击的普通伤害技能
@@ -27,11 +27,12 @@ export default class GroupAttack implements Skill {
         const entities = battle.getTeamEntities(selected.teamId);
 
         for (let i = 0; i < this.times; i++) {
-            const infos = entities.map(e => new AttackInfo(e.entityId, {
-                sourceId,
-                rate: this.rate,
-                params: [AttackParams.SHOULD_COMPUTE_CRI, AttackParams.GROUP],
-            }));
+            const infos = entities.map(e => Attack.build(e.entityId, sourceId)
+                .rate(this.rate)
+                .shouldComputeCri()
+                .group()
+                .end()
+            );
             battle.actionAttack(infos);
         }
         return true;

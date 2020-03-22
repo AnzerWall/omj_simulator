@@ -1,30 +1,30 @@
 import {
-    AttackInfo,
+    Attack,
     AttackParams,
     BattleProperties,
     Buff,
     Control,
     EffectTypes,
     EventCodes,
-    EventData,
     EventRange,
     Battle,
     Reasons,
     Skill
 } from '../../';
+import {RealEventData, TurnProcessing} from "../../tasks";
 
 export const skill1: Skill = {
     no: 1,
     name: '一矢',
     handlers: [
         {
-            handle(battle: Battle, data: EventData) {
-                if (!data.skillOwnerId || !data.targetId) return 0;
+            handle(battle: Battle, data: RealEventData) {
+                if (!data.skillOwnerId || !data.eventId) return 0;
                 const p = battle.hasBuffByName(data.skillOwnerId, '狐狩界') ? 0.4 : 0.05; // 结界启动期间提升概率
                 const isHit = battle.testHit(p);
                 if (isHit) {
                     // 需要起一个伪回合？
-                    battle.actionUseSkill(4, data.skillOwnerId, data.targetId); // TODO: 混乱时随机普攻
+                    battle.actionUseSkill(4, data.skillOwnerId, data.eventId); // TODO: 混乱时随机普攻
                 }
             },
             code: EventCodes.ACTION_END, // 监听行动结束事件
@@ -35,11 +35,11 @@ export const skill1: Skill = {
     ],
     cost: 0,
     use(battle: Battle, sourceId: number, selectedId: number): boolean {
-        const at = new AttackInfo(selectedId, {
-            sourceId,
-            rate: 1,
-            params: [AttackParams.SHOULD_COMPUTE_CRI, AttackParams.SINGLE, AttackParams.NORMAL_ATTACK],
-        });
+        const at = Attack.build(selectedId, sourceId)
+            .rate(1)
+            .shouldComputeCri()
+            .normalAttack()
+            .end();
         battle.actionAttack(at);
         return true;
     },
@@ -49,17 +49,16 @@ export const skill4: Skill = {
     name: '一矢·封魔',
     cost: 0,
     use(battle: Battle, sourceId: number, selectedId: number): boolean {
-        const at = new AttackInfo(selectedId, {
-            sourceId,
-            rate: 1,
-            params: [
+        const at = Attack.build(selectedId, sourceId)
+            .rate(1)
+            .param(
                 AttackParams.SHOULD_COMPUTE_CRI, // 触发暴击
                 AttackParams.SINGLE, // 单体
                 AttackParams.NORMAL_ATTACK, // 普攻
                 AttackParams.NO_TARGET_EQUIPMENT, // 不触发御魂
                 AttackParams.NO_TARGET_PASSIVE // 不触发被动
-            ],
-        });
+            )
+            .end();
         battle.actionAttack(at);
 
         // 处理附带的四个debuff
@@ -125,7 +124,7 @@ export const skill2: Skill = {
     name: '狐狩界',
     handlers: [{
         // 先机：释放狐狩界
-        handle(battle: Battle, data: EventData) {
+        handle(battle: Battle, data: RealEventData) {
             if (!data.skillOwnerId) return 0;
             battle.actionUseSkill(2, data.skillOwnerId, data.skillOwnerId);
             return -1;
@@ -155,11 +154,11 @@ export const skill3: Skill = {
     cost: 3,
     use(battle: Battle, sourceId: number, selectedId: number): boolean {
         const buffs = battle.filterBuffBySource(-1, sourceId).filter(b => ['狐狩界·防御', '狐狩界·伤害', '狐狩界·速度'].includes(b.name)); // 来源是我的灵符
-        const at = new AttackInfo(selectedId, {
-            sourceId,
-            rate: 1.95 * 0.25 * buffs.length,
-            params: [AttackParams.SHOULD_COMPUTE_CRI, AttackParams.SINGLE],
-        });
+        const at = Attack.build(selectedId, sourceId)
+            .rate( 1.95 * 0.25 * buffs.length)
+            .shouldComputeCri()
+            .single()
+            .end();
         battle.actionAttack(at);
 
         // 先攻击后消耗

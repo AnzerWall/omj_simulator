@@ -1,7 +1,7 @@
 import {Battle} from '../../index';
-import TurnData from '../../turn-data';
+import {TurnProcessing} from '../../tasks';
 
-export function normalAI(battle: Battle, turnData: TurnData): boolean {
+export function normalAI(battle: Battle, turnData: TurnProcessing): boolean {
     const enemy = battle.getRandomEnemy(turnData.currentId);
     if (enemy) {
         battle.actionUseSkill(1, turnData.currentId, enemy.entityId);

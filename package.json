@@ -78,7 +78,7 @@
       "@typescript-eslint/no-inferrable-types": 0,
       "@typescript-eslint/camelcase": 0,
       "@typescript-eslint/no-unused-vars": [
-        "error",
+        "off",
         {
           "args": "after-used",
           "varsIgnorePattern": "^_",

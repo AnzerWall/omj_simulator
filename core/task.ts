@@ -1,9 +1,7 @@
-import {EventData} from './events';
 import Battle from './battle';
 
-
 export interface Processor {
-    (battle: Battle, data: EventData, step: number): number | void;
+    (battle: Battle, data: any, step: number): number | void;
 }
 
 // 状态机树  节点
@@ -13,7 +11,7 @@ export default interface Task {
     processor: Processor; // 处理器函数
     type: string; // 类型
     parent: Task | null; // 父亲任务
-    data: EventData; // 任务数据
+    data: any; // 任务数据
     depth: number; // 树深度
     taskId: number; // 任务id
 }

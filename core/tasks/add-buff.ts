@@ -1,9 +1,16 @@
-import {Battle, BattleProperties, BuffParams, EventCodes, EventData} from "../index";
+import {Battle, BattleProperties, BuffParams, EventCodes, Reasons} from "../index";
+import Buff from "../buff";
 
-export default function addBuffProcessor(battle: Battle, data: EventData, step: number) {
-    const {addBuffProcessing } = data;
-    if (!addBuffProcessing) return 0;
-    const buff = addBuffProcessing.buff;
+export class AddBuffProcessing {
+    isHit: boolean = false;
+    isRes: boolean = false; // 是否抵抗
+    cancel: boolean = false;
+    constructor(public buff: Buff, public reason: Reasons) {
+
+    }
+}
+export default function addBuffProcessor(battle: Battle, data: AddBuffProcessing, step: number) {
+    const buff = data.buff;
     const target = buff.ownerId === -1 ? battle.getEntity(buff.ownerId): null;
     const source = battle.getEntity(buff.sourceId);
 
@@ -14,11 +21,11 @@ export default function addBuffProcessor(battle: Battle, data: EventData, step: 
                 target ? `【${target.name}(${target.teamId})】` : '全局',
                 `添加 【${buff.name}】 Buff`,
                 buff.countDown ? (buff.countDown > 0 ? buff.hasParam(BuffParams.COUNT_DOWN_BY_SOURCE) ? '维持' : '持续' + buff.countDown + '回合' : '') : '');
-            battle.addEventProcessor(EventCodes.BEFORE_BUFF_GET, buff.ownerId,{addBuffProcessing});
+            battle.addEventProcessor(EventCodes.BEFORE_BUFF_GET, buff.ownerId,data);
             return 2;
         }
         case 2: {
-            if (addBuffProcessing.cancel) { // buff被抵消了  庇护 花鸟卷
+            if (data.cancel) { // buff被抵消了  庇护 花鸟卷
                 return -1;
             }
 
@@ -33,12 +40,12 @@ export default function addBuffProcessor(battle: Battle, data: EventData, step: 
             if (typeof buff.probability !== 'number') return 0;
 
             const p = buff.probability * (1 + battle.getComputedProperty(source.entityId, BattleProperties.EFT_HIT)); // 基础命中×（1+效果命中）
-             const isHit = addBuffProcessing.isHit = battle.testHit(p);
+             const isHit = data.isHit = battle.testHit(p);
             if (!isHit) return -1; // 未命中
             const res = 1 + battle.getComputedProperty(target.entityId, BattleProperties.EFT_RES); // (1 + 效果抵抗)
-            const isRes = addBuffProcessing.isRes = battle.testHit(p / res);
+            const isRes = data.isRes = battle.testHit(p / res);
             if (isRes) { // 抵抗了
-                battle.addEventProcessor(EventCodes.BUFF_RES,  target.entityId,{addBuffProcessing});
+                battle.addEventProcessor(EventCodes.BUFF_RES,  target.entityId,data);
             }
             return 4;
         }
@@ -55,7 +62,7 @@ export default function addBuffProcessor(battle: Battle, data: EventData, step: 
                 }
             }
             battle.buffs.push(buff);
-            battle.addEventProcessor(EventCodes.BUFF_GET, buff.ownerId, {addBuffProcessing});
+            battle.addEventProcessor(EventCodes.BUFF_GET, buff.ownerId, data);
             return -1;
         }
     }

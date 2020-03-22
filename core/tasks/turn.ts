@@ -1,25 +1,32 @@
-import {BuffParams, Control, EventCodes, EventData, Battle, Reasons} from '../';
+import {BuffParams, Control, EventCodes, Battle, Reasons} from '../';
+export class TurnProcessing {
+    cannotAction: boolean = false;
+    onlyAttack: number[] = [];
+    confusion: boolean = false;
 
-export default function turnProcessor(battle: Battle, {turnData}: EventData, step: number): number {
-    if (!turnData || !turnData.currentId) return 0;
-    const currentEntity = battle.getEntity(turnData.currentId);
+    constructor(public turn: number, public currentId: number) {
+    }
+}
+
+export default function turnProcessor(battle: Battle, data: TurnProcessing, step: number): number {
+    const currentEntity = battle.getEntity(data.currentId);
 
     switch (step) {
         // 开始阶段
         case 1: {
-            turnData.cannotAction = battle.hasBuffByControl(currentEntity.entityId,
+            data.cannotAction = battle.hasBuffByControl(currentEntity.entityId,
                 Control.DIZZY,
                 Control.SLEEP,
                 Control.FROZEN,
                 Control.POLYMORPH,
             );
-            turnData.confusion = battle.hasBuffByControl(currentEntity.entityId, Control.CONFUSION)
+            data.confusion = battle.hasBuffByControl(currentEntity.entityId, Control.CONFUSION);
             battle.filterBuffByControl(currentEntity.entityId,Control.PROVOKE, Control.SNEER).forEach(buff => {
-                turnData.onlyAttack = [buff.sourceId];
+                data.onlyAttack = [buff.sourceId];
             });
-            battle.log(`回合${turnData.turn} ${currentEntity.name}(${currentEntity.teamId})`);
-            battle.addEventProcessor(EventCodes.TURN_START, currentEntity.entityId, {});
-            battle.addEventProcessor(EventCodes.ACTION_START,currentEntity.entityId, {});
+            battle.log(`回合${data.turn} ${currentEntity.name}(${currentEntity.teamId})`);
+            battle.addEventProcessor(EventCodes.TURN_START, currentEntity.entityId, data);
+            battle.addEventProcessor(EventCodes.ACTION_START,currentEntity.entityId, data);
             return 2;
         }
         // 处理buff
@@ -46,29 +53,35 @@ export default function turnProcessor(battle: Battle, {turnData}: EventData, ste
         }
         // 回合内
         case 4: {
-            if (!turnData.cannotAction) {
-                if (turnData.onlyAttack.length) {
-                    battle.actionUseSkill(1, currentEntity.entityId, turnData.onlyAttack[0]);
-                } else if (turnData.confusion) {
+            if (!data.cannotAction) {
+                if (data.onlyAttack.length) {
+                    battle.actionUseSkill(1, currentEntity.entityId, data.onlyAttack[0]);
+                } else if (data.confusion) {
                     const target = battle.getRandomEnemy(currentEntity.entityId);
                     if (target) {
                         battle.actionUseSkill(1, currentEntity.entityId, target.entityId);
                     }
                 } else {
-                    currentEntity.ai(battle, turnData);
+                    currentEntity.ai(battle, data);
                 }
             }
             return 5;
         }
         // 回合结束
         case 5: {
-            battle.addEventProcessor(EventCodes.ACTION_END, currentEntity.entityId,{});
-            battle.addEventProcessor(EventCodes.TURN_END, currentEntity.entityId,{});
+            battle.addEventProcessor(EventCodes.ACTION_END, currentEntity.entityId,data);
+            battle.addEventProcessor(EventCodes.TURN_END, currentEntity.entityId,data);
             return 6;
         }
         // 结算鬼火进度
         case 6: {
-            battle.actionProcessManaProgress(0, currentEntity.teamId);
+            const mana = battle.manas[currentEntity.teamId];
+            if (!mana) return 0;
+            if (mana.progress >= 5) {
+                mana.progress = 0;
+                mana.preProgress = Math.min(5, mana.preProgress + 1);
+                battle.actionUpdateMana(0, currentEntity.teamId, mana.preProgress, Reasons.RULE);
+            }
             return -1;
         }
     }

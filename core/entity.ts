@@ -2,7 +2,7 @@ import Battle from './battle';
 import {forEach, isNil, values} from 'lodash';
 import Skill from './skill';
 import {BattleProperties} from './constant';
-import TurnData from './turn-data';
+import {TurnProcessing} from "./tasks";
 
 let entityCounter = 0;
 export default class Entity {
@@ -117,7 +117,7 @@ export default class Entity {
 
 
 
-    ai: (battle: Battle, turnData: TurnData) => boolean = () => true;
+    ai: (battle: Battle, turnData: TurnProcessing) => boolean = () => true;
 
 
     getSkill(no: number): Skill {

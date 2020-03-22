@@ -2,7 +2,6 @@ import {map, forEach} from 'lodash';
 import HeroData from '../fixtures/hero-data';
 import {BattleProperties, Entity, Battle, Skill} from '../';
 import NormalAttack from './common/normal-attack';
-import TurnData from '../turn-data';
 import {normalAI} from './ai';
 import {amonojakuao_skill1, amonojakuao_skill2} from './n/amanojakuao';
 import {nurikabes_skill1, nurikabes_skill2} from './n/nurikabe';
@@ -15,13 +14,14 @@ import {amanojakumidori_skill1, amanojakumidori_skill2} from './n/amanojakumidor
 import {amanojakuki_skill1, amanojakuki_skill2} from './n/amanojakuki';
 import {amonojakuaka_skill1, amonojakuaka_skill2} from './n/amanojakuaka';
 import {akajita_skill1, akajita_skill2, akajita_skill3} from './n/akajita';
+import {TurnProcessing} from "../tasks";
 
 export const HeroTable = new Map<number, any>(map(HeroData, (data) => [data.id, data]));
 export const HeroTableByName = new Map<string, any>(map(HeroData, (data) => [data.name, data]));
 export const HeroBuilders = new Map<number, () => Entity>();
 export {HeroData};
 
-function build(no: number, tags: string[], ai: (battle: Battle, turnData: TurnData) => boolean, ...skills: Skill[]) {
+function build(no: number, tags: string[], ai: (battle: Battle, turnData: TurnProcessing) => boolean, ...skills: Skill[]) {
     const data = HeroTable.get(no);
     HeroBuilders.set(no, function (): Entity {
         const entity = new Entity();
@@ -53,7 +53,7 @@ HeroTable.forEach((_, no: number) => {
     build(no, ['simple'], normalAI, new NormalAttack('普通攻击'));
 });
 
-function HERO(name: string, skills: Skill[], ai: (battle: Battle, turnData: TurnData) => boolean = normalAI) {
+function HERO(name: string, skills: Skill[], ai: (battle: Battle, turnData: TurnProcessing) => boolean = normalAI) {
     const dd = HeroData.find(d => d.name === name.trim());
     if (!dd) throw new Error('找不到[' + name + ']');
     build(dd.id, [], ai, ...skills);

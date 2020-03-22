@@ -2,16 +2,34 @@ import {filter, forEach, isArray, some} from 'lodash';
 import Entity from './entity';
 import Mana from './mana';
 import Runway from './runway';
-import { BuffParams, Control, EventCodes, Reasons} from './constant';
+import {BuffParams, Control, EventCodes, EventRange, Reasons} from './constant';
 import {HeroBuilders} from './heroes';
-import {EventData, EventRange, RemoveBuffProcessing, AddBuffProcessing} from './events';
 import Skill from './skill';
-import {AttackInfo} from './attack';
 import {MersenneTwister19937, Random} from 'random-js';
 import Buff, { Effect, EffectTypes} from './buff';
 import Task, {Processor} from './task';
-import {addBuffProcessor, attackProcessor, battleProcessor, removeBuffProcessor} from './tasks';
-import Handler from './handler';
+import {
+    AddBuffProcessing,
+    addBuffProcessor,
+    AttackProcessing,
+    attackProcessor,
+    battleProcessor,
+    EventProcessing,
+    eventProcessor, RealEventData,
+    RemoveBuffProcessing,
+    removeBuffProcessor,
+    UpdateHpProcessing,
+    updateHpProcessor,
+    updateManaProcessor,
+    UpdateManaProgressProcessing,
+    updateManaProcessProcessor,
+    UpdateRunWayProcessing,
+    UseSkillProcessing,
+    useSkillProcessor, UpdateNanaProcessing
+} from "./tasks";
+import Attack from "./attack";
+import updateRunWayProcessor from "./tasks/update-runway";
+
 
 
 export default class Battle {
@@ -126,7 +144,7 @@ export default class Battle {
         }
     }
 
-    addProcessor(processor: Processor, data: EventData = {}, type = ''): number {
+    addProcessor(processor: Processor, data: any = {}, type = ''): number {
         const task = {
             step: 1,
             children: [],
@@ -141,15 +159,9 @@ export default class Battle {
         return task.taskId;
     }
 
-    addEventProcessor(code: EventCodes, eventId: number, data: EventData = {}): number {
+    addEventProcessor(code: EventCodes, eventId: number, data?: any): number {
         const eventEntity = eventId === 0 ? null :this.getEntity(eventId);
-
-        let count = 0;
-        const units: {
-            handler: Handler;
-            skillOwnerId: number;
-            skillNo: number;
-        } [] = [];
+        const processing: EventProcessing = new EventProcessing(code);
         this.entities.forEach(entity => {
             forEach(entity.skills, (skill: Skill) => {
                 forEach(skill.handlers, handler => {
@@ -159,36 +171,16 @@ export default class Battle {
                         if (handler.range === EventRange.TEAM && eventEntity.teamId !== entity.teamId) return;
                         if (handler.range === EventRange.ENEMY && (1 - eventEntity.teamId) !== entity.teamId) return;
                     }
-                    units.push({
-                        handler,
-                        skillOwnerId: entity.entityId,
-                        skillNo: skill.no,
-                    });
-                    count++;
+                    processing.units.push(new RealEventData(entity.entityId, skill.no, eventId, handler, data));
                 });
             });
         });
 
-        units.sort((a, b) => {
+        processing.units.sort((a, b) => {
             return a.handler.priority - b.handler.priority;
         });
 
-        this.addProcessor((battle: Battle, _, step: number) => {
-            if (step <= 0) return 0;
-            if (step > units.length) return -1;
-            const unit = units[step - 1];
-            const entity = this.getEntity(unit.skillOwnerId);
-            if (unit.handler.passive && battle.hasBuffByControl(unit.skillOwnerId, Control.PASSIVE_FORBID)) return step + 1; // 被封印被动跳过处理
-
-            this.log(`${entity.name}(${entity.entityId})的${unit.skillNo}技能事件触发`);
-            this.addProcessor(unit.handler.handle, Object.assign({
-                skillOwnerId: unit.skillOwnerId,
-                skillNo: unit.skillNo
-            }, data), `EventProcess(${EventCodes[code]})`);
-
-            return step + 1;
-        }, data, `Event(${EventCodes[code]})`);
-        return count;
+        return this.addProcessor(eventProcessor, processing, `Event(${EventCodes[code]})`);
     }
 
     judgeWin() {
@@ -336,149 +328,43 @@ export default class Battle {
 
 
 
-    actionAttack(attackInfos: AttackInfo[] | AttackInfo) {
-        if (!isArray(attackInfos)) attackInfos = [attackInfos];
-        this.addProcessor(attackProcessor, {attackInfos}, 'Attack');
+    actionAttack(attacks: Attack[] | Attack) {
+        const ap = new AttackProcessing();
+        if (!isArray(attacks)) ap.attacks = [attacks];
+        else  ap.attacks = attacks;
+        this.addProcessor(attackProcessor, ap, 'Attack');
         return true;
     }
 
-    actionUpdateHp(sourceId: number, targetId: number, num: number, reason: Reasons = Reasons.NOTHING): boolean {
-        const source = this.getEntity(sourceId);
-        const target = this.getEntity(targetId);
-        if (!target) return false;
-        if (target.dead) return true; // 死了就不要鞭尸了
-
-        this.addProcessor((battle: Battle, data: EventData, step: number) => {
-            switch (step) {
-                case 1: {
-                    data.remainHp = Math.max(target.hp + num, 0);
-                    data.isDead = data.remainHp <= 0;
-                    battle.log(`${source ? `【${source.name}(${source.teamId})】` : ''}${num < 0 ? '减少' : '恢复'}【${target.name}(${target.teamId})】${Math.abs(num)}点血， 剩余${data.remainHp}`, data.isDead ? '【死亡】' : '');
-                    return 2;
-                }
-                case 2: {
-                    if (data.remainHp === undefined || data.isDead === undefined) return 0;
-                    target.hp = data.remainHp;
-                    target.dead = data.isDead;
-
-                    if (data.isDead) {
-                        const field = this.fields[target.teamId];
-                        if (field) {
-                            const index = field.indexOf(target.entityId);
-                            if (index !== -1) {
-                                field[index] = 0;
-                            }
-                        }
-
-
-                        this.runway.freeze(target.entityId);
-                    }
-                    return -1;
-                }
-            }
-            return 0;
-        }, {sourceId, targetId, num, reason}, 'UpdateHp');
-        return true;
-
+    actionUpdateHp(sourceId: number, targetId: number, num: number, reason: Reasons = Reasons.NOTHING) {
+        return this.addProcessor(updateHpProcessor, new UpdateHpProcessing(sourceId, targetId, num, reason) , 'UpdateHp');
     }
 
-    actionCheckAndUseSkill(no: number, sourceId: number, selectedId: number, reason: Reasons = Reasons.NOTHING): boolean {
-        const source = this.getEntity(sourceId);
-        const skill = source.getSkill(no);
-        if (!skill) return false;
-        if (skill.check && !skill.check(this, sourceId)) return false;
-        const cost = typeof skill.cost === 'number' ? skill.cost : skill.cost(this, sourceId);
-        if (cost > 0) {
-            const mana = this.getMana(source.teamId);
-            if (!mana) return false;
-
-            if (cost > mana.num) return false;
-        }
-        this.actionUseSkill(no, sourceId, selectedId, reason);
-        return true;
-    }
 
     actionUseSkill(no: number, sourceId: number, selectedId: number, reason: Reasons = Reasons.NOTHING) {
-        this.addProcessor((battle: Battle, data: EventData, step: number) => {
-            const source = this.getEntity(sourceId);
-            const selected = this.getEntity(selectedId);
-            const skill = source.getSkill(no);
-            switch (step) {
-                case 1 : {
-                    if (skill.check && !skill.check(this, sourceId)) return 0;
-                    const cost = typeof skill.cost === 'number' ? skill.cost : skill.cost(this, sourceId);
-                    battle.log(`【${source.name}(${source.teamId})】对【${selected.name}(${selected.teamId})】使用技能【${skill.name}】`);
-
-                    if (cost > 0) {
-                        this.actionUpdateMana(source.entityId, source.teamId, -cost, Reasons.COST);
-                    }
-                    return 2;
-                }
-                case 2: {
-                    (skill.use && skill.use(this, sourceId, selectedId));
-                    return -1;
-                }
-            }
-            return 0;
-        }, {no, sourceId, selectedId, reason}, 'UseSkill');
+        this.addProcessor(useSkillProcessor, new UseSkillProcessing(no, sourceId, selectedId, reason), 'UseSkill');
 
     }
 
     actionAddBuff(buff: Buff, reason: Reasons = Reasons.NOTHING) {
-        const addBuffProcessing = new AddBuffProcessing(buff, reason);
-        this.addProcessor(addBuffProcessor, { addBuffProcessing }, 'AddBuff');
+        this.addProcessor(addBuffProcessor, new AddBuffProcessing(buff, reason), 'AddBuff');
     }
 
     actionRemoveBuff(buff: Buff, reason: Reasons = Reasons.NOTHING) {
-        const removeBuffProcessing = new RemoveBuffProcessing(buff, reason);
-        this.addProcessor(removeBuffProcessor, {removeBuffProcessing}, 'RemoveBuff');
+        this.addProcessor(removeBuffProcessor,  new RemoveBuffProcessing(buff, reason), 'RemoveBuff');
     }
 
     actionUpdateMana(sourceId: number, teamId: number, num: number, reason: Reasons = Reasons.NOTHING) {
-        this.addProcessor(() => {
-            const mana = this.manas[teamId];
-            if (!mana) return 0;
-            mana.num = mana.num + num;
-            if (mana.num < 0) return 0;
-            if (mana.num > 8) {
-                mana.num = 8;
-                this.addEventProcessor(EventCodes.MANA_OVERFLOW, 0, { sourceId, teamId, num, reason });
-            }
-            return -1;
-        }, {sourceId, teamId, num, reason}, 'UpdateMana');
+        this.addProcessor(updateManaProcessor, new UpdateNanaProcessing(sourceId, teamId, num, reason), 'UpdateMana');
     }
 
     actionUpdateManaProgress(sourceId: number, teamId: number, num: number, reason: Reasons = Reasons.NOTHING) {
-        this.addProcessor(() => {
-            const mana = this.manas[teamId];
-            if (!mana) return 0;
-
-            mana.progress = mana.progress + num;
-            if (mana.progress < 0) mana.progress = 0;
-            if (mana.progress > 5) mana.progress = 5;
-            return -1;
-        }, {sourceId, teamId, reason}, 'ProcessManaProgress');
-    }
-
-    actionProcessManaProgress(sourceId: number, teamId: number) {
-        this.addProcessor(() => {
-            const mana = this.manas[teamId];
-            if (!mana) return 0;
-            if (mana.progress >= 5) {
-                mana.progress = 0;
-                mana.preProgress = Math.min(5, mana.preProgress + 1);
-                this.actionUpdateMana(0, teamId, mana.preProgress, Reasons.RULE);
-            }
-
-            return -1;
-        }, {sourceId, teamId}, 'ProcessManaProgress');
+        return this.addProcessor(updateManaProcessProcessor, new UpdateManaProgressProcessing(sourceId, teamId, num, reason), 'ProcessManaProgress');
     }
 
     // 拉条
     actionUpdateRunwayPercent(sourceId: number, targetId: number, percent: number, reason: Reasons = Reasons.NOTHING) {
-        this.addProcessor((battle: Battle) => {
-            return battle.runway.updatePercent(targetId, percent) ? -1 : 0;
-        }, {sourceId, targetId, percent, reason}, 'UpdateRunwayPercent');
+        return this.addProcessor(updateRunWayProcessor, new UpdateRunWayProcessing(sourceId, targetId, percent, reason), 'UpdateRunwayPercent');
     }
 
     log = (...args: any[]) => {

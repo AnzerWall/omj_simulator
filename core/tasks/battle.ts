@@ -1,15 +1,16 @@
-import {Battle, EventCodes, EventData, TurnData} from '../';
-import turnProcessor from './turn';
+import turnProcessor, {TurnProcessing} from './turn';
+import {Battle, EventCodes} from "../";
 
-export default function battleProcessor(battle: Battle, _: EventData, step: number): number {
+
+export default function battleProcessor(battle: Battle, _: any, step: number): number {
     switch (step) {
         case 1: {
-            battle.addEventProcessor(EventCodes.BATTLE_START, 0);
+            battle.addEventProcessor(EventCodes.BATTLE_START, 0, _);
             return 2;
         }
         case 2: {
             battle.runway.compute();
-            battle.addEventProcessor(EventCodes.SENKI, 0);
+            battle.addEventProcessor(EventCodes.SENKI, 0, _);
             return 3;
         }
         case 3: {
@@ -21,9 +22,9 @@ export default function battleProcessor(battle: Battle, _: EventData, step: numb
             const next = battle.getEntity(nextId);
             if (battle.turn >= 1000) return 0; // 超时
 
-            const turnData = new TurnData(++battle.turn, next.entityId);
+            const turnData = new TurnProcessing(++battle.turn, next.entityId);
 
-            battle.addProcessor(turnProcessor, {turnData}, 'Turn');
+            battle.addProcessor(turnProcessor, turnData, 'Turn');
             return 3;
         }
         default:

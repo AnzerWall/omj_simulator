@@ -1,4 +1,4 @@
-import { AttackInfo, AttackParams, Battle, Handler, Skill} from '../../';
+import { Attack, AttackParams, Battle, Handler, Skill} from '../../';
 
 /**
  * 创建一个单体多段可以触发暴击的普通伤害技能
@@ -31,13 +31,7 @@ export default class SingleAttack implements Skill {
         if (!selected) return false;
 
         for (let i = 0; i < this.times; i++) {
-            const at = new AttackInfo(selectedId, {
-                sourceId,
-                rate: this.rate,
-                FR: this.FR,
-                params: [AttackParams.SHOULD_COMPUTE_CRI, AttackParams.SINGLE],
-            }).addParam(this.isNormalAttack ? AttackParams.NORMAL_ATTACK : null);
-            battle.actionAttack(at);
+            battle.actionAttack(Attack.build(selectedId, sourceId).rate(this.rate).FR(this.FR).shouldComputeCri().single().normalAttack(this.isNormalAttack).end());
         }
         return true;
     }

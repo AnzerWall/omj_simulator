@@ -120,3 +120,9 @@ export enum Reasons {
     RULE,
 }
 
+export enum EventRange {
+    NONE,
+    SELF,
+    TEAM,
+    ENEMY,
+}

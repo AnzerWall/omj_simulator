@@ -1,4 +1,4 @@
-import {AttackInfo, AttackParams, BattleProperties, Battle, Skill} from '../../';
+import {Attack, AttackParams, BattleProperties, Battle, Skill} from '../../';
 import GroupAttack from '../common/group-attack';
 
 export const houkikami_skill1: Skill = {
@@ -8,18 +8,19 @@ export const houkikami_skill1: Skill = {
     cost: 0,
     name: '蓄力一攻',
     use(battle: Battle, sourceId: number, selectedId: number): boolean {
-        const at = new AttackInfo(selectedId, {
-            base:(battle: Battle, sourceId: number, targetId: number): number => {
+        const at = Attack.build(selectedId, sourceId)
+            .rate(1)
+            .base((battle: Battle, sourceId: number, targetId: number): number => {
                 const target = battle.getEntity(targetId);
                 return battle.getComputedProperty(target.entityId, BattleProperties.ATK);
-            },
-            limit: (battle: Battle, sourceId: number, _: number): number => {
+            })
+            .limit((battle: Battle, sourceId: number, _: number): number => {
                 const source = battle.getEntity(sourceId);
-                return battle.getComputedProperty(source.entityId, BattleProperties.ATK) * 1.5;
-            },
-            rate: 1,
-            params: [ AttackParams.SHOULD_COMPUTE_CRI, AttackParams.NORMAL_ATTACK, AttackParams.SINGLE]
-        });
+                return battle.getComputedProperty(source.entityId, BattleProperties.ATK) * 1.5;}
+            )
+            .single()
+            .normalAttack()
+            .end();
         battle.actionAttack(at);
         return true;
     },

@@ -27,16 +27,19 @@ npm i
 ```shell
 npm run serve
 ```
-## 预览
+## 预测预览
+已完成，但由于式神未完成，该功能暂无效
 
 ![preview](./public/preview.png)
 
-## 技能编写示例
+## 战斗模拟预览
+已完成血量和式神显示
 
-![preview](./public/carbon.png)
+![preview](./public/preview2.png)
+
 # Roadmap
 
-## 当前备忘
+## 当前
 - [x] buff冲突覆盖机制
 - [x] 整理输出和代码
 - [x] 全局增加Player用于存储全局buff 结界等

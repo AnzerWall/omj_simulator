@@ -1,4 +1,4 @@
-import {filter, forEach, isArray, some} from 'lodash';
+import {filter, forEach, isArray, some, map} from 'lodash';
 import Entity from './entity';
 import Mana from './mana';
 import Runway from './runway';
@@ -15,7 +15,6 @@ import Handler from './handler';
 
 
 export default class Battle {
-    rules: object; // 规则表
 
     output: object[]; // 游戏记录
 
@@ -30,8 +29,9 @@ export default class Battle {
     winner: number; // 获胜者id
     random: Random;
 
-    rootTask: Task;
-    currentTask: Task;
+    rootTask: Task; // 根任务节点
+    currentTask: Task; // 当前处理的任务节点
+    taskCounter: number; // 分配任务id用的计数器
 
     buffs: Buff[];
 
@@ -41,7 +41,6 @@ export default class Battle {
         lv?: number;
         equipments?: number[];
     }[], seed = Date.now()) {
-        this.rules = {};
         this.isEnd = false;
         this.winner = -1;
         this.turn = 0;
@@ -76,7 +75,7 @@ export default class Battle {
             this.runway.addEntity(entity.entityId, () => (this.getComputedProperty(entity.entityId,'spd') || 0));
             this.fields[entity.teamId].push(entity.entityId);
         });
-
+        this.taskCounter = 0;
         this.currentTask = this.rootTask = {
             step: 1,
             children: [],
@@ -85,6 +84,7 @@ export default class Battle {
             parent: null,
             data: {},
             depth: 0,
+            taskId: ++this.taskCounter,
         };
     }
 
@@ -92,16 +92,19 @@ export default class Battle {
         if (this.seed === null) return false;
         if (this.isEnd) return false;
 
+        // step === 0 出错
+        // step < 0 任务结束 目前只有-1
+        // step > 0 任务进行到step阶段
         // 当前任务出错
         if (this.currentTask.step === 0) return false;
 
         // 先处理子任务
         if (this.currentTask.children.length) {
-            if (this.currentTask.children[0].step < 0) {
+            if (this.currentTask.children[0].step < 0) { // 该子任务已结束
                 this.currentTask.children.shift();
                 return this.process();
             }
-            this.currentTask = this.currentTask.children[0];
+            this.currentTask = this.currentTask.children[0]; // 切换到处理子任务
             return this.process();
         }
 
@@ -132,6 +135,7 @@ export default class Battle {
             parent: this.currentTask,
             data,
             depth: this.currentTask.depth + 1,
+            taskId: ++this.taskCounter,
         });
     }
 
@@ -213,10 +217,9 @@ export default class Battle {
 
     getTeamEntities(teamId: number): Entity[] {
         const ret: Entity[] = [];
-
-        this.entities.forEach((e: Entity) => {
-            if (e.teamId === teamId && !e.dead) {
-                ret.push(e);
+        forEach(this.fields[teamId], entity_id => {
+            if (entity_id) {
+                ret.push(this.getEntity(entity_id));
             }
         });
         return ret;
@@ -355,7 +358,17 @@ export default class Battle {
                     if (data.remainHp === undefined || data.isDead === undefined) return 0;
                     target.hp = data.remainHp;
                     target.dead = data.isDead;
+
                     if (data.isDead) {
+                        const field = this.fields[target.teamId];
+                        if (field) {
+                            const index = field.indexOf(target.entityId);
+                            if (index !== -1) {
+                                field[index] = 0;
+                            }
+                        }
+
+
                         this.runway.freeze(target.entityId);
                     }
                     return -1;

@@ -28,8 +28,9 @@ export enum EventCodes {
     TAKEN_DAMAGE, // 受到伤害后
     TAKEN_ATTACK, // 受到攻击后 eventId: 被攻击的人
     BUFF_GET, // 获得buff后 eventId: 获得buff的人
-    BUFF_REMOVE, // 移除buff后 eventId: 获得buff的人
-    BEFORE_BUFF_GET, // 将要获得buff eventId: 失去buff的人
+    BUFF_REMOVE, // 移除buff后 eventId: 失去buff的人
+    ADD_BUFF, // 准备获得buff，在命中判定前 eventId: 获得uff的人
+    BEFORE_BUFF_GET, // 将要获得buff ，在命中判定后 eventId: 获得uff的人
     BEFORE_BUFF_REMOVE, // 将要移除buff eventId: 失去buff的人
     KILL, // 击杀后
     NO_KILL, // 未击杀后

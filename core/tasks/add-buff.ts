@@ -21,7 +21,7 @@ export default function addBuffProcessor(battle: Battle, data: AddBuffProcessing
                 target ? `【${target.name}(${target.teamId})】` : '全局',
                 `添加 【${buff.name}】 Buff`,
                 buff.countDown  ? (buff.hasParam(BuffParams.COUNT_DOWN_BY_SOURCE) ? '维持' : '持续') + buff.countDown + '回合'  : '');
-            battle.addEventProcessor(EventCodes.BEFORE_BUFF_GET, buff.ownerId,data);
+            battle.addEventProcessor(EventCodes.ADD_BUFF, buff.ownerId,data);
             return 2;
         }
         case 2: {
@@ -49,8 +49,11 @@ export default function addBuffProcessor(battle: Battle, data: AddBuffProcessing
             }
             return 4;
         }
-
         case 4: {
+            battle.addEventProcessor(EventCodes.BEFORE_BUFF_GET, buff.ownerId,data);
+            return 5;
+        }
+        case 5: {
 
             // 替换同名buff
             if (buff.maxCount && buff.maxCount > 0 && buff.name) {

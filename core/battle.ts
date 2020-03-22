@@ -1,4 +1,4 @@
-import {filter, forEach, isArray, some, map} from 'lodash';
+import {filter, forEach, isArray, some} from 'lodash';
 import Entity from './entity';
 import Mana from './mana';
 import Runway from './runway';

@@ -49,7 +49,6 @@ export const skill4: Skill = {
     name: '一矢·封魔',
     cost: 0,
     use(battle: Battle, sourceId: number, selectedId: number): boolean {
-        const owner = battle.getEntity(sourceId);
         const at = new AttackInfo(selectedId, {
             sourceId,
             rate: 1,
@@ -138,7 +137,7 @@ export const skill2: Skill = {
     }],
     passive: false,
     cost: 3,
-    use(battle: Battle, sourceId: number, selectedId: number): boolean {
+    use(battle: Battle, sourceId: number, _: number): boolean {
         const buff = Buff.build(sourceId, sourceId)
             .name('狐狩界', 1) // 同名最多1
             .enchantment() // 是结界

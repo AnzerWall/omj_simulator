@@ -22,7 +22,8 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "types": [
-      "webpack-env"
+      "webpack-env",
+      "Phaser"
     ],
     "paths": {
       "@/*": [
@@ -34,6 +35,9 @@
       "dom",
       "dom.iterable",
       "scripthost"
+    ],
+    "typeRoots": [
+      "./node_modules/phaser/types"
     ]
   },
   "include": [

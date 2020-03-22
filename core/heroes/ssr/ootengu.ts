@@ -5,7 +5,7 @@ import {
     EventCodes,
     EventData,
     EventRange,
-    Game,
+    Battle,
     Reasons,
     Skill
 } from '../../index';
@@ -34,20 +34,20 @@ export const skill2: Skill = {
     cost: 0,
     handlers: [{
         // 战斗开始：获得庇护
-        handle(game: Game, data: EventData) {
+        handle(battle: Battle, data: EventData) {
             if (data.skillOwnerId) {
-                game.actionAddBuff(buildBuff1(data.skillOwnerId, data.skillOwnerId), Reasons.SKILL);
+                battle.actionAddBuff(buildBuff1(data.skillOwnerId, data.skillOwnerId), Reasons.SKILL);
             }
         },
-        code: EventCodes.GAME_START,
+        code: EventCodes.BATTLE_START,
         range: EventRange.NONE,
         priority: 0,
         passive: false,
     }, {
         // 回合结束：获得庇护
-        handle(game: Game, data: EventData) {
+        handle(battle: Battle, data: EventData) {
             if (data.skillOwnerId) {
-                game.actionAddBuff(buildBuff1(data.skillOwnerId, data.skillOwnerId), Reasons.SKILL);
+                battle.actionAddBuff(buildBuff1(data.skillOwnerId, data.skillOwnerId), Reasons.SKILL);
             }
         },
         code: EventCodes.TURN_END,
@@ -56,11 +56,11 @@ export const skill2: Skill = {
         passive: false,
     }, {
         // 回合开始：失去庇护
-        handle(game: Game, data: EventData) {
+        handle(battle: Battle, data: EventData) {
             if (data.skillOwnerId) {
-                const buffs = game.filterBuffByName(data.skillOwnerId, '庇护');
+                const buffs = battle.filterBuffByName(data.skillOwnerId, '庇护');
                 buffs.forEach(b => {
-                    game.actionRemoveBuff(b, Reasons.SKILL);
+                    battle.actionRemoveBuff(b, Reasons.SKILL);
 
                 })
             }
@@ -71,9 +71,9 @@ export const skill2: Skill = {
         passive: false,
     },{
         // 造成伤害时: 获得雄姿英发
-        handle(game: Game, data: EventData) {
-            if(game.testHit(0.5) && data.skillOwnerId) {
-                game.actionAddBuff(buildBuff2(data.skillOwnerId, data.skillOwnerId), Reasons.SKILL);
+        handle(battle: Battle, data: EventData) {
+            if(battle.testHit(0.5) && data.skillOwnerId) {
+                battle.actionAddBuff(buildBuff2(data.skillOwnerId, data.skillOwnerId), Reasons.SKILL);
             }
         },
         code: EventCodes.DAMAGE,

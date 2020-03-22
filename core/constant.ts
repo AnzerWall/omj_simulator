@@ -16,7 +16,7 @@ export enum Control {
 // 事件代码
 export enum EventCodes {
     NONE,
-    GAME_START, // 游戏开始
+    BATTLE_START, // 游戏开始
     SENKI, // 先机
     TURN_START, // 回合开始后
     ACTION_START, // 行动开始

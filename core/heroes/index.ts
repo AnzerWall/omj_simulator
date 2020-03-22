@@ -1,6 +1,6 @@
 import {map, forEach} from 'lodash';
 import HeroData from '../fixtures/hero-data';
-import {BattleProperties, Entity, Game, Skill} from '../';
+import {BattleProperties, Entity, Battle, Skill} from '../';
 import NormalAttack from './common/normal-attack';
 import TurnData from '../turn-data';
 import {normalAI} from './ai';
@@ -21,7 +21,7 @@ export const HeroTableByName = new Map<string, any>(map(HeroData, (data) => [dat
 export const HeroBuilders = new Map<number, () => Entity>();
 export {HeroData};
 
-function build(no: number, tags: string[], ai: (game: Game, turnData: TurnData) => boolean, ...skills: Skill[]) {
+function build(no: number, tags: string[], ai: (battle: Battle, turnData: TurnData) => boolean, ...skills: Skill[]) {
     const data = HeroTable.get(no);
     HeroBuilders.set(no, function (): Entity {
         const entity = new Entity();
@@ -53,7 +53,7 @@ HeroTable.forEach((_, no: number) => {
     build(no, ['simple'], normalAI, new NormalAttack('普通攻击'));
 });
 
-function HERO(name: string, skills: Skill[], ai: (game: Game, turnData: TurnData) => boolean = normalAI) {
+function HERO(name: string, skills: Skill[], ai: (battle: Battle, turnData: TurnData) => boolean = normalAI) {
     const dd = HeroData.find(d => d.name === name.trim());
     if (!dd) throw new Error('找不到[' + name + ']');
     build(dd.id, [], ai, ...skills);

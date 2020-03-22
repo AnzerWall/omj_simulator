@@ -1,10 +1,10 @@
-import {Buff, Skill, Handler, Game, Reasons} from '../../';
+import {Buff, Skill, Handler, Battle, Reasons} from '../../';
 import { forEach, isArray } from 'lodash';
-type BuffBuilder = (game: Game, sourceId: number, targetId: number) => Buff[] | Buff;
+type BuffBuilder = (battle: Battle, sourceId: number, targetId: number) => Buff[] | Buff;
 export default class BuffSkill implements Skill {
     no: number;
     name: string;
-    cost: number | ((game: Game, entityId: number) => number);
+    cost: number | ((battle: Battle, entityId: number) => number);
     handlers: Handler[] = [];
     passive: boolean = false;
     buffBuilder: BuffBuilder;
@@ -17,15 +17,15 @@ export default class BuffSkill implements Skill {
 
     }
 
-    use(game: Game, sourceId: number, _: number): boolean {
-        const source = game.getEntity(sourceId);
+    use(battle: Battle, sourceId: number, _: number): boolean {
+        const source = battle.getEntity(sourceId);
 
-        const entities = game.getTeamEntities(source.teamId);
+        const entities = battle.getTeamEntities(source.teamId);
         entities.forEach(e => {
-            let buffs = this.buffBuilder(game, sourceId, e.entityId);
+            let buffs = this.buffBuilder(battle, sourceId, e.entityId);
             if (!isArray(buffs)) buffs = [buffs];
 
-            forEach(buffs, b => game.actionAddBuff(b, Reasons.SKILL));
+            forEach(buffs, b => battle.actionAddBuff(b, Reasons.SKILL));
         });
 
         return true;

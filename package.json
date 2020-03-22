@@ -28,6 +28,7 @@
     "less-loader": "^5.0.0",
     "lodash": "^4.17.11",
     "markdown-loader": "^5.1.0",
+    "phaser": "^3.22.0",
     "pixi.js": "^5.2.1",
     "random": "^2.1.1",
     "random-js": "^2.1.0",
@@ -79,14 +80,19 @@
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
-          "args": "all",
+          "args": "after-used",
           "varsIgnorePattern": "^_",
           "ignoreRestSiblings": true,
           "argsIgnorePattern": "^_",
           "ignoreErr": "^ignore"
         }
       ],
-      "@typescript-eslint/no-use-before-define": ["error", { "classes": false }]
+      "@typescript-eslint/no-use-before-define": [
+        "error",
+        {
+          "classes": false
+        }
+      ]
     },
     "ignorePatterns": [
       "*.d.ts",

@@ -21,7 +21,7 @@
     </div>
 </template>
 <script>
-    import {Game, HeroBuilders, BattleProperties} from '../../core'
+    import {Battle, HeroBuilders, BattleProperties} from '../../core'
 
     const columns = [
         {
@@ -115,12 +115,12 @@
                 const fn = () => {
                     if (!this.total) return;
                     this.total--
-                    const game = new Game(this.$store.state.team0.concat(this.$store.state.team1));
+                    const battle = new Battle(this.$store.state.team0.concat(this.$store.state.team1));
                     // eslint-disable-next-line no-empty
-                    while (game.process()) {
+                    while (battle.process()) {
                     }
-                    if (game.winner === 0) this.winner0++;
-                    else if (game.winner === 1) this.winner1++;
+                    if (battle.winner === 0) this.winner0++;
+                    else if (battle.winner === 1) this.winner1++;
                     else this.error++;
                     setTimeout(fn, 10);
                 }

@@ -1,4 +1,4 @@
-import { AttackInfo, AttackParams, Game, Handler, Skill} from '../../';
+import { AttackInfo, AttackParams, Battle, Handler, Skill} from '../../';
 
 /**
  * 创建一个单体多段可以触发暴击的普通伤害技能
@@ -26,8 +26,8 @@ export default class SingleAttack implements Skill {
         this.FR = FR;
     }
 
-    use(game: Game, sourceId: number, selectedId: number): boolean {
-        const selected = game.getEntity(selectedId);
+    use(battle: Battle, sourceId: number, selectedId: number): boolean {
+        const selected = battle.getEntity(selectedId);
         if (!selected) return false;
 
         for (let i = 0; i < this.times; i++) {
@@ -37,7 +37,7 @@ export default class SingleAttack implements Skill {
                 FR: this.FR,
                 params: [AttackParams.SHOULD_COMPUTE_CRI, AttackParams.SINGLE],
             }).addParam(this.isNormalAttack ? AttackParams.NORMAL_ATTACK : null);
-            game.actionAttack(at);
+            battle.actionAttack(at);
         }
         return true;
     }

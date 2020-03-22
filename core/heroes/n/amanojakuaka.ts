@@ -1,4 +1,4 @@
-import {BattleProperties, Buff, Control, EffectTypes, Game, Reasons, Skill} from '../../';
+import {BattleProperties, Buff, Control, EffectTypes, Battle, Reasons, Skill} from '../../';
 import NormalAttack from '../common/normal-attack';
 
 export const amonojakuaka_skill1 = new NormalAttack('肉弹战车');
@@ -6,7 +6,7 @@ export const amonojakuaka_skill2: Skill = {
     no: 2,
     name: '挑衅',
     cost: 2,
-    use(game: Game, sourceId: number, selectedId: number): boolean {
+    use(battle: Battle, sourceId: number, selectedId: number): boolean {
         const buff1 = Buff
             .build(sourceId, selectedId)
             .name('挑衅', 1)
@@ -25,9 +25,9 @@ export const amonojakuaka_skill2: Skill = {
             .countDown(1)
             .debuff(BattleProperties.DMG_TAKEN_D, EffectTypes.FIXED, 0.4)
             .end();
-        game.actionAddBuff( buff1, Reasons.SKILL);
-        game.actionAddBuff( buff2, Reasons.SKILL);
-        game.actionAddBuff( buff3, Reasons.SKILL);
+        battle.actionAddBuff( buff1, Reasons.SKILL);
+        battle.actionAddBuff( buff2, Reasons.SKILL);
+        battle.actionAddBuff( buff3, Reasons.SKILL);
 
         return true;
     },

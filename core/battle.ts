@@ -10,13 +10,11 @@ import {AttackInfo} from './attack';
 import {MersenneTwister19937, Random} from 'random-js';
 import Buff, {Effect, EffectTypes} from './buff';
 import Task, {Processor} from './task';
-import {attackProcessor, gameProcessor} from './tasks';
+import {attackProcessor, battleProcessor} from './tasks';
 import Handler from './handler';
 
-type Unit = [(game: Game, data: EventData) => boolean, object, string];
 
-
-export default class Game {
+export default class Battle {
     rules: object; // 规则表
 
     output: object[]; // 游戏记录
@@ -24,8 +22,6 @@ export default class Game {
     seed: number;
     manas: Mana[]; // 鬼火信息
     runway: Runway; // 行动条位置
-    microTasks: Unit[];
-    tasks: Unit[];
     currentId: number; // 当前回合实体
     fields: number[][]; // 场上位置
     turn: number; // 当前回合
@@ -57,8 +53,6 @@ export default class Game {
 
         this.runway = new Runway();
         this.manas = [new Mana(4), new Mana(4)];
-        this.tasks = [];
-        this.microTasks = [];
         this.seed = seed;
         this.random = new Random(MersenneTwister19937.seed(seed));
         this.buffs = [];
@@ -86,8 +80,8 @@ export default class Game {
         this.currentTask = this.rootTask = {
             step: 1,
             children: [],
-            processor: gameProcessor,
-            type: 'Game',
+            processor: battleProcessor,
+            type: 'Battle',
             parent: null,
             data: {},
             depth: 0,
@@ -173,12 +167,12 @@ export default class Game {
             return a.handler.priority - b.handler.priority;
         });
 
-        this.addProcessor((game: Game, _, step: number) => {
+        this.addProcessor((battle: Battle, _, step: number) => {
             if (step <= 0) return 0;
             if (step > units.length) return -1;
             const unit = units[step - 1];
             const entity = this.getEntity(unit.skillOwnerId);
-            if (unit.handler.passive && game.hasBuffByControl(unit.skillOwnerId, Control.PASSIVE_FORBID)) return step + 1; // 被封印被动跳过处理
+            if (unit.handler.passive && battle.hasBuffByControl(unit.skillOwnerId, Control.PASSIVE_FORBID)) return step + 1; // 被封印被动跳过处理
 
             this.log(`${entity.name}(${entity.entityId})的${unit.skillNo}技能事件触发`);
             this.addProcessor(unit.handler.handle, Object.assign({
@@ -349,12 +343,12 @@ export default class Game {
         if (!target) return false;
         if (target.dead) return true; // 死了就不要鞭尸了
 
-        this.addProcessor((game: Game, data: EventData, step: number) => {
+        this.addProcessor((battle: Battle, data: EventData, step: number) => {
             switch (step) {
                 case 1: {
                     data.remainHp = Math.max(target.hp + num, 0);
                     data.isDead = data.remainHp <= 0;
-                    game.log(`${source ? `【${source.name}(${source.teamId})】` : ''}${num < 0 ? '减少' : '恢复'}【${target.name}(${target.teamId})】${Math.abs(num)}点血， 剩余${data.remainHp}`, data.isDead ? '【死亡】' : '');
+                    battle.log(`${source ? `【${source.name}(${source.teamId})】` : ''}${num < 0 ? '减少' : '恢复'}【${target.name}(${target.teamId})】${Math.abs(num)}点血， 剩余${data.remainHp}`, data.isDead ? '【死亡】' : '');
                     return 2;
                 }
                 case 2: {
@@ -390,7 +384,7 @@ export default class Game {
     }
 
     actionUseSkill(no: number, sourceId: number, selectedId: number, reason: Reasons = Reasons.NOTHING) {
-        this.addProcessor((game: Game, data: EventData, step: number) => {
+        this.addProcessor((battle: Battle, data: EventData, step: number) => {
             const source = this.getEntity(sourceId);
             const selected = this.getEntity(selectedId);
             const skill = source.getSkill(no);
@@ -398,7 +392,7 @@ export default class Game {
                 case 1 : {
                     if (skill.check && !skill.check(this, sourceId)) return 0;
                     const cost = typeof skill.cost === 'number' ? skill.cost : skill.cost(this, sourceId);
-                    game.log(`【${source.name}(${source.teamId})】对【${selected.name}(${selected.teamId})】使用技能【${skill.name}】`);
+                    battle.log(`【${source.name}(${source.teamId})】对【${selected.name}(${selected.teamId})】使用技能【${skill.name}】`);
 
                     if (cost > 0) {
                         this.actionUpdateMana(source.entityId, source.teamId, -cost, Reasons.COST);
@@ -416,7 +410,7 @@ export default class Game {
     }
 
     actionAddBuff(buff: Buff, reason: Reasons = Reasons.NOTHING) {
-        this.addProcessor((game: Game, data: EventData, step: number) => {
+        this.addProcessor((battle: Battle, data: EventData, step: number) => {
             const target = buff.ownerId === -1 ? this.getEntity(buff.ownerId): null;
             const source = this.getEntity(buff.sourceId);
 
@@ -427,10 +421,10 @@ export default class Game {
                     if (buff.hasParam(BuffParams.SHOULD_COMPUTE_PROBABILITY)) return 2; // 不需要计算概率
                     if (typeof buff.probability !== 'number') return 0;
 
-                    const p = buff.probability * (1 + game.getComputedProperty(source.entityId, BattleProperties.EFT_HIT)); // 基础命中×（1+效果命中）
+                    const p = buff.probability * (1 + battle.getComputedProperty(source.entityId, BattleProperties.EFT_HIT)); // 基础命中×（1+效果命中）
                     const isHit = this.testHit(p);
                     if (!isHit) return -1; // 未命中
-                    const res = 1 + game.getComputedProperty(target.entityId, BattleProperties.EFT_RES); // (1 + 效果抵抗)
+                    const res = 1 + battle.getComputedProperty(target.entityId, BattleProperties.EFT_RES); // (1 + 效果抵抗)
                     const notRes = this.testHit(p / res);
 
                     if (!notRes) { // 抵抗了
@@ -440,7 +434,7 @@ export default class Game {
                 }
                 case 2: {
 
-                    game.log(`${source ? `【${source.name}(${source.teamId})】` : ''}对`,
+                    battle.log(`${source ? `【${source.name}(${source.teamId})】` : ''}对`,
                         target ? `【${target.name}(${target.teamId})】` : '全局',
                         `添加 【${buff.name}】 Buff`,
                         buff.countDown ? (buff.countDown > 0 ? buff.hasParam(BuffParams.COUNT_DOWN_BY_SOURCE) ? '维持' : '持续' + buff.countDown + '回合' : '') : '');
@@ -466,7 +460,7 @@ export default class Game {
     }
 
     actionRemoveBuff(buff: Buff, reason: Reasons = Reasons.NOTHING) {
-        this.addProcessor((game: Game, _: EventData, step: number) => {
+        this.addProcessor((battle: Battle, _: EventData, step: number) => {
             const index = this.buffs.indexOf(buff);
             if (index === -1) return -1;
             switch (step) {
@@ -477,7 +471,7 @@ export default class Game {
                 case 2: {
                    this.buffs.splice(index, 1);
 
-                    game.addEventProcessor(EventCodes.BUFF_REMOVE, buff.ownerId, {buff, targetId: buff.ownerId});
+                    battle.addEventProcessor(EventCodes.BUFF_REMOVE, buff.ownerId, {buff, targetId: buff.ownerId});
                     return -1;
                 }
             }
@@ -527,8 +521,8 @@ export default class Game {
 
     // 拉条
     actionUpdateRunwayPercent(sourceId: number, targetId: number, percent: number, reason: Reasons = Reasons.NOTHING) {
-        this.addProcessor((game: Game) => {
-            return game.runway.updatePercent(targetId, percent) ? -1 : 0;
+        this.addProcessor((battle: Battle) => {
+            return battle.runway.updatePercent(targetId, percent) ? -1 : 0;
         }, {sourceId, targetId, percent, reason}, 'UpdateRunwayPercent');
     }
 

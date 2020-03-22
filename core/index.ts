@@ -4,7 +4,7 @@ export * from './buff';
 export * from './constant';
 export {default as Entity} from './entity';
 export * from './events';
-export {default as Game} from './game';
+export {default as Battle} from './battle';
 export {default as Handler} from './handler';
 export {default as Mana} from './mana';
 export {default as Runway} from './runway';

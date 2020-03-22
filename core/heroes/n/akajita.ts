@@ -4,7 +4,7 @@ import {
     BattleProperties,
     Buff,
     EventData,
-    Game,
+    Battle,
     EffectTypes,
     Reasons,
     Skill
@@ -29,23 +29,23 @@ export const akajita_skill3: Skill = {
     no: 3,
     cost: 3,
     name: '风鼓雷',
-    use(game: Game, sourceId: number, selectedId: number): boolean {
-        const selected = game.getEntity(selectedId);
-        const entities = game.getTeamEntities(selected.teamId);
+    use(battle: Battle, sourceId: number, selectedId: number): boolean {
+        const selected = battle.getEntity(selectedId);
+        const entities = battle.getTeamEntities(selected.teamId);
 
         for (let i = 0; i < 2; i++) {
             const attackInfos: AttackInfo[] = entities.map(e => {
                 return new AttackInfo(e.entityId, {
                     rate: 0.72,
                     params: [AttackParams.SHOULD_COMPUTE_CRI, AttackParams.GROUP],
-                    completedProcessor:  function (game: Game, data: EventData): void { // 造成伤害时
-                        if (game.testHit(0.3) && data.targetId) {
-                            game.actionUpdateRunwayPercent(sourceId, data.targetId, -1, Reasons.SKILL);
+                    completedProcessor:  function (battle: Battle, data: EventData): void { // 造成伤害时
+                        if (battle.testHit(0.3) && data.targetId) {
+                            battle.actionUpdateRunwayPercent(sourceId, data.targetId, -1, Reasons.SKILL);
                         }
                     },
                 });
             });
-            if (!game.actionAttack(attackInfos)) return false;
+            if (!battle.actionAttack(attackInfos)) return false;
 
         }
         return true;

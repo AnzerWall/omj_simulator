@@ -1,8 +1,8 @@
 import {EventData} from './events';
-import Game from './game';
+import Battle from './battle';
 
 export interface Processor {
-    (game: Game, data: EventData, step: number): number | void;
+    (battle: Battle, data: EventData, step: number): number | void;
 }
 
 export default interface Task {

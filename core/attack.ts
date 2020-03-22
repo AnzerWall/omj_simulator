@@ -1,9 +1,9 @@
-import Game from './game';
+import Battle from './battle';
 import {AttackParams, BattleProperties} from './constant';
 import {Processor} from './task';
 import { get } from 'lodash';
 
-type ValueFunction = (game: Game, sourceId: number, targetId: number) => number
+type ValueFunction = (battle: Battle, sourceId: number, targetId: number) => number
 type AttackTargetOptions = {
     sourceId?: number;
     base?: ValueFunction | string;
@@ -16,8 +16,8 @@ type AttackTargetOptions = {
 export class AttackInfo {
     targetId: number;
     sourceId: number;
-    base: ((game: Game, sourceId: number, targetId: number) => number) | string; // 基础数值来源
-    limit?: ((game: Game, sourceId: number, targetId: number) => number) | number; // 不超过xxx
+    base: ((battle: Battle, sourceId: number, targetId: number) => number) | string; // 基础数值来源
+    limit?: ((battle: Battle, sourceId: number, targetId: number) => number) | number; // 不超过xxx
     rate: number; // 倍率
     completedProcessor?: Processor; // 完成后触发的处理者
 

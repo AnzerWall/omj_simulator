@@ -10,7 +10,7 @@ export const enum EffectTypes {
 
 export interface Effect {
     propertyName: string; // 属性名
-    value: number; // 值   | ((game: Game, ownerId: number)=> number)
+    value: number; // 值   | ((battle: Battle, ownerId: number)=> number)
     effectType: EffectTypes;
 }
 let buffCounter = 0;

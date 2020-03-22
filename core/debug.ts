@@ -1,6 +1,6 @@
 import datas from './fixtures/heros.json';
 import {sampleSize, map, filter} from 'lodash';
-import Game from './game';
+import Battle from './battle';
 
 function sleep(ms: number): void {
     const current = Date.now();
@@ -8,7 +8,7 @@ function sleep(ms: number): void {
     while (Date.now() - current < ms) ;
 }
 
-class OrdinaryGame extends Game {
+class OrdinaryBattle extends Battle {
     run() {
         while (this.process()) {
             sleep(100);
@@ -31,6 +31,6 @@ const entities: any[] = [];
     }
 });
 
-const game = new OrdinaryGame(entities);
-game.run();
+const battle = new OrdinaryBattle(entities);
+battle.run();
 

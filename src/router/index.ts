@@ -5,6 +5,7 @@ import Team from '../views/Team.vue';
 import Debug from '../views/Debug.vue';
 import Predict from '../views/Predict.vue';
 import Hero from '../views/Hero.vue';
+import Visual from '../views/Visual.vue';
 
 Vue.use(VueRouter);
 
@@ -33,6 +34,11 @@ const routes = [
         path: '/hero',
         name: 'Hero',
         component: Hero,
+    },
+    {
+        path: '/visual',
+        name: 'Visual',
+        component: Visual,
     },
 ];
 

@@ -38,7 +38,7 @@
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             step() {
                 this.scene.battle.process();
-                while(this.scene.battle.currentTask.depth > 1) {
+                while(this.scene.battle.currentTask.depth > 2) {
                     this.scene.battle.process();
                 }
                 if (this.scene.battle.isEnd) {

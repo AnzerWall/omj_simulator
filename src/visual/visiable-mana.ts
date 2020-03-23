@@ -2,12 +2,10 @@ import Phaser from "phaser";
 import {Mana} from "../../core";
 
 export default class VisibleMana extends Phaser.GameObjects.Container{
-    mana: Mana;
     text: Phaser.GameObjects.Text;
     rects: Phaser.GameObjects. Rectangle[];
-    constructor(scene: Phaser.Scene, mana: Mana) {
+    constructor(scene: Phaser.Scene, mana: any) {
         super(scene);
-        this.mana = mana;
         this.rects = [];
 
         this.text = new Phaser.GameObjects.Text(scene, 200, -8, '0', { color: '#fff' , fontSize: '20px'});
@@ -17,14 +15,14 @@ export default class VisibleMana extends Phaser.GameObjects.Container{
             this.add(rect);
             this.rects.push(rect);
         }
-        this.u();
+        this.update(mana, null);
     }
 
-    u() {
-        this.text.text = String(this.mana.progress);
+    update(mydata: any, dumpData: any) {
+        this.text.text = String(mydata.progress);
         for (let i = 0; i < 8; i++ ) {
             const rect = this.rects[i];
-            if (i + 1 <= this.mana.num) {
+            if (i + 1 <= mydata.num) {
                 rect.isFilled = true;
                 rect.isStroked = false;
                 rect.fillColor = Phaser.Display.Color.HexStringToColor('#fff').color32;

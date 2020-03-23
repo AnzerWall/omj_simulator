@@ -51,16 +51,22 @@ export class BuffBuilder {
 
     stamp() {
         this._buff.params.push(BuffParams.STAMP);
+        this._buff.params.push(BuffParams.NO_DISPEL);
+        this._buff.params.push(BuffParams.NO_REMOVE);
         return this;
     }
 
     enchantment() {
         this._buff.params.push(BuffParams.ENCHANTMENT);
+        this._buff.params.push(BuffParams.NO_DISPEL);
+        this._buff.params.push(BuffParams.NO_REMOVE);
         return this;
     }
 
     fairyland() {
         this._buff.params.push(BuffParams.FAIRYLAND);
+        this._buff.params.push(BuffParams.NO_DISPEL);
+        this._buff.params.push(BuffParams.NO_REMOVE);
         return this;
     }
 

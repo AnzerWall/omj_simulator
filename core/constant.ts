@@ -49,6 +49,7 @@ export enum AttackParams {
     INDIRECT = 'Indirect', // 是否是间接伤害
     REAL = 'Real', // 是否是真实伤害
     CRITICAL = 'Critical', // 是否是暴击伤害
+    CONDUCTION = 'Conduction', // 是否是传导伤害
 
     NORMAL_ATTACK = 'NormalAttack',  // 是否是普通攻击
     SINGLE = 'Single', // 是否是单体

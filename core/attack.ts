@@ -46,7 +46,11 @@ export class AttackBuilder {
         this.attack.params.push(AttackParams.SHOULD_COMPUTE_CRI);
         return this;
     }
-
+    conduction(isAdd: boolean = true) {
+        if(!isAdd) return this;
+        this.attack.params.push(AttackParams.CONDUCTION);
+        return this;
+    }
     indirect(isAdd: boolean = true) {
         if(!isAdd) return this;
         this.attack.params.push(AttackParams.INDIRECT);

@@ -94,8 +94,18 @@ export class BuffBuilder {
         this._buff.params.push(BuffParams.CONTROL);
         return this;
     }
+    
+    buff() {
+        this._buff.params.push( BuffParams.BUFF);
+        return this;
+    }
 
-    buff(propertyName: string, effectType: EffectTypes, value: number) {
+    debuff() {
+        this._buff.params.push( BuffParams.DEBUFF);
+        return this;
+    }
+
+    buffAP(propertyName: string, effectType: EffectTypes, value: number) {
         this._buff.effect = {
             value,
             propertyName,
@@ -105,7 +115,7 @@ export class BuffBuilder {
         return this;
     }
 
-    debuff(propertyName: string, effectType: EffectTypes, value: number) {
+    debuffAP(propertyName: string, effectType: EffectTypes, value: number) {
         this._buff.effect = {
             value,
             propertyName,
@@ -137,6 +147,14 @@ export class BuffBuilder {
         return this;
     }
 
+    ruleHighAndDry() {
+        this._buff.params.push(BuffParams.RULE_HIGH_AND_DRY);
+        return this;
+    }
+    ruleControlImmune() {
+        this._buff.params.push(BuffParams.RULE_CONTROL_IMMUNE);
+        return this;
+    }
     end(): Buff {
         return this._buff;
     }

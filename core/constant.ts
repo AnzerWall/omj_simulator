@@ -22,26 +22,41 @@ export enum EventCodes {
     ACTION_START, // 行动开始
     ACTION_END, // 行动结束后
     TURN_END, // 回合结束后
-    DAMAGE, // 造成伤害后
-    ATTACK, // 攻击后 eventId: 攻击的人
+    
+    
     TAKEN_SELECT, // 被选中后
-    TAKEN_DAMAGE, // 受到伤害后
-    TAKEN_ATTACK, // 受到攻击后 eventId: 被攻击的人
+  
+    
     BUFF_GET, // 获得buff后 eventId: 获得buff的人
     BUFF_REMOVE, // 移除buff后 eventId: 失去buff的人
     ADD_BUFF, // 准备获得buff，在命中判定前 eventId: 获得uff的人
     BEFORE_BUFF_GET, // 将要获得buff ，在命中判定后 eventId: 获得uff的人
     BEFORE_BUFF_REMOVE, // 将要移除buff eventId: 失去buff的人
-    KILL, // 击杀后
-    NO_KILL, // 未击杀后
-    DEAD, // 死亡后
+
     BUFF_RES, // 抵抗后 eventId: 谁抵抗了
     MANA_OVERFLOW, // 鬼火溢出后
     MANA_CHANGE, // 鬼火变化后
     SKILL, // 使用技能后
-    UPDATE_HP, // 生命变化后
+
     BEFORE_ATTACK, // 攻击处理前 eventId: 发起攻击的人
+    WILL_ATTACK, // 将要攻击 eventId: 攻击的人
+    WILL_BE_ATTACKED, // 将要受到攻击 eventId: 被攻击的人
     CRI, // 暴击后
+    WILL_DAMAGE, // 造成伤害前
+    WILL_BE_DAMAGE, // 受到伤害前
+    HAS_DAMAGED, // 造成伤害后
+    HAS_BEEN_DAMAGED, // 受到伤害后
+    HAS_ATTACKED, // 攻击后
+    HAS_BEEN_ATTACKED, // 被攻击后
+    DEAD, // 死亡后
+    UPDATE_HP, // 生命变化后
+
+    BEFORE_HEALING,
+    WILL_BE_HEALED,
+    WILL_HEAL,
+    HAS_BEEN_HEALED,
+    HAS_HEALED,
+
 }
 export enum AttackParams {
     SHOULD_COMPUTE_CRI= 'shouldComputeCri', //计算暴击
@@ -87,6 +102,11 @@ export enum BuffParams {
 
     RULE_HIGH_AND_DRY = 'RuleIighAndDry', // 孤立无援
     RULE_CONTROL_IMMUNE = 'RuleControlImmune', // 免疫控制
+}
+
+export enum HealingParams {
+    CRITICAL = 'Critical', // 是否是暴击治疗
+    SHOULD_COMPUTE_CRI= 'shouldComputeCri', //计算暴击
 }
 
 // 式神可变属性

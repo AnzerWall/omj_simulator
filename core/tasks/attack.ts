@@ -1,5 +1,4 @@
-import {Battle, Attack, BattleProperties, EventCodes, AttackParams} from "../";
-
+import {Battle, Attack, BattleProperties, EventCodes, AttackParams, eps} from "../";
 export class AttackProcessing {
     index: number = 0;
     attackInfos: AttackInfo[] = [];
@@ -24,6 +23,10 @@ export class AttackInfo {
 
     finalDamage: number = 0; // 最终伤害
     isCri: boolean = false; // 是否暴击
+
+    remainHp: number = 0;
+    isDead: boolean = false;
+    originHp: number = 0;
 }
 
 
@@ -62,15 +65,19 @@ export default function attackProcessor(battle: Battle, data: AttackProcessing, 
         }
         // 受到攻击处理
         case 3: {
-            battle.addEventProcessor(EventCodes.ATTACK,  attack.sourceId, data); // 攻击时
-            battle.addEventProcessor(EventCodes.TAKEN_ATTACK, attack.targetId, data); // 被攻击时
+            if (!attack.hasParam(AttackParams.IGNORE_SOURCE)) battle.addEventProcessor(EventCodes.WILL_ATTACK,  attack.sourceId, data); // 攻击时
+            battle.addEventProcessor(EventCodes.WILL_BE_ATTACKED, attack.targetId, data); // 被攻击时
             return 4;
         }
         case 4:{
             const attackInfo = data.attackInfos[data.index];
             if (!attackInfo) return 0;
             if (attack.hasParam(AttackParams.SHOULD_COMPUTE_CRI)) {
-                attackInfo.isCri = attackInfo.isCri || battle.testHit(attackInfo.criticalDamage);
+                if (attack.hasParam(AttackParams.INDIRECT) && battle.getComputedProperty(target.entityId, BattleProperties.DEF) <= eps) { // 间接伤害 防御为0时必然暴击
+                    attackInfo.isCri = true;
+                } else {
+                    attackInfo.isCri = attackInfo.isCri || battle.testHit(attackInfo.criticalDamage);
+                }
                 if (attackInfo.isCri) {
                     attack.addParam(AttackParams.CRITICAL);
                     battle.addEventProcessor(EventCodes.CRI, attack.sourceId, data ); // 暴击时
@@ -91,16 +98,44 @@ export default function attackProcessor(battle: Battle, data: AttackProcessing, 
             attackInfo.finalDamage = atk / def * rate * FR;
             //TODO: 计算盾的抵消伤害
 
-            battle.addEventProcessor(EventCodes.DAMAGE, attack.sourceId,data); // 造成伤害
-            battle.addEventProcessor(EventCodes.TAKEN_DAMAGE, attack.targetId, data); // 收到伤害时
+            attackInfo.originHp = attackInfo.remainHp = target.hp; // 保存剩余生命
 
-            return 6;
+            if (attackInfo.finalDamage > eps) {
+                attackInfo.remainHp = Math.max(target.hp - attackInfo.finalDamage, 0);
+                attackInfo.isDead = attackInfo.remainHp <= eps;
+                if (!attack.hasParam(AttackParams.IGNORE_SOURCE)) battle.addEventProcessor(EventCodes.WILL_DAMAGE, attack.sourceId,data); // 造成伤害前
+                battle.addEventProcessor(EventCodes.WILL_BE_DAMAGE, attack.targetId, data); // 收到伤害时前
+                return 6;
+            }
+            return 7;
         }
-        // 伤害结算步骤
         case 6: {
             const attackInfo = data.attackInfos[data.index];
             if (!attackInfo) return 0;
-            battle.actionUpdateHp(attack.hasParam(AttackParams.IGNORE_SOURCE) ? 0 : attack.sourceId, attack.targetId, - attackInfo.finalDamage);
+            
+            target.hp = attackInfo.remainHp;
+            target.dead = attackInfo.isDead;
+            battle.log(`${source ? `【${source.name}(${source.teamId})】` : ''}对【${target.name}(${target.teamId})】造成${attackInfo.finalDamage}点血， 剩余${attackInfo.remainHp}`, attackInfo.isDead ? '【死亡】' : '');
+       
+            if (attackInfo.isDead) {
+                const field = battle.fields[target.teamId];
+                if (field) {
+                    const index = field.indexOf(target.entityId);
+                    if (index !== -1) {
+                        field[index] = 0;
+                    }
+                }
+                battle.runway.freeze(target.entityId);
+                // TODO: 杀生丸禁止复活buff
+                battle.buffs = battle.buffs.filter(b => b.ownerId === target.entityId); // 移除所有buff
+            }
+            if (!attack.hasParam(AttackParams.IGNORE_SOURCE)) battle.addEventProcessor(EventCodes.HAS_DAMAGED, attack.sourceId,data); // 造成伤害后
+            battle.addEventProcessor(EventCodes.HAS_BEEN_DAMAGED, attack.targetId, data); // 收到伤害后
+            battle.addEventProcessor(EventCodes.UPDATE_HP, attack.targetId, data); // 更新hp
+
+            if (attackInfo.isDead) {
+                battle.addEventProcessor(EventCodes.DEAD, attack.targetId, data); // 死亡
+            }
             return 7;
         }
         // 伤害后步骤
@@ -108,7 +143,11 @@ export default function attackProcessor(battle: Battle, data: AttackProcessing, 
             if (attack.completedProcessor) {
                 battle.addProcessor(attack.completedProcessor, data, `AttackCompletedProcessor`);
             } // 伤害后处理，一般处理伤害时的控制
-
+            if (!attack.hasParam(AttackParams.IGNORE_SOURCE)) battle.addEventProcessor(EventCodes.HAS_ATTACKED, attack.sourceId,data);
+            battle.addEventProcessor(EventCodes.HAS_BEEN_ATTACKED, attack.targetId, data);
+            return 8;
+        }
+        case 8: {
             if (data.index + 1 >= data.attackInfos.length) return -1;
             data.index ++;
             return 2;

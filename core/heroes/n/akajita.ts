@@ -18,12 +18,12 @@ export const akajita_skill2 = new BuffSkill(2, '鼓舞', 2, (_, sourceId, target
     Buff.build(sourceId,  targetId)
         .name('鼓舞[速]')
         .countDown(2)
-        .buff(BattleProperties.SPD, EffectTypes.FIXED, 15)
+        .buffAP(BattleProperties.SPD, EffectTypes.FIXED, 15)
         .end(),
     Buff.build(sourceId,  targetId)
         .name('鼓舞[暴]')
         .countDown(2)
-        .buff(BattleProperties.CRI, EffectTypes.FIXED, 0.11)
+        .buffAP(BattleProperties.CRI, EffectTypes.FIXED, 0.11)
         .end()
 ]);
 export const akajita_skill3: Skill = {
@@ -31,7 +31,7 @@ export const akajita_skill3: Skill = {
     cost: 3,
     name: '风鼓雷',
     target: SkillTarget.ENEMY,
-    use(battle: Battle, sourceId: number, selectedId: number): boolean {
+    use(battle: Battle, sourceId: number, selectedId: number): number {
         const selected = battle.getEntity(selectedId);
         const entities = battle.getTeamEntities(selected.teamId);
         function computed(battle: Battle, data: AttackProcessing): number { // 造成伤害时
@@ -44,10 +44,10 @@ export const akajita_skill3: Skill = {
         }
         for (let i = 0; i < 2; i++) {
             const attacks: Attack[] = entities.map(e => Attack.build(e.entityId, sourceId).rate(0.72).shouldComputeCri().group().completed(computed).end());
-            if (!battle.actionAttack(attacks)) return false;
+            if (!battle.actionAttack(attacks)) return 0;
 
         }
-        return true;
+        return -1;
     },
 };
 

@@ -1,45 +1,57 @@
-# 概述
+# Onmyoji Simulator
+
+## 概述
 
 本项目旨在通过实现阴阳师整体机制，以及式神逻辑以及AI，可以实现对局模拟，机制测试，对弈竞猜胜率预测的功能
 
-# Github Page
+## Github Page
 
 [预览](https://anzerwall.github.io/)
 
-# 运行环境
+## 运行环境
 
 [node.js](https://nodejs.org)  
 [vue.js](https://vuejs.org)  
 [pixi.js](https://www.pixijs.com/)  
 
-# 运行方式
+## 运行方式
 
-## 安装node
+### 安装node
 
 从[官网](https://nodejs.org)根据平台下载安装包
-## 安装依赖
+
+### 安装依赖
+
 在项目跟目录下执行：
+
 ```shell
 npm i
 ```
-## 运行
+
+### 运行
+
 在项目跟目录下执行：
+
 ```shell
 npm run serve
 ```
-## 预测预览
+
+### 预测预览
+
 已完成，但由于式神未完成，该功能暂无效
 
 ![preview](./public/preview.png)
 
-## 战斗模拟预览
+### 战斗模拟预览
+
 已完成血量和式神显示
 
 ![preview](./public/preview2.png)
 
-# Roadmap
+## Roadmap
 
-## 当前
+### 当前
+
 - [x] buff冲突覆盖机制
 - [x] 整理输出和代码
 - [x] 全局增加Player用于存储全局buff 结界等
@@ -48,43 +60,47 @@ npm run serve
 - [x] 事件机制完善（支持反馈处理结果）
 - [x] 技能事件完善 (优化代码逻辑)
 - [x] AI机制实现
-- [ ] 伪回合
+- [x] 伪回合
 - [ ] 额外回合
 - [x] 场上位置
-- [ ] 死亡以及复活
-- [ ] 治疗计算，减疗 增疗
+- [x] 死亡
+- [ ] 复活
+- [x] 治疗计算，减疗 增疗
 - [ ] 召唤物
-- [ ] 间接伤害处理
+- [x] 间接伤害处理
 
+### 核心组件
 
-## 核心组件
 - [x] UI-式神数据页
 - [x] UI-队伍录入页
 - [x] UI-对战调试页(基础)
 - [ ] UI-对战调试页(pixi)
 - [x] UI-对弈竞猜预测页(对战模拟法)
 - [ ] UI-对弈竞猜预测页(机器学习法)
-- [x] Mana(鬼火机制) 
+- [x] Mana(鬼火机制)
 - [x] Runway(行动条)  
-- [x] Team(队伍) 
-- [ ] Equipment(基础御魂) 
-- [x] Buff(buff机制) 
-- [x] Skill(技能机智) 
-- [x] Entity(实体) 
-- [x] Hero(式神) 
-- [x] Event(事件机制) 
+- [x] Team(队伍)
+- [ ] Equipment(基础御魂)
+- [x] Buff(buff机制)
+- [x] Skill(技能机智)
+- [x] Entity(实体)
+- [x] Hero(式神)
+- [x] Event(事件机制)
 
-## 式神进度
+### 式神进度
 
 目前可以做到：
 如果全式神40级不带御魂分列两队的胜率预测
 其中已完成逻辑的式神有
 
 ### 呱
+
 呱(0 / 14)
 
 ### N
+
 N (11 / 12)
+
 - [x] 赤舌
 - [x] 天邪鬼红
 - [x] 天邪鬼青
@@ -98,15 +114,19 @@ N (11 / 12)
 - [ ] 灯笼鬼
 
 ### R
+
 R(0 / 35)
 
 ### SR
+
 SR(0 / 54)
 
 ### SSR
+
 SSR(2 / 28)
+
 - [x] 大天狗
-- [ ] 酒吞童子
+- [x] 酒吞童子
 - [ ] 荒川之主
 - [ ] 阎魔
 - [ ] 两面佛
@@ -133,26 +153,27 @@ SSR(2 / 28)
 - [ ] 缘结神
 
 ### SP
+
 SP(0/ 11)
 
 ### 其他
 
-
-## 杂务
+### 杂务
 
 - [ ] [Buff关联图标](https://bbs.nga.cn/read.php?tid=14455689&rand=14)
-- [ ]  HP + 1问题 
+- [ ]  HP + 1问题
 
-# 鸣谢
+## 鸣谢
 
 [六星满级面板数据](https://nga.178.com/read.php?tid=14788831)
 
 [头像整理](https://bbs.nga.cn/read.php?tid=19007353)
 
-[阴阳师式神AI全解](https://bbs.nga.cn/read.php?tid=16541728) 
+[阴阳师式神AI全解](https://bbs.nga.cn/read.php?tid=16541728)
 
 [buff图标整理](https://bbs.nga.cn/read.php?tid=14455689)
 
-阴阳师百鬼研究中心(Q群:284220173)的热心群友 
+阴阳师百鬼研究中心(Q群:284220173)的热心群友
+
 - 回合结算过程3.0.docx
 - 阴阳师式神信息表3.2.1.xlsx

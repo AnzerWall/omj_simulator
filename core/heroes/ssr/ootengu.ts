@@ -94,7 +94,7 @@ export const ootengu_skill2: Skill = {
                 battle.actionAddBuff(buildBuff2(data.skillOwnerId, data.skillOwnerId), Reasons.SKILL);
             }
         },
-        code: EventCodes.DAMAGE,
+        code: EventCodes.HAS_DAMAGED,
         range: EventRange.SELF,
         priority: 0,
         passive: true,

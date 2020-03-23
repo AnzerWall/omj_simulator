@@ -24,7 +24,7 @@ export const nurikabes_skill2: Skill = {
             const buff = Buff.build(sourceId, e.entityId)
                 .name('坚壁', 1)
                 .countDown(2)
-                .buff(BattleProperties.DEF, EffectTypes.FIXED, 0.2 * source.getProperty(BattleProperties.DEF) + 0.4 * e.getProperty(BattleProperties.DEF))
+                .buffAP(BattleProperties.DEF, EffectTypes.FIXED, 0.2 * source.getProperty(BattleProperties.DEF) + 0.4 * e.getProperty(BattleProperties.DEF))
                 .end();
 
             battle.actionAddBuff(buff, Reasons.SKILL);

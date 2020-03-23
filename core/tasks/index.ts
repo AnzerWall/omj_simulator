@@ -20,8 +20,8 @@ export {default as removeBuffProcessor} from './remove-buff';
 export * from './turn';
 export {default as turnProcessor} from './turn';
 
-export {default as updateHpProcessor} from './update-hp';
-export * from  './update-hp';
+// export {default as updateHpProcessor} from './update-hp';
+// export * from  './update-hp';
 
 export {default as updateManaProcessor } from './update-mana';
 export * from './update-mana';
@@ -35,4 +35,5 @@ export * from  './update-runway';
 export {default as useSkillProcessor} from './use-skill';
 export * from  './use-skill';
 
+export {default as FakeTurnProcessor} from  './fake-turn';
 export * from  './fake-turn';

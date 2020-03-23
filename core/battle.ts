@@ -18,8 +18,8 @@ import {
     eventProcessor, RealEventData,
     RemoveBuffProcessing,
     removeBuffProcessor,
-    UpdateHpProcessing,
-    updateHpProcessor,
+    // UpdateHpProcessing,
+    // updateHpProcessor,
     updateManaProcessor,
     UpdateManaProgressProcessing,
     updateManaProcessProcessor,
@@ -28,9 +28,11 @@ import {
     useSkillProcessor,
     UpdateNanaProcessing,
     FakeTurnProcessing,
+    updateRunwayProcessor,
 } from "./tasks";
 import Attack from "./attack";
-import updateRunWayProcessor from "./tasks/update-runway";
+import healingProcessor, {HealingProcessing} from './tasks/healing';
+import {Healing} from './index';
 
 
 
@@ -44,6 +46,8 @@ export default class Battle {
     runway: Runway; // 行动条位置
     currentId: number; // 当前回合实体
     fields: number[][]; // 场上位置
+    fieldSize: number;
+
     turn: number; // 当前回合
     entities: Map<number, Entity>; // 实体列表
     isEnd: boolean; // 是否游戏结束
@@ -79,6 +83,7 @@ export default class Battle {
         this.random = new Random(MersenneTwister19937.seed(seed));
         this.buffs = [];
         this.fakeTurns = [];
+        this.fieldSize = 0;
 
         forEach(datas, data => {
             if (data.teamId < 0 || data.teamId > 1) {
@@ -99,6 +104,7 @@ export default class Battle {
             this.runway.addEntity(entity.entityId, () => (this.getComputedProperty(entity.entityId,'spd') || 0));
             this.fields[entity.teamId].push(entity.entityId);
         });
+        this.fieldSize = Math.max(this.fields[0].length, this.fields[1].length);
         this.taskCounter = 0;
         this.currentTask = this.rootTask = {
             step: 1,
@@ -266,12 +272,12 @@ export default class Battle {
         return list[this.random.integer(0, list.length - 1)] || null;
     }
 
-    getComputedProperty(entity_id: number, name: string): number {
-        const entity = this.getEntity(entity_id);
+    getComputedProperty(entityId: number, name: string): number {
+        const entity = this.getEntity(entityId);
         const origin = entity.properties.get(name);
-        if (origin === undefined) throw new Error(`Cannot found property in entity which id=${entity_id} named by ${name}`);
+        if (origin === undefined) throw new Error(`Cannot found property in entity which id=${entityId} named by ${name}`);
         const effects: Effect[] = this.buffs.reduce((list: Effect[], buff: Buff) => {
-            if (buff.ownerId !== entity_id && (entity_id !== entity.teamId - 2 || entity.entityId === -3)) return list; // 不是全局buff或者是持有的buff，忽略    -2 表示队伍0   -1 表示队伍1   -3表示双方队伍
+            if (buff.ownerId !== entityId && (entityId !== entity.teamId - 2 || entity.entityId === -3)) return list; // 不是全局buff或者是持有的buff，忽略    -2 表示队伍0   -1 表示队伍1   -3表示双方队伍
             if (!buff.hasParam(BuffParams.AFFECT_PROPERTY)) return list; // 不影响属性的buff跳过
             if (!buff.effect) return list; // 未提供effect属性跳过
             if (buff.effect.propertyName !== name) return list; // 不是影响该属性跳过
@@ -352,10 +358,16 @@ export default class Battle {
         this.addProcessor(attackProcessor, ap, 'Attack');
         return true;
     }
-
-    actionUpdateHp(sourceId: number, targetId: number, num: number, reason: Reasons = Reasons.NOTHING) {
-        return this.addProcessor(updateHpProcessor, new UpdateHpProcessing(sourceId, targetId, num, reason) , 'UpdateHp');
+    actionHeal(healings: Healing[] | Healing) {
+        const hp = new HealingProcessing();
+        if (!isArray(healings)) hp.healings = [healings];
+        else  hp.healings = healings;
+        this.addProcessor(healingProcessor, hp, 'Heal');
+        return true;
     }
+    // actionUpdateHp(sourceId: number, targetId: number, num: number, reason: Reasons = Reasons.NOTHING) {
+    //     return this.addProcessor(updateHpProcessor, new UpdateHpProcessing(sourceId, targetId, num, reason) , 'UpdateHp');
+    // }
 
 
     actionUseSkill(no: number, sourceId: number, selectedId: number, cost: number, reason: Reasons = Reasons.NOTHING) {
@@ -381,7 +393,7 @@ export default class Battle {
 
     // 拉条
     actionUpdateRunwayPercent(sourceId: number, targetId: number, percent: number, reason: Reasons = Reasons.NOTHING) {
-        return this.addProcessor(updateRunWayProcessor, new UpdateRunWayProcessing(sourceId, targetId, percent, reason), 'UpdateRunwayPercent');
+        return this.addProcessor(updateRunwayProcessor, new UpdateRunWayProcessing(sourceId, targetId, percent, reason), 'UpdateRunwayPercent');
     }
 
     log = (...args: any[]) => {

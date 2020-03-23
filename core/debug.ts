@@ -1,4 +1,4 @@
-import datas from './fixtures/heros.json';
+import datas from './fixtures/hero-data';
 import {sampleSize, map, filter} from 'lodash';
 import Battle from './battle';
 

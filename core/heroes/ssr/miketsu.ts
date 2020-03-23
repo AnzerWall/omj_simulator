@@ -102,7 +102,7 @@ export const miketsu_skill4: Skill = {
             .name('一矢·封魔·减疗', 1)
             .countDown(1)
             .probability(1)
-            .debuff(BattleProperties.HEALING_DOWN, EffectTypes.MAX, 0.7)
+            .debuffAP(BattleProperties.HEALING_DOWN, EffectTypes.MAX, 0.7)
             .end();
         battle.actionAddBuff( buff1, Reasons.SKILL);
         battle.actionAddBuff( buff2, Reasons.SKILL);
@@ -115,18 +115,18 @@ export const miketsu_skill4: Skill = {
             const buff5 = Buff.build(sourceId, source.teamId - 2)   // 添加全局buff时  -2 表示队伍0   -1 表示队伍1   -3表示双方队伍
                 .name('狐狩界·防御', 3) // 最大持有12，实际上是最大持有3，每次增加4张对应处理就好了
                 .dependOn(sourceId,'狐狩界') // 依赖于结界的存在
-                .buff(BattleProperties.DEF, EffectTypes.ADD_RATE,  0.03 * 4)
+                .buffAP(BattleProperties.DEF, EffectTypes.ADD_RATE,  0.03 * 4)
                 .end();
 
             const buff6 = Buff.build(sourceId, source.teamId - 2)
                 .name('狐狩界·伤害', 3)
                 .dependOn(sourceId,'狐狩界')
-                .buff(BattleProperties.DMG_DEALT_B, EffectTypes.FIXED,  0.02 * 4)
+                .buffAP(BattleProperties.DMG_DEALT_B, EffectTypes.FIXED,  0.02 * 4)
                 .end();
             const buff7 = Buff.build(sourceId, source.teamId - 2)
                 .name('狐狩界·速度', 3)
                 .dependOn(sourceId,'狐狩界')
-                .buff(BattleProperties.SPD, EffectTypes.FIXED,  1 * 4)
+                .buffAP(BattleProperties.SPD, EffectTypes.FIXED,  1 * 4)
                 .end();
 
             battle.actionAddBuff(buff5, Reasons.SKILL);

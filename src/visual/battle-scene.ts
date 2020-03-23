@@ -1,6 +1,7 @@
 import Phaser from 'phaser'
 import {Battle, BattleProperties} from '../../core';
 import VisibleHero from '@/visual/visible-hero';
+import VisibleMana from "@/visual/visiable-mana";
 // import {forEach, values, isArray, some, isObject} from 'lodash';
 type BattleData = {
     no: number;
@@ -11,10 +12,12 @@ type BattleData = {
 export default class BattleScene extends Phaser.Scene {
     battle: Battle;
     heros: Map<number, VisibleHero>;
-    constructor(data: BattleData[]) {
+    mana: VisibleMana[];
+    constructor(data: BattleData[], seed: number) {
         super({});
-        this.battle = new Battle(data);
+        this.battle = new Battle(data, seed);
         this.heros = new Map<number, VisibleHero>();
+        this.mana = [];
     }
 
     init() {
@@ -46,7 +49,7 @@ export default class BattleScene extends Phaser.Scene {
             for(let pos = 0; pos < field.length; pos++) {
                 if (field[pos] <= 0) continue;
                 const entity = battle.getEntity(field[pos]);
-                const hero = new VisibleHero(this, 100 + pos * 180, 100 + teamId * 280,{
+                const hero = new VisibleHero(this, 120 + pos * 180, 140 + teamId * 200,{
                     hp: entity.hp,
                     shield: 0,
                     maxHp: battle.getComputedProperty(entity.entityId, BattleProperties.MAX_HP),
@@ -59,6 +62,11 @@ export default class BattleScene extends Phaser.Scene {
                 this.heros.set(entity.entityId, hero)
 
             }
+            const mana = this.mana[teamId] = new VisibleMana(this, battle.getMana(teamId));
+            mana.x = 50;
+            mana.y = 20 + teamId * 440;
+            this.children.add(mana);
+
         }
 
         console.log('create');
@@ -90,6 +98,10 @@ export default class BattleScene extends Phaser.Scene {
                hero.updateData(data);
            }
         });
+
+        for(let teamId = 0; teamId <= 1; teamId++) {
+            this.mana[teamId].u();
+        }
     }
 
     syncData() {

@@ -11,9 +11,14 @@
     import { message } from 'ant-design-vue'
 
     export default {
+        data() {
+            return {
+                seed: Math.random(),
+            }
+        },
         mounted() {
-            const data = this.$store.state.team0.concat(this.$store.state.team1)
-            const scene = this.scene = new BattleScene(data);
+            const data = this.$store.state.team0.concat(this.$store.state.team1);
+            const scene = this.scene = new BattleScene(data, this.seed);
 
             this.game = new Phaser.Game({
                 type:Phaser.AUTO,

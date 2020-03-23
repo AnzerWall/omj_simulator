@@ -14,7 +14,7 @@ export default interface Skill {
     passive?: boolean; // 是否是被动
     text?: string; // 技能描述
     target?: ((battle: Battle, entityId: number) => number[]) |SkillTarget; // 是否能使用
-    use?: (battle: Battle, sourceId: number, selectedId: number) => boolean; // 实际效果
+    use?: (battle: Battle, sourceId: number, selectedId: number) => number | void; // 实际效果
 }
 
 export interface SelectableSkill {

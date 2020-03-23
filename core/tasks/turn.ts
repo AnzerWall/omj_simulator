@@ -3,7 +3,7 @@ import {SelectableSkill, SkillTarget} from "../skill";
 
 export class TurnProcessing {
     cannotAction: boolean = false;
-    onlyAttack: number[] = [];
+    onlyAttack: number = 0;
     confusion: boolean = false;
 
     constructor(public turn: number, public currentId: number) {
@@ -24,8 +24,9 @@ export default function turnProcessor(battle: Battle, data: TurnProcessing, step
             );
             data.confusion = battle.hasBuffByControl(currentEntity.entityId, Control.CONFUSION);
             battle.filterBuffByControl(currentEntity.entityId, Control.PROVOKE, Control.SNEER).forEach(buff => {
-                data.onlyAttack = [buff.sourceId];
+                data.onlyAttack = buff.sourceId;
             });
+            if (currentEntity.dead) return -1;
             battle.log(`回合${data.turn} ${currentEntity.name}(${currentEntity.teamId})`);
             battle.addEventProcessor(EventCodes.TURN_START, currentEntity.entityId, data);
             battle.addEventProcessor(EventCodes.ACTION_START, currentEntity.entityId, data);
@@ -56,8 +57,8 @@ export default function turnProcessor(battle: Battle, data: TurnProcessing, step
         // 回合内
         case 4: {
             if (!data.cannotAction) {
-                if (data.onlyAttack.length) {
-                    battle.actionUseSkill(1, currentEntity.entityId, data.onlyAttack[0], 0); //TODO: 是否需要确认鬼火
+                if (data.onlyAttack) {
+                    battle.actionUseSkill(1, currentEntity.entityId, data.onlyAttack, 0); //TODO: 是否需要确认鬼火
                 } else if (data.confusion) {
                     const target = battle.getRandomEnemy(currentEntity.entityId);
                     if (target) {

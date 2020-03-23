@@ -25,10 +25,13 @@ import {
     updateManaProcessProcessor,
     UpdateRunWayProcessing,
     UseSkillProcessing,
-    useSkillProcessor, UpdateNanaProcessing
+    useSkillProcessor,
+    UpdateNanaProcessing,
+    FakeTurnProcessing,
 } from "./tasks";
 import Attack from "./attack";
 import updateRunWayProcessor from "./tasks/update-runway";
+
 
 
 
@@ -53,6 +56,8 @@ export default class Battle {
 
     buffs: Buff[];
 
+    fakeTurns: FakeTurnProcessing[];
+
     constructor(datas: {
         no: number;
         teamId: number;
@@ -73,6 +78,7 @@ export default class Battle {
         this.seed = seed;
         this.random = new Random(MersenneTwister19937.seed(seed));
         this.buffs = [];
+        this.fakeTurns = [];
 
         forEach(datas, data => {
             if (data.teamId < 0 || data.teamId > 1) {
@@ -143,6 +149,16 @@ export default class Battle {
             return this.process();
         }
     }
+    addFakeTurn(currentId: number, processor: Processor, data: any = {}) {
+        const ft = new FakeTurnProcessing(processor, data, currentId);
+        const index = this.fakeTurns.findIndex(ft => ft.currentId === currentId);
+        if (index !== -1) { // 同名覆盖
+            this.fakeTurns.splice(index, 1);
+        }
+
+        return this.fakeTurns.push(ft);
+    }
+
 
     addProcessor(processor: Processor, data: any = {}, type = ''): number {
         const task = {
@@ -327,7 +343,6 @@ export default class Battle {
             return buff.ownerId === ownerId &&buff.params.includes(BuffParams.CONTROL) && !!buff.control && controls.includes(buff.control)
         });
     }
-
 
 
     actionAttack(attacks: Attack[] | Attack) {

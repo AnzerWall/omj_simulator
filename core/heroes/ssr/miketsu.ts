@@ -1,19 +1,32 @@
 import {
     Attack,
     AttackParams,
+    Battle,
     BattleProperties,
     Buff,
     Control,
     EffectTypes,
     EventCodes,
-    EventRange,
-    Battle,
+    EventRange, FakeTurnProcessing,
     Reasons,
     Skill
 } from '../../';
-import {RealEventData, TurnProcessing} from "../../tasks";
+import {RealEventData} from "../../tasks";
 import {SkillTarget} from "../../skill";
 
+function fakeTurn(battle: Battle, data: FakeTurnProcessing)  {
+    const eventData: RealEventData = data.data;
+    if (data.confusion) { // 被混乱
+        const e = battle.getRandomEnemy(data.currentId);
+        if (e) {
+            battle.actionUseSkill(4, data.currentId, e.entityId, 0);
+        }
+    } else if (data.onlyAttack) {
+        battle.actionUseSkill(4, data.currentId, data.onlyAttack, 0);
+    }else {
+        battle.actionUseSkill(4, data.currentId, eventData.eventId, 0);
+    }
+}
 export const miketsu_skill1: Skill = {
     no: 1,
     name: '一矢',
@@ -25,25 +38,25 @@ export const miketsu_skill1: Skill = {
                 const p = battle.hasBuffByName(data.skillOwnerId, '狐狩界') ? 0.4 : 0.05; // 结界启动期间提升概率
                 const isHit = battle.testHit(p);
                 if (isHit) {
-                    // 需要起一个伪回合？
-                    battle.actionUseSkill(4, data.skillOwnerId, data.eventId, 0); // TODO: 混乱时随机普攻
+                    battle.addFakeTurn(data.skillOwnerId, fakeTurn, data);
+
                 }
+                return -1;
             },
             code: EventCodes.ACTION_END, // 监听行动结束事件
-            range: EventRange.ENEMY, // 地方结束
+            range: EventRange.ENEMY, // 敌方结束
             priority: 0,
             passive: false,
         }
     ],
     cost: 0,
-    use(battle: Battle, sourceId: number, selectedId: number): boolean {
+    use(battle: Battle, sourceId: number, selectedId: number) {
         const at = Attack.build(selectedId, sourceId)
             .rate(1)
             .shouldComputeCri()
             .normalAttack()
             .end();
         battle.actionAttack(at);
-        return true;
     },
 };
 export const miketsu_skill4: Skill = {
@@ -52,7 +65,7 @@ export const miketsu_skill4: Skill = {
     cost: 0,
     hide: true,
     target:  SkillTarget.ENEMY,
-    use(battle: Battle, sourceId: number, selectedId: number): boolean {
+    use(battle: Battle, sourceId: number, selectedId: number) {
         const source = battle.getEntity(sourceId);
         const at = Attack.build(selectedId, sourceId)
             .rate(1)
@@ -120,7 +133,6 @@ export const miketsu_skill4: Skill = {
             battle.actionAddBuff(buff6, Reasons.SKILL);
             battle.actionAddBuff(buff7, Reasons.SKILL);
         }
-        return true;
     },
 };
 
@@ -142,14 +154,13 @@ export const miketsu_skill2: Skill = {
     }],
     passive: false,
     cost: 3,
-    use(battle: Battle, sourceId: number, _: number): boolean {
+    use(battle: Battle, sourceId: number, _: number) {
         const buff = Buff.build(sourceId, sourceId)
             .name('狐狩界', 1) // 同名最多1
             .enchantment() // 是结界
             .countDownBySource(1) // 已来源计算回合
             .end();
         battle.actionAddBuff(buff, Reasons.SKILL); // 开启狐狩界
-        return true;
     },
 };
 export const miketsu_skill3: Skill = {
@@ -159,7 +170,7 @@ export const miketsu_skill3: Skill = {
     name: '燃爆·破魔箭',
     cost: 3,
     target:  SkillTarget.ENEMY,
-    use(battle: Battle, sourceId: number, selectedId: number): boolean {
+    use(battle: Battle, sourceId: number, selectedId: number) {
         const buffs = battle.filterBuffBySource(-1, sourceId).filter(b => ['狐狩界·防御', '狐狩界·伤害', '狐狩界·速度'].includes(b.name)); // 来源是我的灵符
         const at = Attack.build(selectedId, sourceId)
             .rate( 1.95 * 0.25 * buffs.length / 3)
@@ -173,6 +184,5 @@ export const miketsu_skill3: Skill = {
            battle.actionRemoveBuff(b, Reasons.COST);
         });
 
-        return true;
     },
 };

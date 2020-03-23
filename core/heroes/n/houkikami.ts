@@ -9,7 +9,7 @@ export const houkikami_skill1: Skill = {
     cost: 0,
     name: '蓄力一攻',
     target:  SkillTarget.ENEMY,
-    use(battle: Battle, sourceId: number, selectedId: number): boolean {
+    use(battle: Battle, sourceId: number, selectedId: number) {
         const at = Attack.build(selectedId, sourceId)
             .rate(1)
             .base((battle: Battle, sourceId: number, targetId: number): number => {
@@ -24,7 +24,6 @@ export const houkikami_skill1: Skill = {
             .normalAttack()
             .end();
         battle.actionAttack(at);
-        return true;
     },
 };
 export const houkikami_skill2 = new GroupAttack(2, '大扫除', 1.31, 2);

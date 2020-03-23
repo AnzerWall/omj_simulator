@@ -16,7 +16,7 @@ export const nurikabes_skill2: Skill = {
     name: '坚壁',
     cost: 2,
     target:  SkillTarget.TEAM,
-    use(battle: Battle, sourceId: number, _: number): boolean {
+    use(battle: Battle, sourceId: number, _: number) {
         const source = battle.getEntity(sourceId);
 
         const entities = battle.getTeamEntities(source.teamId); // 所有队友
@@ -30,6 +30,5 @@ export const nurikabes_skill2: Skill = {
             battle.actionAddBuff(buff, Reasons.SKILL);
         });
 
-        return true;
     },
 };

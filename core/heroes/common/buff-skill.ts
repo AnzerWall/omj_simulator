@@ -17,7 +17,7 @@ export default class BuffSkill implements Skill {
         this.buffBuilder = buffBuilder;
     }
 
-    use(battle: Battle, sourceId: number, _: number): boolean {
+    use(battle: Battle, sourceId: number, _: number) {
         const source = battle.getEntity(sourceId);
 
         const entities = battle.getTeamEntities(source.teamId);
@@ -28,7 +28,6 @@ export default class BuffSkill implements Skill {
             forEach(buffs, b => battle.actionAddBuff(b, Reasons.SKILL));
         });
 
-        return true;
     }
 
 }

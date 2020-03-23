@@ -23,7 +23,7 @@ export default class GroupAttack implements Skill {
         this.times = times;
     }
 
-    use(battle: Battle, sourceId: number, selectedId: number): boolean {
+    use(battle: Battle, sourceId: number, selectedId: number) {
         const selected = battle.getEntity(selectedId);
         const entities = battle.getTeamEntities(selected.teamId);
 
@@ -36,6 +36,5 @@ export default class GroupAttack implements Skill {
             );
             battle.actionAttack(infos);
         }
-        return true;
     }
 }

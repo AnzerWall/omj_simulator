@@ -27,13 +27,11 @@ export default class SingleAttack implements Skill {
         this.FR = FR;
     }
 
-    use(battle: Battle, sourceId: number, selectedId: number): boolean {
+    use(battle: Battle, sourceId: number, selectedId: number) {
         const selected = battle.getEntity(selectedId);
-        if (!selected) return false;
 
         for (let i = 0; i < this.times; i++) {
             battle.actionAttack(Attack.build(selectedId, sourceId).rate(this.rate).FR(this.FR).shouldComputeCri().single().normalAttack(this.isNormalAttack).end());
         }
-        return true;
     }
 }

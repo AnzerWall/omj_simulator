@@ -24,7 +24,8 @@ export default class Entity {
     lv: number; // 等级
     skills: Skill[];
     rank: string;
-    keyValueTable: Map<string, string>;
+    battleData: Map<string, string>;
+    turnData: Map<string, string>;
     summonToken: boolean; // 是否是召唤物
 
     constructor() {
@@ -39,7 +40,8 @@ export default class Entity {
         this.lv = 40;
         this.skills = [];
         this.rank = 'X';
-        this.keyValueTable = new Map<string, string>();
+        this.battleData = new Map<string, string>();
+        this.turnData = new Map<string, string>();
         this.summonToken = false;
 
         forEach(values(BattleProperties), key => {
@@ -49,25 +51,47 @@ export default class Entity {
     }
 
     /**
-     * 获得实体存储的附加数据，详见setData
+     * 获得实体存储的附加数据，详见setBattleData
      * @param {string} key
      * @return {string|null} 返回数据，对应key不存在返回null
      */
-    getData(key: string): string | null {
-        return this.keyValueTable.get(key) || null;
+    getBattleData(key: string): string | null {
+        return this.battleData.get(key) || null;
     }
 
     /**
      * 设置实体存储的附加数据，主要用于式神记录一些临时数据
-     * 比如记录本回合内是否有人死亡，比如犬神记录本回合有没有人砍了队友
      * @param key
      * @param value
      */
     setData(key: string, value: string | null): boolean {
         if (value === null) {
-            return this.keyValueTable.delete(key);
+            return this.battleData.delete(key);
         }
-        this.keyValueTable.set(key, value);
+        this.battleData.set(key, value);
+        return true;
+    }
+
+    /**
+     * 获得实体存储的附加数据，该数据表会在每次正式回合开始时被清空，详见setTurnData
+     * @param {string} key
+     * @return {string|null} 返回数据，对应key不存在返回null
+     */
+    getTurnData(key: string): string | null {
+        return this.turnData.get(key) || null;
+    }
+
+    /**
+     * 设置实体存储的附加数据，该数据表会在每次正式回合开始时被清空，主要用于式神记录一些临时数据
+     * 比如记录本回合内是否有人死亡，比如犬神记录本回合有没有人砍了队友
+     * @param key
+     * @param value
+     */
+    setTurnData(key: string, value: string | null): boolean {
+        if (value === null) {
+            return this.turnData.delete(key);
+        }
+        this.turnData.set(key, value);
         return true;
     }
 

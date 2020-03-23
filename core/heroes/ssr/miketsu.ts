@@ -53,6 +53,7 @@ export const miketsu_skill4: Skill = {
     hide: true,
     target:  SkillTarget.ENEMY,
     use(battle: Battle, sourceId: number, selectedId: number): boolean {
+        const source = battle.getEntity(sourceId);
         const at = Attack.build(selectedId, sourceId)
             .rate(1)
             .param(
@@ -98,18 +99,18 @@ export const miketsu_skill4: Skill = {
         // 如果结界开启，增加护符
 
         if (battle.hasBuffByName(sourceId, '狐狩界')) {
-            const buff5 = Buff.build(sourceId, -1)
+            const buff5 = Buff.build(sourceId, source.teamId - 2)   // 添加全局buff时  -2 表示队伍0   -1 表示队伍1   -3表示双方队伍
                 .name('狐狩界·防御', 3) // 最大持有12，实际上是最大持有3，每次增加4张对应处理就好了
                 .dependOn(sourceId,'狐狩界') // 依赖于结界的存在
                 .buff(BattleProperties.DEF, EffectTypes.ADD_RATE,  0.03 * 4)
                 .end();
 
-            const buff6 = Buff.build(sourceId, -1)
+            const buff6 = Buff.build(sourceId, source.teamId - 2)
                 .name('狐狩界·伤害', 3)
                 .dependOn(sourceId,'狐狩界')
                 .buff(BattleProperties.DMG_DEALT_B, EffectTypes.FIXED,  0.02 * 4)
                 .end();
-            const buff7 = Buff.build(sourceId, -1)
+            const buff7 = Buff.build(sourceId, source.teamId - 2)
                 .name('狐狩界·速度', 3)
                 .dependOn(sourceId,'狐狩界')
                 .buff(BattleProperties.SPD, EffectTypes.FIXED,  1 * 4)
@@ -161,7 +162,7 @@ export const miketsu_skill3: Skill = {
     use(battle: Battle, sourceId: number, selectedId: number): boolean {
         const buffs = battle.filterBuffBySource(-1, sourceId).filter(b => ['狐狩界·防御', '狐狩界·伤害', '狐狩界·速度'].includes(b.name)); // 来源是我的灵符
         const at = Attack.build(selectedId, sourceId)
-            .rate( 1.95 * 0.25 * buffs.length)
+            .rate( 1.95 * 0.25 * buffs.length / 3)
             .shouldComputeCri()
             .single()
             .end();

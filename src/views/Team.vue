@@ -31,7 +31,7 @@
                         p.children.push({
                             value: hero.no,
                             label: hero.name,
-                            children: [],
+                            // children: [],
                         });
                     }
                     return list;

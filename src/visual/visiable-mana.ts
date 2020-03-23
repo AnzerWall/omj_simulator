@@ -10,7 +10,7 @@ export default class VisibleMana extends Phaser.GameObjects.Container{
         this.mana = mana;
         this.rects = [];
 
-        this.text = new Phaser.GameObjects.Text(scene, 190, -8, '0', { color: '#fff' , fontSize: '20px'});
+        this.text = new Phaser.GameObjects.Text(scene, 200, -8, '0', { color: '#fff' , fontSize: '20px'});
         this.add(this.text);
         for (let i = 0; i < 8; i++ ) {
             const rect = new Phaser.GameObjects. Rectangle(scene, i * 25, 0, 20, 10, Phaser.Display.Color.HexStringToColor('#fff').color32);

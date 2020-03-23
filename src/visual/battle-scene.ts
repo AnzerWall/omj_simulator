@@ -13,6 +13,7 @@ export default class BattleScene extends Phaser.Scene {
     battle: Battle;
     heros: Map<number, VisibleHero>;
     mana: VisibleMana[];
+    // text: Phaser.GameObjects.Text;
     constructor(data: BattleData[], seed: number) {
         super({});
         this.battle = new Battle(data, seed);
@@ -49,25 +50,19 @@ export default class BattleScene extends Phaser.Scene {
             for(let pos = 0; pos < field.length; pos++) {
                 if (field[pos] <= 0) continue;
                 const entity = battle.getEntity(field[pos]);
-                const hero = new VisibleHero(this, 120 + pos * 180, 140 + teamId * 200,{
-                    hp: entity.hp,
-                    shield: 0,
-                    maxHp: battle.getComputedProperty(entity.entityId, BattleProperties.MAX_HP),
-                    isDead: entity.dead,
-                    teamId: teamId,
-                    entityId: entity.entityId,
-                    no: entity.no,
-                });
+                const hero = new VisibleHero(this, 120 + pos * 180, 160 + teamId * 180, entity, battle);
                 this.children.add(hero);
                 this.heros.set(entity.entityId, hero)
 
             }
             const mana = this.mana[teamId] = new VisibleMana(this, battle.getMana(teamId));
-            mana.x = 50;
+            mana.x = this.game.canvas.width - 280;
             mana.y = 20 + teamId * 440;
             this.children.add(mana);
 
         }
+        // this.text = new Phaser.GameObjects.Text(this, 10, 10, '', {});
+        // this.children.add(this.text);
 
         console.log('create');
 
@@ -76,26 +71,20 @@ export default class BattleScene extends Phaser.Scene {
     update(_: number, __: number): void {
 
         const battle = this.battle;
+
+        // let text  = '';
+        // let t = battle.currentTask;
+        // while (t.parent!== null) {
+        //     text = t.type + ' >  ' + text;
+        //     t = t.parent;
+        // }
+        // this.text.text = text;
+
         // let once = true;
         battle.entities.forEach(entity => {
            const hero = this.heros.get(entity.entityId);
-
            if (hero) {
-               const data = {
-                   hp: entity.hp,
-                   shield: 0,
-                   maxHp: battle.getComputedProperty(entity.entityId, BattleProperties.MAX_HP),
-                   isDead: entity.dead,
-                   teamId: entity.teamId,
-                   entityId: entity.entityId,
-                   no: entity.no,
-               };
-               // if (once) {
-               //     console.log(`(${data.maxHp} - ${data.hp}) / ${data.maxHp} = ${((data.maxHp - data.hp)/ data.maxHp) * 180}`);
-               //     once = false;
-               // }
-
-               hero.updateData(data);
+               hero.u();
            }
         });
 

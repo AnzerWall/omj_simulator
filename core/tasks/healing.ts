@@ -61,7 +61,7 @@ export default function healingProcessor(battle: Battle, data: HealingProcessing
             const healingInfo = data.healingInfos[data.index];
             if (!healingInfo) return 0;
 
-            healingInfo.finalValue = healingInfo.originValue * healing.rate * (1 - healingInfo.healingDown) + (1 + healingInfo.healingUp);
+            healingInfo.finalValue = healingInfo.originValue * healing.rate * (1 - healingInfo.healingDown) + (1 + healingInfo.healingUp) * (healingInfo.isCri ? healingInfo.criticalDamage : 1);
             healingInfo.originHp = target.hp;
             healingInfo.remainHp = target.hp + healingInfo.finalValue;
             battle.addEventProcessor(EventCodes.WILL_HEAL, healing.sourceId, data);

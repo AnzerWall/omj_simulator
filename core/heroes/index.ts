@@ -18,6 +18,7 @@ import {TurnProcessing} from "../tasks";
 import {miketsu_skill1, miketsu_skill2, miketsu_skill3, miketsu_skill4} from "./ssr/miketsu";
 import {ootengu_skill1, ootengu_skill2, ootengu_skill3} from "./ssr/ootengu";
 import {AI} from "../entity";
+import {shutendoji_skill1, shutendoji_skill2, shutendoji_skill3} from "./ssr/shutendoji";
 
 export const HeroTable = new Map<number, any>(map(HeroData, (data) => [data.id, data]));
 export const HeroTableByName = new Map<string, any>(map(HeroData, (data) => [data.name, data]));
@@ -121,6 +122,12 @@ HERO('大天狗', [
     ootengu_skill1,
     ootengu_skill2,
     ootengu_skill3,
+]);
+
+HERO('酒吞童子', [
+    shutendoji_skill1,
+    shutendoji_skill2,
+    shutendoji_skill3,
 ]);
 
 

@@ -6,7 +6,7 @@ import {BuffParams, Control, EventCodes, EventRange, Reasons} from './constant';
 import {HeroBuilders} from './heroes';
 import Skill, {SelectableSkill} from './skill';
 import {MersenneTwister19937, Random} from 'random-js';
-import Buff, { Effect, EffectTypes} from './buff';
+import Buff, {Effect, EffectTypes} from './buff';
 import Task, {Processor} from './task';
 import {
     AddBuffProcessing,
@@ -35,8 +35,6 @@ import healingProcessor, {HealingProcessing} from './tasks/healing';
 import {Healing} from './index';
 
 
-
-
 export default class Battle {
 
     output: object[]; // 游戏记录
@@ -62,6 +60,7 @@ export default class Battle {
 
     fakeTurns: FakeTurnProcessing[];
     waitInput: boolean;
+
     constructor(datas: {
         no: number;
         teamId: number;
@@ -102,7 +101,7 @@ export default class Battle {
 
             console.log(`【${data.teamId}】${entity.name}(${entity.no})(${entity.entityId})`);
             this.entities.set(entity.entityId, entity);
-            this.runway.addEntity(entity.entityId, () => (this.getComputedProperty(entity.entityId,'spd') || 0));
+            this.runway.addEntity(entity.entityId, () => (this.getComputedProperty(entity.entityId, 'spd') || 0));
             this.fields[entity.teamId].push(entity.entityId);
         });
         this.fieldSize = Math.max(this.fields[0].length, this.fields[1].length);
@@ -156,6 +155,7 @@ export default class Battle {
             return this.process();
         }
     }
+
     addFakeTurn(currentId: number, processor: Processor, data: any = {}) {
         const ft = new FakeTurnProcessing(processor, data, currentId);
         const index = this.fakeTurns.findIndex(ft => ft.currentId === currentId);
@@ -183,16 +183,22 @@ export default class Battle {
     }
 
     addEventProcessor(code: EventCodes, eventId: number, data?: any): number {
-        const eventEntity = eventId <= 0 ? null :this.getEntity(eventId);
+        const eventEntity = eventId <= 0 ? null : this.getEntity(eventId);
         const processing: EventProcessing = new EventProcessing(code);
         this.entities.forEach(entity => {
             forEach(entity.skills, (skill: Skill) => {
                 forEach(skill.handlers, handler => {
                     if (handler.code !== code) return;
                     if (eventId && eventEntity) {
-                        if (handler.range === EventRange.SELF && eventId === entity.entityId) return;
-                        if (handler.range === EventRange.TEAM && eventEntity.teamId !== entity.teamId) return;
-                        if (handler.range === EventRange.ENEMY && (1 - eventEntity.teamId) !== entity.teamId) return;
+                        if (handler.range === EventRange.SELF) {
+                            if (eventId !== entity.entityId) return;
+                        }
+                        if (handler.range === EventRange.TEAM) {
+                            if (eventEntity.teamId !== entity.teamId) return;
+                        }
+                        if (handler.range === EventRange.ENEMY) {
+                            if ((1 - eventEntity.teamId) !== entity.teamId) return;
+                        }
                     }
                     processing.units.push(new RealEventData(entity.entityId, skill.no, eventId, handler, data));
                 });
@@ -228,7 +234,7 @@ export default class Battle {
 
     getEntity(entityId: number): Entity {
         const ret = this.entities.get(entityId);
-        if (!ret)  throw new Error(`Cannot found entity, id = ${entityId}`);
+        if (!ret) throw new Error(`Cannot found entity, id = ${entityId}`);
         return ret;
     }
 
@@ -263,9 +269,11 @@ export default class Battle {
     testHit(p: number): boolean {
         return this.random.real(0, 1) <= p;
     }
+
     getRandomOne<T>(arr: T[]): T {
         return arr[this.random.integer(0, arr.length - 1)];
     }
+
     getRandomEnemy(entityId: number): Entity | null {
         const list: Entity[] = this.getEnemies(entityId);
         if (!list.length) return null;
@@ -284,7 +292,7 @@ export default class Battle {
             if (buff.effect.propertyName !== name) return list; // 不是影响该属性跳过
             if (buff.hasParam(BuffParams.DEPEND_ON)) {
                 if (this.buffs.every(b =>
-                     b.buffId !== buff.dependBuffId && !(b.ownerId === b.dependBuffId && b.name === b.dependBuffName)  // 依赖 不存在
+                    b.buffId !== buff.dependBuffId && !(b.ownerId === b.dependBuffId && b.name === b.dependBuffName)  // 依赖 不存在
                 )) {
                     return list;
                 }
@@ -309,7 +317,7 @@ export default class Battle {
             }
         }, origin);
     }
-    
+
     canCost(teamId: number, count: number): boolean {
         if (teamId < 0 || teamId > 1) return false;
 
@@ -323,16 +331,19 @@ export default class Battle {
     }
 
     filterBuffByName(ownerId: number, name: string): Buff[] {
-        return filter(this.buffs,  buff => buff.ownerId === ownerId && buff.name === name);
+        return filter(this.buffs, buff => buff.ownerId === ownerId && buff.name === name);
     }
+
     filterBuffByParam(ownerId: number, ...params: BuffParams[]): Buff[] {
         return filter(this.buffs, buff => buff.ownerId === ownerId && params.some(p => buff.params.includes(p)));
     }
+
     filterBuffByControl(ownerId: number, ...controls: Control[]): Buff[] {
         return filter(this.buffs, buff => {
             return buff.ownerId === ownerId && buff.params.includes(BuffParams.CONTROL) && !!buff.control && controls.includes(buff.control)
         });
     }
+
     filterBuffBySource(ownerId: number, sourceId: number): Buff[] {
         return filter(this.buffs, buff => {
             return buff.ownerId === ownerId && buff.sourceId === sourceId;
@@ -342,12 +353,14 @@ export default class Battle {
     hasBuffByName(ownerId: number, name: string): boolean {
         return some(this.buffs, buff => buff.ownerId === ownerId && buff.name === name);
     }
+
     hasBuffByParam(ownerId: number, ...params: BuffParams[]): boolean {
         return some(this.buffs, buff => buff.ownerId === ownerId && params.some(p => buff.params.includes(p)));
     }
+
     hasBuffByControl(ownerId: number, ...controls: Control[]): boolean {
         return some(this.buffs, buff => {
-            return buff.ownerId === ownerId &&buff.params.includes(BuffParams.CONTROL) && !!buff.control && controls.includes(buff.control)
+            return buff.ownerId === ownerId && buff.params.includes(BuffParams.CONTROL) && !!buff.control && controls.includes(buff.control)
         });
     }
 
@@ -355,17 +368,19 @@ export default class Battle {
     actionAttack(attacks: Attack[] | Attack) {
         const ap = new AttackProcessing();
         if (!isArray(attacks)) ap.attacks = [attacks];
-        else  ap.attacks = attacks;
+        else ap.attacks = attacks;
         this.addProcessor(attackProcessor, ap, 'Attack');
         return true;
     }
+
     actionHeal(healings: Healing[] | Healing) {
         const hp = new HealingProcessing();
         if (!isArray(healings)) hp.healings = [healings];
-        else  hp.healings = healings;
+        else hp.healings = healings;
         this.addProcessor(healingProcessor, hp, 'Heal');
         return true;
     }
+
     // actionUpdateHp(sourceId: number, targetId: number, num: number, reason: Reasons = Reasons.NOTHING) {
     //     return this.addProcessor(updateHpProcessor, new UpdateHpProcessing(sourceId, targetId, num, reason) , 'UpdateHp');
     // }
@@ -381,7 +396,7 @@ export default class Battle {
     }
 
     actionRemoveBuff(buff: Buff, reason: Reasons = Reasons.NOTHING) {
-        this.addProcessor(removeBuffProcessor,  new RemoveBuffProcessing(buff, reason), 'RemoveBuff');
+        this.addProcessor(removeBuffProcessor, new RemoveBuffProcessing(buff, reason), 'RemoveBuff');
     }
 
     actionUpdateMana(sourceId: number, teamId: number, num: number, reason: Reasons = Reasons.NOTHING) {

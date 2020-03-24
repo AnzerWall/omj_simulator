@@ -148,7 +148,7 @@ export default function attackProcessor(battle: Battle, data: AttackProcessing, 
             return 8;
         }
         case 8: {
-            if (data.index + 1 >= data.attackInfos.length) return -1;
+            if (data.index + 1 >= data.attacks.length) return -1;
             data.index ++;
             return 2;
         }

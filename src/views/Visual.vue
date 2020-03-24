@@ -1,43 +1,53 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <div class="debug">
-        <div>{{data.hint}}</div>
+        <div>Seed: {{data.seed}}</div>
+        <div>{{data.hint}}</div>.
+
         <div class="select-skill-field">
+            <a-input-number v-model="depth"  style="width: 50px; margin-right: 5px; " :defaultValue="1" :max="10" :min="0"/>
             <a-button @click="step" :block="false" style="width: 100px; ">下一步</a-button>
             <a-button :block="false" style="width: 100px; margin-left: 20px;" v-for="skill in data.skills"
-                      :key="skill.no" @click="selectSkill(skill.no)" :disabled="!!selectionNo">{{skill.name || `技能 ${skill.no}`}}
+                      :key="skill.no" @click="selectSkill(skill.no)" :disabled="!!selectionNo">{{skill.name || `技能
+                ${skill.no}`}}
             </a-button>
-            <a-button :block="false" style="width: 100px;  margin-left: 20px;" v-if="data.skills.length" @click="useSkill(0, 0)">AI</a-button>
+            <a-button :block="false" style="width: 100px;  margin-left: 20px;" v-if="data.skills.length"
+                      @click="useSkill(0, 0)">AI
+            </a-button>
             <a-button :block="false" style="width: 100px;  margin-left: 20px;" v-if="selectionNo"
                       @click="selectionNo = 0">取消
             </a-button>
         </div>
 
         <div class="team-field" v-for="teamId in 2" :key="teamId">
-            <div v-for="e in data.teams[teamId - 1]" :key="e.entityId">
-                <div class="hero-card-wrap"
-                     :class="{dead: e.dead,
+            <div class="mana">{{manaNum2Text(data.mana[teamId -1])}} {{data.mana[teamId -1].progress}}</div>
+            <div class="hero-field">
+                <div v-for="e in data.teams[teamId - 1]" :key="e.entityId">
+                    <div class="hero-card-wrap"
+                         :class="{dead: e.dead,
                      unselectable: selectionNo && selectedSkill && !selectedSkill.targets.includes(e.entityId),
                       selectable: selectionNo && selectedSkill && selectedSkill.targets.includes(e.entityId),
                       'current-turn': data.currentId === e.entityId
                        }"
-                    @click="selectHero(e)"
-                >
-                    <div class="hero-info">
-                        <div class="helo-info-left">
-                            <a-avatar class="hero-avatar active" :src=" '/avatar/'+ e.no + '.png'" size="large"/>
-                        </div>
-                        <div class="hero-properties">
-                            <div class="bold">{{e.name}}[{{e.entityId}}]</div>
-                            <div>
-                                <a-progress size="small" :percent="Math.ceil(e.hp / e.maxHp * 100)" :showInfo="false"
-                                            status="exception"/>
+                         @click="selectHero(e)"
+                    >
+                        <div class="hero-info">
+                            <div class="helo-info-left">
+                                <a-avatar class="hero-avatar active" :src=" '/avatar/'+ e.no + '.png'" size="large"/>
+                            </div>
+                            <div class="hero-properties">
+                                <div class="bold">{{e.name}}[{{e.entityId}}]</div>
+                                <div>
+                                    <a-progress size="small" :percent="Math.ceil(e.hp / e.maxHp * 100)"
+                                                :showInfo="false"
+                                                status="exception"/>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="hero-buffs">
-                        <div v-for="buff in e.buffs" :key="buff.buffId">
-                            <img v-if="buff.icon" :src="'/public/buff/'+icon"/>
-                            <a-tag v-else>{{buff.name}} {{buff.count > 1 ? buff.count : ''}}</a-tag>
+                        <div class="hero-buffs">
+                            <div v-for="buff in e.buffs" :key="buff.buffId">
+                                <img v-if="buff.icon" :src="'/public/buff/'+icon"/>
+                                <a-tag v-else>{{buff.name}} {{buff.count > 1 ? buff.count : ''}}</a-tag>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -61,59 +71,71 @@
     .select-skill-field {
         display: flex;
         flex-direction: row;
-        margin: 20px 0;
     }
 
     .team-field {
         display: flex;
-        flex-direction: row;
-
-        .hero-card-wrap {
-            height: 220px;
-            width: 180px;
-            background-color: #fefdff;
-            margin-top: 30px;
-            margin-left: 30px;
-            padding: 15px;
-            border-radius: 2px;
-            position: relative;
-            /*border: #000 solid 5px;*/
-            &.current-turn{
-                box-shadow: rgba(0, 0, 0, .3) 1px 1px 3px;
-                background-color: burlywood;
+        flex-direction: column;
+        margin-top: 10px;
+        .mana {
+            color: #1543a6;
+            font-family: Courier;
+        }
+        .hero-field {
+            display: flex;
+            flex-direction: row;
+            &>:not(:first-child) {
+                margin-left: 30px;
             }
-            &.unselectable, .dead {
-                opacity: 0.3;
-            }
+            .hero-card-wrap {
+                height: 220px;
+                width: 180px;
+                background-color: #fefdff;
+                margin-top: 5px;
 
-            &.selectable {
-                cursor: pointer;
-            }
+                padding: 15px;
+                border-radius: 2px;
+                position: relative;
+                /*border: #000 solid 5px;*/
 
-            .hero-info {
-                display: flex;
-                flex-direction: row;
+                &.current-turn {
+                    box-shadow: rgba(0, 0, 0, .3) 1px 1px 3px;
+                    background-color: burlywood;
+                }
 
-                .hero-info-left {
-                    .hero-avatar {
-                        &.active {
-                            border: 2px #2565d6 solid;
+                &.unselectable, .dead {
+                    opacity: 0.3;
+                }
+
+                &.selectable {
+                    cursor: pointer;
+                }
+
+                .hero-info {
+                    display: flex;
+                    flex-direction: row;
+
+                    .hero-info-left {
+                        .hero-avatar {
+                            &.active {
+                                border: 2px #2565d6 solid;
+                            }
+                        }
+                    }
+
+                    .hero-properties {
+                        flex: 1;
+                        padding: 0 0 0 8px;
+
+                        .bold {
+                            font-weight: bold;
                         }
                     }
                 }
 
-                .hero-properties {
-                    flex: 1;
-                    padding: 0 0 0 8px;
-
-                    .bold {
-                        font-weight: bold;
-                    }
+                .hero-buffs {
+                    margin-top: 20px;
                 }
-            }
-
-            .hero-buffs {
-                margin-top: 20px;
             }
         }
     }
@@ -234,6 +256,7 @@
                 data: empty(),
                 selectionNo: 0,
                 selectedSkill: {},
+                depth: 1,
             }
         },
         // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -272,7 +295,7 @@
             step() {
                 do {
                     this.battle.process();
-                } while (this.battle.currentTask.depth > 1 && this.battle.currentTask.type !== 'WaitInput');
+                } while (this.battle.currentTask.depth > this.depth && this.battle.currentTask.type !== 'WaitInput');
                 this.data = dump(this.battle);
                 if (this.battle.isEnd) {
                     message.info('胜利者是队伍' + (this.battle.winner + 1))
@@ -301,10 +324,16 @@
             },
 
             selectHero(e) {
-                if (!e ) return;
-                if ( this.selectionNo && this.selectedSkill && this.selectedSkill.targets.includes(e.entityId)) {
+                if (!e) return;
+                if (this.selectionNo && this.selectedSkill && this.selectedSkill.targets.includes(e.entityId)) {
                     this.useSkill(this.selectionNo, e.entityId)
                 }
+            },
+
+            manaNum2Text(mana) {
+                if (!mana) return '';
+
+                return times(mana.num,() => '■').concat(times(8 - mana.num,() => '□')).join(' ')
             }
 
 

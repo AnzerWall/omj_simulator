@@ -12,9 +12,9 @@
                     <a-icon type="profile"/>
                     <span>队伍设置</span>
                 </a-menu-item>
-                <a-menu-item key="/debug">
-                    <a-icon type="build"/>
-                    <span>对战调试</span>
+                <a-menu-item key="/visual">
+                    <a-icon type="fire"/>
+                    <span>可视化模拟</span>
                 </a-menu-item>
                 <a-menu-item key="/predict">
                     <a-icon type="crown"/>
@@ -24,10 +24,14 @@
                     <a-icon type="table"/>
                     <span>式神列表</span>
                 </a-menu-item>
-                <a-menu-item key="/visual">
-                    <a-icon type="fire"/>
-                    <span>可视化模拟</span>
+
+                <a-menu-item key="/debug">
+                    <a-icon type="build"/>
+                    <span>对战调试(程序员)</span>
                 </a-menu-item>
+
+
+
             </a-menu>
         </a-layout-sider>
         <a-layout class="site-right">

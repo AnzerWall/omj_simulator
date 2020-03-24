@@ -37,10 +37,13 @@ export default function turnProcessor(battle: Battle, data: TurnProcessing, step
         // 处理buff
         case 2: {
             battle.buffs.forEach(buff => {
-                if (!buff.hasParam(BuffParams.COUNT_DOWN) || !buff.hasParam(BuffParams.COUNT_DOWN_BY_SOURCE)) return;
-                if (buff.hasParam(BuffParams.COUNT_DOWN) && buff.ownerId === currentEntity.entityId) return; // 不是本人的回合
-                if (buff.hasParam(BuffParams.COUNT_DOWN_BY_SOURCE) && buff.sourceId === currentEntity.entityId) return; // 不是来源的回合
-
+                if (!(buff.hasParam(BuffParams.COUNT_DOWN)  || buff.hasParam(BuffParams.COUNT_DOWN_BY_SOURCE))) return;
+                if (buff.hasParam(BuffParams.COUNT_DOWN)){
+                    if ( buff.ownerId !== currentEntity.entityId) return; // 不是本人的回合
+                }
+                if (buff.hasParam(BuffParams.COUNT_DOWN_BY_SOURCE)) {
+                    if (buff.sourceId !== currentEntity.entityId) return; // 不是来源的回合
+                }
                 if (!buff.countDown || buff.countDown <= 1) { // 未提供倒计时或者剩余时间少于一个回合
                     buff.countDown = 0;
                     battle.actionRemoveBuff(buff, Reasons.TIME_OUT);
@@ -105,6 +108,7 @@ export default function turnProcessor(battle: Battle, data: TurnProcessing, step
                             no: s.no,
                             targets,
                             cost: typeof s.cost === 'number' ? s.cost : s.cost(battle, currentEntity.entityId),
+                            name: s.name,
                         }
                     })
                         .filter(s => s.targets.length);
@@ -112,7 +116,7 @@ export default function turnProcessor(battle: Battle, data: TurnProcessing, step
                     if (skills.length) {
                         if (battle.waitInput) {
                             data.waitInput = new WaitInputProcessing(skills);
-                            battle.addProcessor(waitInputProcessor);
+                            battle.addProcessor(waitInputProcessor, data.waitInput, 'WaitInput');
                         }
 
                     }

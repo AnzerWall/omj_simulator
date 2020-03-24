@@ -21,6 +21,7 @@ export interface SelectableSkill {
     no: number;
     targets: number[];
     cost: number;
+    name: string;
 }
 
 export interface SkillSelection {

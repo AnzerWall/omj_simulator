@@ -1,29 +1,134 @@
-<template>
-    <div class="debug" >
-        <a-button @click="step" :block="false" style="width: 100px; margin-bottom: 20px;">下一步</a-button>
-<!--        <div ref="container"> </div>-->
-        <json-tree :data="data" ></json-tree>
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
+    <div class="debug">
+        <div>{{data.hint}}</div>
+        <div class="select-skill-field">
+            <a-button @click="step" :block="false" style="width: 100px; ">下一步</a-button>
+            <a-button :block="false" style="width: 100px; margin-left: 20px;" v-for="skill in data.skills"
+                      :key="skill.no" @click="selectSkill(skill.no)" :disabled="!!selectionNo">{{skill.name || `技能 ${skill.no}`}}
+            </a-button>
+            <a-button :block="false" style="width: 100px;  margin-left: 20px;" v-if="data.skills.length" @click="useSkill(0, 0)">AI</a-button>
+            <a-button :block="false" style="width: 100px;  margin-left: 20px;" v-if="selectionNo"
+                      @click="selectionNo = 0">取消
+            </a-button>
+        </div>
+
+        <div class="team-field" v-for="teamId in 2" :key="teamId">
+            <div v-for="e in data.teams[teamId - 1]" :key="e.entityId">
+                <div class="hero-card-wrap"
+                     :class="{dead: e.dead,
+                     unselectable: selectionNo && selectedSkill && !selectedSkill.targets.includes(e.entityId),
+                      selectable: selectionNo && selectedSkill && selectedSkill.targets.includes(e.entityId),
+                      'current-turn': data.currentId === e.entityId
+                       }"
+                    @click="selectHero(e)"
+                >
+                    <div class="hero-info">
+                        <div class="helo-info-left">
+                            <a-avatar class="hero-avatar active" :src=" '/avatar/'+ e.no + '.png'" size="large"/>
+                        </div>
+                        <div class="hero-properties">
+                            <div class="bold">{{e.name}}[{{e.entityId}}]</div>
+                            <div>
+                                <a-progress size="small" :percent="Math.ceil(e.hp / e.maxHp * 100)" :showInfo="false"
+                                            status="exception"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-buffs">
+                        <div v-for="buff in e.buffs" :key="buff.buffId">
+                            <img v-if="buff.icon" :src="'/public/buff/'+icon"/>
+                            <a-tag v-else>{{buff.name}} {{buff.count > 1 ? buff.count : ''}}</a-tag>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div>
 
         </div>
     </div>
 </template>
-<style>
+<style lang="scss">
     .debug {
         display: flex;
         justify-content: center;
         flex-direction: column;
         padding: 20px;
+
     }
+
+    .select-skill-field {
+        display: flex;
+        flex-direction: row;
+        margin: 20px 0;
+    }
+
+    .team-field {
+        display: flex;
+        flex-direction: row;
+
+        .hero-card-wrap {
+            height: 220px;
+            width: 180px;
+            background-color: #fefdff;
+            margin-top: 30px;
+            margin-left: 30px;
+            padding: 15px;
+            border-radius: 2px;
+            position: relative;
+            /*border: #000 solid 5px;*/
+            &.current-turn{
+                box-shadow: rgba(0, 0, 0, .3) 1px 1px 3px;
+                background-color: burlywood;
+            }
+            &.unselectable, .dead {
+                opacity: 0.3;
+            }
+
+            &.selectable {
+                cursor: pointer;
+            }
+
+            .hero-info {
+                display: flex;
+                flex-direction: row;
+
+                .hero-info-left {
+                    .hero-avatar {
+                        &.active {
+                            border: 2px #2565d6 solid;
+                        }
+                    }
+                }
+
+                .hero-properties {
+                    flex: 1;
+                    padding: 0 0 0 8px;
+
+                    .bold {
+                        font-weight: bold;
+                    }
+                }
+            }
+
+            .hero-buffs {
+                margin-top: 20px;
+            }
+        }
+    }
+
 </style>
 <script>
     // import Phaser from 'phaser';
     // import BattleScene from "@/visual/battle-scene"
-    // import { message } from 'ant-design-vue'
-    import { Battle, BattleProperties } from '../../core'
-    import { times } from 'lodash'
+    import {message} from 'ant-design-vue'
+    import {Battle, BattleProperties} from '../../core'
+    import {times, map} from 'lodash'
+
     function empty() {
         return {
+            seed: 0,
             hint: '',
             currentId: 0,
             mana: [
@@ -37,8 +142,8 @@
                 }
             ],
             teams: [
-                times(5, () => ({
-                    entityId: 0,
+                map(Array.from({length: 5}), () => ({
+                    entityId: Math.random(),
                     hp: 0,
                     maxHp: 0,
                     dead: true,
@@ -46,8 +151,8 @@
                     buffs: [],
                     name: '',
                 })),
-                times(5, () => ({
-                    entityId: 0,
+                map(Array.from({length: 5}), () => ({
+                    entityId: Math.random(),
                     hp: 0,
                     maxHp: 0,
                     dead: true,
@@ -56,9 +161,13 @@
                     name: '',
                 }))
             ],
-            attack: {}
+            attack: {},
+            skills: [],
+            watiInput: false,
+            selection: null,
         };
     }
+
     function dump(battle) {
         const dump = empty();
         const types = [];
@@ -67,6 +176,9 @@
             if (t.type === 'Turn') {
                 const data = t.data;
                 dump.currentId = data.currentId;
+            }
+            if (t.type === 'WaitInput') {
+                dump.skills = t.data.skills;
             }
         }
         for (let teamId = 0; teamId < 2; teamId++) {
@@ -81,10 +193,10 @@
                     const buffsTemp = battle.buffs
                         .filter(b => b.ownerId === entity.entityId)
                         .map(b => ({name: b.name, icon: b.icon || ''}));
-                    const buffs = [{name: '', icon: '', count: 0}];
+                    const buffs = [];
                     buffs.length = 0;
 
-                    for(const b of buffsTemp) {
+                    for (const b of buffsTemp) {
                         const bb = buffs.find(bbb => bbb.name === b.name);
                         if (bb) {
                             bb.count++;
@@ -92,6 +204,7 @@
                             buffs.push({
                                 name: b.name,
                                 icon: b.icon,
+                                buffId: b.buffId,
                                 count: 1,
                             })
                         }
@@ -110,14 +223,17 @@
             }
         }
         dump.hint = 'Next:  ' + types.reverse().join(' > ');
-
+        dump.seed = battle.seed;
         return dump;
     }
+
     export default {
         data() {
             return {
                 seed: Math.random(),
                 data: empty(),
+                selectionNo: 0,
+                selectedSkill: {},
             }
         },
         // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -125,7 +241,8 @@
         mounted() {
             // eslint-disable-next-line
             const data = this.$store.state.team0.concat(this.$store.state.team1);
-            this.battle = new Battle(data);
+            window.battle = this.battle = new Battle(data, Date.now(), true);
+            this.data = dump(this.battle);
             // const scene = this.scene = new BattleScene(data, this.seed);
             //
             // this.game = new Phaser.Game({
@@ -142,17 +259,55 @@
         unmounted() {
             // this.game.destroy(true);
         },
+        computed: {
+            team0() {
+                return this.data.teams[0];
+            },
+            team1() {
+                return this.data.teams[1];
+            },
+        },
         methods: {
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             step() {
                 do {
                     this.battle.process();
-                } while(this.battle.currentTask.depth > 2);
+                } while (this.battle.currentTask.depth > 1 && this.battle.currentTask.type !== 'WaitInput');
                 this.data = dump(this.battle);
-                // if (this.scene.battle.isEnd) {
-                //     message.info('胜利者是队伍' + (this.scene.battle.winner + 1) )
-                // }
+                if (this.battle.isEnd) {
+                    message.info('胜利者是队伍' + (this.battle.winner + 1))
+                }
+            },
+            selectSkill(no) {
+                const skill = this.data.skills.find(s => s.no === no);
+                if (!skill) return;
+
+                this.selectedSkill = skill;
+                this.selectionNo = no;
+            },
+
+            useSkill(no, targetId) {
+                if (this.battle.currentTask.type !== 'WaitInput') return;
+                this.selectionNo = 0;
+                if (!no) {
+                    this.battle.currentTask.data.selection = {no: 0, targetId: 0}
+                } else {
+                    this.battle.currentTask.data.selection = {no, targetId}
+                }
+                this.battle.process();
+                this.battle.process();
+                this.data = dump(this.battle);
+
+            },
+
+            selectHero(e) {
+                if (!e ) return;
+                if ( this.selectionNo && this.selectedSkill && this.selectedSkill.targets.includes(e.entityId)) {
+                    this.useSkill(this.selectionNo, e.entityId)
+                }
             }
+
+
         }
 
     }

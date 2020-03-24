@@ -37,3 +37,6 @@ export * from  './use-skill';
 
 export {default as FakeTurnProcessor} from  './fake-turn';
 export * from  './fake-turn';
+
+export {default as WaitInputProcessor} from  './wait-input';
+export * from  './wait-input';

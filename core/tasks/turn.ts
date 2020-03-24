@@ -1,11 +1,13 @@
-import {Battle, BuffParams, Control, EventCodes, Reasons} from '../';
-import {SelectableSkill, SkillTarget} from "../skill";
+import {Battle, BuffParams, Control, EventCodes, Reasons, WaitInputProcessing} from '../';
+import {SelectableSkill, SkillSelection, SkillTarget} from "../skill";
+import waitInputProcessor from "./wait-input";
 
 export class TurnProcessing {
     cannotAction: boolean = false;
     onlyAttack: number = 0;
     confusion: boolean = false;
-
+    waitInput?: WaitInputProcessing;
+    skills: SelectableSkill[] = [];
     constructor(public turn: number, public currentId: number) {
     }
 }
@@ -65,7 +67,7 @@ export default function turnProcessor(battle: Battle, data: TurnProcessing, step
                         battle.actionUseSkill(1, currentEntity.entityId, target.entityId, 0); //TODO: 是否需要确认鬼火
                     }
                 } else {
-                    const mana = battle.manas[currentEntity.teamId];
+                    const mana = battle.getMana(currentEntity.teamId);
                     const skills: SelectableSkill[] = currentEntity.skills
                         .filter(s => {
                             if (s.passive) return false;
@@ -76,7 +78,8 @@ export default function turnProcessor(battle: Battle, data: TurnProcessing, step
                                 if (!mana || mana.num < cost) return false;
                             }
                             return true;
-                        }).map(s => {
+                        })
+                        .map(s => {
                         let targets: number[] = [];
                         if (typeof s.target === 'function') {
                             targets = s.target(battle, currentEntity.entityId)
@@ -105,29 +108,41 @@ export default function turnProcessor(battle: Battle, data: TurnProcessing, step
                         }
                     })
                         .filter(s => s.targets.length);
-
+                    data.skills = skills;
                     if (skills.length) {
-                        const selection = currentEntity.ai(battle, data, mana || null, skills);
-
-                        if (selection && selection.no && selection.targetId) {
-                            const skill = skills.find(s => s.no === selection.no && s.targets.includes(selection.targetId));
-                            if (skill) {
-                                battle.actionUseSkill(selection.no, currentEntity.entityId, selection.targetId, skill.cost)
-                            }
+                        if (battle.waitInput) {
+                            data.waitInput = new WaitInputProcessing(skills);
+                            battle.addProcessor(waitInputProcessor);
                         }
+
                     }
+                    return 5;
                 }
             }
-            return 5;
-        }
-        // 回合结束
-        case 5: {
-            battle.addEventProcessor(EventCodes.ACTION_END, currentEntity.entityId, data);
-            battle.addEventProcessor(EventCodes.TURN_END, currentEntity.entityId, data);
             return 6;
         }
-        // 结算鬼火进度
+        // 处理选择
+        case 5: {
+            const mana = battle.getMana(currentEntity.teamId);
+
+            const selection = (data.waitInput && data.waitInput.selection) || currentEntity.ai(battle, data, mana || null, data.skills);
+
+            if (selection && selection.no && selection.targetId) {
+                const skill = data.skills.find(s => s.no === selection.no && s.targets.includes(selection.targetId));
+                if (skill) {
+                    battle.actionUseSkill(selection.no, currentEntity.entityId, selection.targetId, skill.cost)
+                }
+            }
+            return 6;
+        }
+        // 回合结束
         case 6: {
+            battle.addEventProcessor(EventCodes.ACTION_END, currentEntity.entityId, data);
+            battle.addEventProcessor(EventCodes.TURN_END, currentEntity.entityId, data);
+            return 7;
+        }
+        // 结算鬼火进度
+        case 7: {
             const mana = battle.manas[currentEntity.teamId];
             if (!mana) return 0;
             if (mana.progress >= 5) {

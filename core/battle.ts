@@ -4,7 +4,7 @@ import Mana from './mana';
 import Runway from './runway';
 import {BuffParams, Control, EventCodes, EventRange, Reasons} from './constant';
 import {HeroBuilders} from './heroes';
-import Skill from './skill';
+import Skill, {SelectableSkill} from './skill';
 import {MersenneTwister19937, Random} from 'random-js';
 import Buff, { Effect, EffectTypes} from './buff';
 import Task, {Processor} from './task';
@@ -61,13 +61,13 @@ export default class Battle {
     buffs: Buff[];
 
     fakeTurns: FakeTurnProcessing[];
-
+    waitInput: boolean;
     constructor(datas: {
         no: number;
         teamId: number;
         lv?: number;
         equipments?: number[];
-    }[], seed = Date.now()) {
+    }[], seed = Date.now(), waitInput: boolean = false) {
         this.isEnd = false;
         this.winner = -1;
         this.turn = 0;
@@ -84,6 +84,7 @@ export default class Battle {
         this.buffs = [];
         this.fakeTurns = [];
         this.fieldSize = 0;
+        this.waitInput = waitInput;
 
         forEach(datas, data => {
             if (data.teamId < 0 || data.teamId > 1) {

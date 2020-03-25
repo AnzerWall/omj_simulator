@@ -44,12 +44,12 @@ jobs:
       env:
         GITHUB_PAT: ${{ secrets.PT }}
     - name: Deploy to server
-      uses: Pendect/action-rsyncer@v1.1.0
+      uses: AEnterprise/rsync-deploy@v1.0
       env:
-        DEPLOY_KEY: ${{secrets.ALIYUN_KEY}}
-      with:
-        flags: '-avzr --delete'
-        options: ''
-        ssh_options: ''
-        src: 'dist/'
-        dest: 'root@120.25.26.193:22:/root/static'
+        DEPLOY_KEY: ${{ secrets.ALIYUN_KEY }}
+        ARGS: "-e -c -r --delete"
+        SERVER_PORT: 22
+        FOLDER: "./dist/"
+        SERVER_IP: ${{ secrets.SERVER_IP }}
+        USERNAME: ${{ secrets.USERNAME }}
+        SERVER_DESTINATION: ${{ secrets.REMOTE_TARGET }}

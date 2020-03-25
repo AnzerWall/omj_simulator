@@ -42,3 +42,16 @@ jobs:
         build_dir: public
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: ssh deploy
+      uses: easingthemes/ssh-deploy@v2.0.9
+      with:
+        # Private Key
+        SSH_PRIVATE_KEY: ${{ secret.ALIYUN_KEY }}
+        # Remote host
+        REMOTE_HOST: 120.25.26.193
+        # Remote user
+        REMOTE_USER: root
+        # Source directory
+        SOURCE: dist
+        # Target directory
+        TARGET: /root/static

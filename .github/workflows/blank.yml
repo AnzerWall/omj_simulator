@@ -38,8 +38,9 @@ jobs:
       if: success()
       uses: crazy-max/ghaction-github-pages@v1
       with:
-        target_branch: gh-pages
-        build_dir: public
+        repo: https://github.com/AnzerWall/anzerwall.github.io 
+        target_branch: master
+        build_dir: dist
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: ssh deploy
@@ -52,6 +53,6 @@ jobs:
         # Remote user
         REMOTE_USER: root
         # Source directory
-        SOURCE: dist
+        SOURCE: dist/
         # Target directory
-        TARGET: /root/static
+        TARGET: /root/static/

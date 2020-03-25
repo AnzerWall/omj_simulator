@@ -25,7 +25,7 @@
             </a-button>
         </div>
         <div class="runway-field"> 
-            <a-avatar  v-for="item in data.runway" :key="item.entityId"   class="runway-item" :class="{team0: item.teamId === 0, team1: item.teamId === 1, frozen: item.frozen}" :src=" '/avatar/'+ item.no + '.png'"  :style="{ left: Math.floor((item.distance / 100)) + '%'}"/>
+            <a-avatar  v-for="item in data.runway" :key="item.entityId"   class="runway-item" :class="{team0: item.teamId === 0, team1: item.teamId === 1, frozen: item.frozen, current: item.entityId === data.currentId}" :src=" '/avatar/'+ item.no + '.png'"  :style="{ left:  Math.floor((item.distance / 100)) + '%' }"/>
         </div>
         <div class="team-field" v-for="teamId in 2" :key="teamId">
             <div class="mana">{{manaNum2Text(data.mana[teamId -1])}} {{data.mana[teamId -1].progress}}</div>
@@ -122,6 +122,9 @@
             }
             &.frozen{
                 filter: brightness(30%)
+            }
+            &.current {
+                z-index: 30;
             }
         }
     }

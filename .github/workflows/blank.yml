@@ -21,29 +21,29 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-    - name: Use Node.js 12.x
+    - name: Init Node
       uses: actions/setup-node@v1.1.0
       with:
-        node-version: 12.x
+        node-version: 10.x
 
     # Runs a single command using the runners shell
-    - name: npm install, build
+    - name: Build
       run: |
         npm install
         npm run build
 
     # Runs a set of commands using the runners shell
     - 
-      name: Deploy
+      name: Deploy Github Pages
       if: success()
       uses: crazy-max/ghaction-github-pages@v1
       with:
-        repo: https://github.com/AnzerWall/anzerwall.github.io 
+        repo: AnzerWall/anzerwall.github.io
         target_branch: master
         build_dir: dist
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: ssh deploy
+    - name: SSH deploy
       uses: easingthemes/ssh-deploy@v2.0.9
       with:
         # Private Key
@@ -55,4 +55,4 @@ jobs:
         # Source directory
         SOURCE: dist/
         # Target directory
-        TARGET: /root/static/
+        TARGET: ${{ secrets.REMOTE_TARGET }}

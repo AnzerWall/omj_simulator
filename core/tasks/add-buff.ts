@@ -11,7 +11,7 @@ export class AddBuffProcessing {
 }
 export default function addBuffProcessor(battle: Battle, data: AddBuffProcessing, step: number) {
     const buff = data.buff;
-    const target = buff.ownerId === -1 ? null: battle.getEntity(buff.ownerId);
+    const target = buff.ownerId < 0 ? null: battle.getEntity(buff.ownerId);
     const source = battle.getEntity(buff.sourceId);
 
     switch (step) {

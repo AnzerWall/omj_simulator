@@ -206,7 +206,7 @@ export default class Battle {
             forEach(entity.skills, (skill: Skill) => {
                 forEach(skill.handlers, handler => {
                     if (handler.code !== code) return;
-                    if (eventId && eventEntity) {
+                    if (eventId > 0 && eventEntity) {
                         if (handler.range === EventRange.SELF) {
                             if (eventId !== entity.entityId) return;
                         }
@@ -214,7 +214,7 @@ export default class Battle {
                             if (eventEntity.teamId !== entity.teamId) return;
                         }
                         if (handler.range === EventRange.ENEMY) {
-                            if ((1 - eventEntity.teamId) !== entity.teamId) return;
+                            if (eventEntity.teamId == entity.teamId) return;
                         }
                     }
                     processing.units.push(new RealEventData(entity.entityId, skill.no, eventId, handler, data));

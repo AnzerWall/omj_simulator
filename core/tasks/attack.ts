@@ -1,4 +1,5 @@
-import {Battle, Attack, BattleProperties, EventCodes, AttackParams, eps} from "../";
+import {Attack, AttackParams, Battle, BattleProperties, eps, EventCodes, Reasons} from "../";
+
 export class AttackProcessing {
     index: number = 0;
     attackInfos: AttackInfo[] = [];
@@ -127,7 +128,11 @@ export default function attackProcessor(battle: Battle, data: AttackProcessing, 
                 }
                 battle.runway.freeze(target.entityId);
                 // TODO: 杀生丸禁止复活buff
-                battle.buffs = battle.buffs.filter(b => b.ownerId === target.entityId); // 移除所有buff
+                battle.buffs.forEach(b => {
+                    if (b.ownerId === target.entityId) {
+                        battle.actionRemoveBuff(b, Reasons.RULE)
+                    }
+                }); // 移除所有buff
             }
             if (!attack.hasParam(AttackParams.IGNORE_SOURCE)) battle.addEventProcessor(EventCodes.HAS_DAMAGED, attack.sourceId,data); // 造成伤害后
             battle.addEventProcessor(EventCodes.HAS_BEEN_DAMAGED, attack.targetId, data); // 收到伤害后

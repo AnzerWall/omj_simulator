@@ -9,7 +9,7 @@
         <div>Seed: {{data.seed}}</div>
         <div>{{data.hint}}</div>
         <div v-if="data.event">事件: {{data.event}}</div>
-        
+
         <div class="select-skill-field">
             <a-input-number v-model="depth"  style="width: 50px; margin-right: 5px; " :defaultValue="1" :max="10" :min="0"/>
             <a-button @click="step" :block="false" style="width: 100px; ">下一步</a-button>
@@ -29,6 +29,12 @@
         </div>
         <div class="team-field" v-for="teamId in 2" :key="teamId">
             <div class="mana">{{manaNum2Text(data.mana[teamId -1])}} {{data.mana[teamId -1].progress}}</div>
+            <div style="display: flex;flex-direction: row">
+                <div v-for="buff in data.globalBuffs[teamId-1]" :key="buff.buffId">
+                    <img v-if="buff.icon" :src="'/public/buff/'+icon"/>
+                    <a-tag v-else>{{buff.name}} {{buff.count > 1 ? buff.count : ''}}</a-tag>
+                </div>
+            </div>
             <div class="hero-field">
                 <div v-for="e in data.teams[teamId - 1]" :key="e.entityId">
                     <div class="hero-card-wrap"
@@ -229,6 +235,7 @@
                     progress: 0,
                 }
             ],
+            globalBuffs: [[], []],
             teams: [
                 map(Array.from({length: 5}), () => ({
                     entityId: Math.floor(Math.random() * 10000) + 10000,
@@ -325,6 +332,28 @@
                 }
             }
         }
+        [-1, -2].forEach(id => {
+            const buffsTemp = battle.buffs
+                .filter(b => b.ownerId ===id)
+                .map(b => ({name: b.name, icon: b.icon || ''}));
+            const buffs = [];
+            buffs.length = 0;
+
+            for (const b of buffsTemp) {
+                const bb = buffs.find(bbb => bbb.name === b.name);
+                if (bb) {
+                    bb.count++;
+                } else {
+                    buffs.push({
+                        name: b.name,
+                        icon: b.icon,
+                        buffId: b.buffId,
+                        count: 1,
+                    })
+                }
+            }
+            dump.globalBuffs[id + 2] = buffs;
+        });
         dump.hint = 'Next:  ' + types.reverse().join(' > ');
         dump.seed = battle.seed;
         return dump;
@@ -414,6 +443,7 @@
                 if (this.selectionNo && this.selectedSkill && this.selectedSkill.targets.includes(e.entityId)) {
                     this.useSkill(this.selectionNo, e.entityId)
                 } else if(!this.selectionNo) {
+                    if (!this.battle.getEntity(e.entityId)) return;
                     this.panelId = e.entityId;
                     this.panelType = 'entity';
                     this.updatePanel();

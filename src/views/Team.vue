@@ -84,7 +84,6 @@
                 this.$store.commit('UPDATE_TEAM_MEMBER', {teamId, index, no: seletions[1]});
             },
              handleChange2(teamId, index, key, v) {
-                 console.log(teamId, index, key, v)
                 this.$store.commit('UPDATE_TEAM_MEMBER', {teamId, index, [key]: v});
             },
             convert(no) {

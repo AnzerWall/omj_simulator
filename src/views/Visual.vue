@@ -1,8 +1,11 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <div class="debug">
-<!--        <div class="float-panel">-->
-<!--            123-->
-<!--        </div>-->
+        <div class="float-panel" v-if="panelType">
+            <template v-if="panelType==='entity'">
+                <div v-for="(value,key) in panelData" :key="key" class="item"><span class="key">{{key}}:</span> <span class="value"> {{value}}</span></div>
+            </template>
+            <button @click="panelType=''" style="margin-top:  10px">关闭</button>
+        </div>
         <div>Seed: {{data.seed}}</div>
         <div>{{data.hint}}</div>
         <div v-if="data.event">事件: {{data.event}}</div>
@@ -84,6 +87,17 @@
         z-index: 300;
         border-radius: 3px;
         padding: 20px;
+        font-size: 16px;
+        .item {
+            margin-top: 10px;
+        }
+        .key {
+            color: #000;
+        }
+        .value {
+            margin-left: 10px;
+        }
+
     }
     .runway-field {
         width: 500px;
@@ -321,6 +335,9 @@
                 selectionNo: 0,
                 selectedSkill: {},
                 depth: 1,
+                panelType: '',
+                panelId: 0,
+                panelData: {},
             }
         },
         // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -361,6 +378,7 @@
                     this.battle.process();
                 } while (this.battle.currentTask.depth > this.depth && this.battle.currentTask.type !== 'WaitInput');
                 this.data = dump(this.battle);
+                this.updatePanel();
                 if (this.battle.isEnd) {
                     message.info('胜利者是队伍' + (this.battle.winner + 1))
                 }
@@ -384,6 +402,7 @@
                 this.battle.process();
                 this.battle.process();
                 this.data = dump(this.battle);
+                this.updatePanel();
 
             },
 
@@ -391,7 +410,49 @@
                 if (!e) return;
                 if (this.selectionNo && this.selectedSkill && this.selectedSkill.targets.includes(e.entityId)) {
                     this.useSkill(this.selectionNo, e.entityId)
+                } else if(!this.selectionNo) {
+                    this.panelId = e.entityId;
+                    this.panelType = 'entity';
+                    this.updatePanel();
                 }
+
+            },
+            updatePanel() {
+                const battle = this.battle;
+                if (this.panelType === 'entity') {
+                    const entity = battle.getEntity(this.panelId);
+                    if (entity) {
+
+                        const originMaxHp = entity.getProperty(BattleProperties.MAX_HP);
+                        const maxHp =  battle.getComputedProperty(entity.entityId, BattleProperties.MAX_HP);
+                        const originAtk = entity.getProperty(BattleProperties.ATK);
+                        const atk =  battle.getComputedProperty(entity.entityId, BattleProperties.ATK);
+                        const originDef = entity.getProperty(BattleProperties.DEF);
+                        const def =  battle.getComputedProperty(entity.entityId, BattleProperties.DEF);
+                        const originSpd = entity.getProperty(BattleProperties.SPD);
+                        const spd =  battle.getComputedProperty(entity.entityId, BattleProperties.SPD);
+                        const originCri = entity.getProperty(BattleProperties.CRI);
+                        const cri =  battle.getComputedProperty(entity.entityId, BattleProperties.CRI);
+                        const originCriDmg = entity.getProperty(BattleProperties.CRI_DMG);
+                        const criDmg =  battle.getComputedProperty(entity.entityId, BattleProperties.CRI_DMG);
+                        const originEftHit = entity.getProperty(BattleProperties.EFT_HIT);
+                        const eftHit =  battle.getComputedProperty(entity.entityId, BattleProperties.EFT_HIT);
+                        const originEftRes = entity.getProperty(BattleProperties.EFT_RES);
+                        const eftRes =  battle.getComputedProperty(entity.entityId, BattleProperties.EFT_RES);
+                        this.panelData = {
+                            '当前生命': entity.hp,
+                            '最大生命': maxHp + (originMaxHp !== maxHp ? `(${originMaxHp})` : ''),
+                            '攻击':  atk + (originAtk !== atk ? `(${originAtk})` : ''),
+                            '防御':  def +( originDef !== def ? `(${originDef})` : ''),
+                            '速度':  spd + (originSpd !== spd ? `(${originSpd})` : ''),
+                            '暴击':  cri * 100 + '%' +  (originCri !== cri ? `(${originCri* 100}%)` : '') ,
+                            '爆伤':  criDmg* 100+'%' +( originCriDmg !== criDmg ? `(${originCriDmg* 100}%)` : ''),
+                            '命中':  eftHit + (originEftHit !== eftHit ? `(${originEftHit})` : ''),
+                            '抵抗':  eftRes + (originEftRes !== eftRes ? `(${originEftRes})` : ''),
+                        }
+                    }
+                }
+
             },
 
             manaNum2Text(mana) {

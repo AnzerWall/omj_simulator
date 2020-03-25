@@ -3,6 +3,7 @@
         <div>Seed: {{data.seed}}</div>
         <div>{{data.hint}}</div>
         <div v-if="data.event">事件: {{data.event}}</div>
+        
         <div class="select-skill-field">
             <a-input-number v-model="depth"  style="width: 50px; margin-right: 5px; " :defaultValue="1" :max="10" :min="0"/>
             <a-button @click="step" :block="false" style="width: 100px; ">下一步</a-button>
@@ -17,7 +18,9 @@
                       @click="selectionNo = 0">取消
             </a-button>
         </div>
-
+        <div class="runway-field"> 
+            <a-avatar  v-for="item in data.runway" :key="item.entityId"   class="runway-item" :class="{team0: item.teamId === 0, team1: item.teamId === 1}" :src=" '/avatar/'+ item.no + '.png'"  :style="{ left: Math.floor((item.distance / 100)) + '%'}"/>
+        </div>
         <div class="team-field" v-for="teamId in 2" :key="teamId">
             <div class="mana">{{manaNum2Text(data.mana[teamId -1])}} {{data.mana[teamId -1].progress}}</div>
             <div class="hero-field">
@@ -66,6 +69,29 @@
         flex-direction: column;
         padding: 20px;
 
+    }
+    .runway-field {
+        width: 500px;
+        height: 25px;
+        border-radius: 15px;
+
+        position: relative;
+        background-color: #00accab4;
+        margin-top: 15px;
+        .runway-item {
+            position: absolute;
+            top: 50%;
+            transform:translate(-50%, -50%);
+            transition: all 0.5s;
+            background-color: #fefdff;
+            &.team0{
+                border:rgb(250, 162, 0) 2px solid;
+
+            }
+            &.team1{
+                border:rgb(158, 5, 0) 2px solid;
+            }
+        }
     }
 
     .select-skill-field {
@@ -217,6 +243,7 @@
                 frozon: battle.runway.frozenTable.get(entityId) || false,
                 name: entity.name,
                 no: entity.no,
+                teamId: entity.teamId,
             });
         });
         dump.runway.sort((a, b) => a.distance - b.distance);

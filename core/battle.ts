@@ -114,7 +114,8 @@ export default class Battle {
             if (data.eft_res && data.eft_res >= 0 && data.eft_res <= 10000) entity.setProperty(BattleProperties.EFT_RES, data.eft_res);
             if (data.cri && data.cri >= 0 && data.cri <= 10) entity.setProperty(BattleProperties.CRI, data.cri);
             if (data.cri_dmg && data.cri_dmg >= 0 && data.cri_dmg <= 10) entity.setProperty(BattleProperties.CRI_DMG, data.cri_dmg);
-
+            entity.syncHp();
+            
             console.log(`【${data.teamId}】${entity.name}(${entity.no})(${entity.entityId})`);
             this.entities.set(entity.entityId, entity);
             this.runway.addEntity(entity.entityId, () => (this.getComputedProperty(entity.entityId, 'spd') || 0));

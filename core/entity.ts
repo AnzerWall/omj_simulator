@@ -143,6 +143,10 @@ export default class Entity {
     setName(name: string) {
         this.name = name;
     }
+    // 同步hp到原始最大生命值
+    syncHp() {
+        this.hp = this.getProperty(BattleProperties.MAX_HP);
+    }
 
 
 

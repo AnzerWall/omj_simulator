@@ -46,7 +46,7 @@ jobs:
       uses: easingthemes/ssh-deploy@v2.0.9
       with:
         # Private Key
-        SSH_PRIVATE_KEY: ${{ secret.ALIYUN_KEY }}
+        SSH_PRIVATE_KEY: ${{ secrets.ALIYUN_KEY }}
         # Remote host
         REMOTE_HOST: 120.25.26.193
         # Remote user

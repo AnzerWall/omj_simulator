@@ -1,8 +1,8 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <div class="debug">
         <div>Seed: {{data.seed}}</div>
-        <div>{{data.hint}}</div>.
-
+        <div>{{data.hint}}</div>
+        <div v-if="data.event">事件: {{data.event}}</div>
         <div class="select-skill-field">
             <a-input-number v-model="depth"  style="width: 50px; margin-right: 5px; " :defaultValue="1" :max="10" :min="0"/>
             <a-button @click="step" :block="false" style="width: 100px; ">下一步</a-button>
@@ -71,6 +71,7 @@
     .select-skill-field {
         display: flex;
         flex-direction: row;
+        margin-top: 10px;
     }
 
     .team-field {
@@ -152,7 +153,9 @@
         return {
             seed: 0,
             hint: '',
+            event: '',
             currentId: 0,
+            runway: [],
             mana: [
                 {
                     num: 0,
@@ -165,7 +168,7 @@
             ],
             teams: [
                 map(Array.from({length: 5}), () => ({
-                    entityId: Math.random(),
+                    entityId: Math.floor(Math.random() * 10000) + 10000,
                     hp: 0,
                     maxHp: 0,
                     dead: true,
@@ -174,7 +177,7 @@
                     name: '',
                 })),
                 map(Array.from({length: 5}), () => ({
-                    entityId: Math.random(),
+                    entityId: Math.floor(Math.random() * 10000) + 10000,
                     hp: 0,
                     maxHp: 0,
                     dead: true,
@@ -202,7 +205,21 @@
             if (t.type === 'WaitInput') {
                 dump.skills = t.data.skills;
             }
+            if (t.type === 'EventProcess') {
+                dump.event = '处理' + battle.getEntity(t.data.skillOwnerId).name + t.data.handler.name;
+            }
         }
+        battle.runway.distanceTable.forEach((distance, entityId) => {
+            const entity = battle.getEntity(entityId);
+            dump.runway.push({
+                entityId,
+                distance,
+                frozon: battle.runway.frozenTable.get(entityId) || false,
+                name: entity.name,
+                no: entity.no,
+            });
+        });
+        dump.runway.sort((a, b) => a.distance - b.distance);
         for (let teamId = 0; teamId < 2; teamId++) {
             dump.mana[teamId].num = battle.getMana(teamId).num;
             dump.mana[teamId].progress = battle.getMana(teamId).progress;
@@ -263,7 +280,7 @@
 
         mounted() {
             // eslint-disable-next-line
-            const data = this.$store.state.team0.concat(this.$store.state.team1);
+            const data = this.$store.state.team0.concat(this.$store.state.team1).map(d => Object.assign({}, d, {waitInput: true}));
             window.battle = this.battle = new Battle(data, Date.now(), true);
             this.data = dump(this.battle);
             // const scene = this.scene = new BattleScene(data, this.seed);

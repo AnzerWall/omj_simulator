@@ -27,6 +27,7 @@ export default class Entity {
     battleData: Map<string, string>;
     turnData: Map<string, string>;
     summonToken: boolean; // 是否是召唤物
+    waitInput: boolean; // 手动单位
 
     constructor() {
         this.entityId = ++entityCounter;
@@ -43,6 +44,7 @@ export default class Entity {
         this.battleData = new Map<string, string>();
         this.turnData = new Map<string, string>();
         this.summonToken = false;
+        this.waitInput = false;
 
         forEach(values(BattleProperties), key => {
             this.setProperty(key, 0);

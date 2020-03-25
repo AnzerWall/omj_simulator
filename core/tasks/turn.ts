@@ -114,7 +114,7 @@ export default function turnProcessor(battle: Battle, data: TurnProcessing, step
                         .filter(s => s.targets.length);
                     data.skills = skills;
                     if (skills.length) {
-                        if (battle.waitInput) {
+                        if (currentEntity.waitInput) {
                             data.waitInput = new WaitInputProcessing(skills);
                             battle.addProcessor(waitInputProcessor, data.waitInput, 'WaitInput');
                         }

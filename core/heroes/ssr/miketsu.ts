@@ -47,6 +47,7 @@ export const miketsu_skill1: Skill = {
             range: EventRange.ENEMY, // 敌方结束
             priority: 0,
             passive: false,
+            name: '一矢判定'
         }
     ],
     cost: 0,
@@ -151,6 +152,7 @@ export const miketsu_skill2: Skill = {
         range: EventRange.NONE,
         priority: 0,
         passive: false,
+        name: '【先机】狐狩界'
     }],
     passive: false,
     cost: 3,

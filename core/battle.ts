@@ -2,7 +2,7 @@ import {filter, forEach, isArray, some} from 'lodash';
 import Entity from './entity';
 import Mana from './mana';
 import Runway from './runway';
-import {BuffParams, Control, EventCodes, EventRange, Reasons} from './constant';
+import {BuffParams, Control, EventCodes, EventRange, Reasons, BattleProperties} from './constant';
 import {HeroBuilders} from './heroes';
 import Skill, {SelectableSkill} from './skill';
 import {MersenneTwister19937, Random} from 'random-js';
@@ -34,7 +34,21 @@ import Attack from "./attack";
 import healingProcessor, {HealingProcessing} from './tasks/healing';
 import {Healing} from './index';
 
-
+interface InititalData {
+    no: number;
+    teamId: number;
+    lv?: number;
+    equipments?: number[];
+    max_hp?: number;
+    atk?: number;
+    def?: number;
+    spd?: number;
+    cri?: number;
+    cri_dmg?: number;
+    eft_hit?: number;
+    eft_res?: number;
+    waitInput?: boolean;
+}
 export default class Battle {
 
     output: object[]; // 游戏记录
@@ -59,14 +73,8 @@ export default class Battle {
     buffs: Buff[];
 
     fakeTurns: FakeTurnProcessing[];
-    waitInput: boolean;
 
-    constructor(datas: {
-        no: number;
-        teamId: number;
-        lv?: number;
-        equipments?: number[];
-    }[], seed = Date.now(), waitInput: boolean = false) {
+    constructor(datas: InititalData[], seed = Date.now()) {
         this.isEnd = false;
         this.winner = -1;
         this.turn = 0;
@@ -83,7 +91,6 @@ export default class Battle {
         this.buffs = [];
         this.fakeTurns = [];
         this.fieldSize = 0;
-        this.waitInput = waitInput;
 
         forEach(datas, data => {
             if (data.teamId < 0 || data.teamId > 1) {
@@ -98,6 +105,15 @@ export default class Battle {
             const entity = builder();
 
             entity.setTeam(data.teamId);
+            entity.waitInput = !!data.waitInput;
+            if (data.max_hp && data.max_hp >= 1 && data.max_hp <= 1e10) entity.setProperty(BattleProperties.MAX_HP, data.max_hp);
+            if (data.atk && data.atk >= 0 && data.atk <= 100000) entity.setProperty(BattleProperties.ATK, data.atk);
+            if (data.def && data.def >= 0 && data.def <= 100000) entity.setProperty(BattleProperties.DEF, data.def);
+            if (data.spd && data.spd >= 0 && data.spd <= 1000) entity.setProperty(BattleProperties.SPD, data.spd);
+            if (data.eft_hit && data.eft_hit >= 0 && data.eft_hit <= 10000) entity.setProperty(BattleProperties.EFT_HIT, data.eft_hit);
+            if (data.eft_res && data.eft_res >= 0 && data.eft_res <= 10000) entity.setProperty(BattleProperties.EFT_RES, data.eft_res);
+            if (data.cri && data.cri >= 0 && data.cri <= 10) entity.setProperty(BattleProperties.CRI, data.cri);
+            if (data.cri_dmg && data.cri_dmg >= 0 && data.cri_dmg <= 10) entity.setProperty(BattleProperties.CRI_DMG, data.cri_dmg);
 
             console.log(`【${data.teamId}】${entity.name}(${entity.no})(${entity.entityId})`);
             this.entities.set(entity.entityId, entity);

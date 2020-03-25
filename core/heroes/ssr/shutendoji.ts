@@ -10,8 +10,9 @@ import {
     EffectTypes,
     BattleProperties,
     Attack,
-    Healing
+    Healing,
 } from '../../';
+import {SkillTarget} from "../../skill";
 function buildKyoki(s: number, t: number): Buff {
     return Buff.build(s, t)
         .name('狂气', 4)
@@ -23,6 +24,7 @@ export const shutendoji_skill1: Skill = {
     no: 1,
     name: '鬼葫芦',
     cost: 0,
+    target:  SkillTarget.ENEMY,
     use: (battle: Battle, sourceId: number, selectedId: number) => {
         const buffs = battle.filterBuffByName(sourceId, '狂气');
         const selected = battle.getEntity(selectedId);
@@ -57,6 +59,7 @@ export const shutendoji_skill2: Skill = {
             range: EventRange.SELF, // 事件范围
             priority: 0, // 优先级
             passive: true, // 是否是写在被动里的
+            name: '回合结束获得狂气',
         },
         // 受到攻击 25% 获得狂气
         {
@@ -75,6 +78,7 @@ export const shutendoji_skill2: Skill = {
             range: EventRange.SELF, // 事件范围
             priority: 0, // 优先级
             passive: true, // 是否是写在被动里的
+            name: '受到攻击获得狂气',
         },
     ]
 
@@ -101,6 +105,7 @@ export const shutendoji_skill3: Skill = {
             range: EventRange.SELF, // 事件范围
             priority: 0, // 优先级
             passive: false, // 是否是写在被动里的
+            name: '鬼王降临形态结束处理',
         }
     ],
     target: (battle: Battle, entityId: number): number[] =>{

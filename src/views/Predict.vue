@@ -10,7 +10,7 @@
         </div>
         <a-table
                 :columns="columns"
-                rowKey="id"
+                :rowKey="r => r.teamId + '_' + r.index + '_' +r.no"
                 :dataSource="data"
                 size="small"
                 :pagination="false"
@@ -40,12 +40,8 @@
             dataIndex: 'teamId',
         },
         {
-            title: '已实现',
-            dataIndex: 'ok',
-        },
-        {
             title: '生命',
-            dataIndex: 'hp',
+            dataIndex: 'max_hp',
         },
         {
             title: '攻击',
@@ -67,43 +63,27 @@
             title: '暴击伤害',
             dataIndex: 'cri_dmg',
         },
+        {
+            title: '命中',
+            dataIndex: 'eft_hit',
+        },
+        {
+            title: '抵抗',
+            dataIndex: 'eft_res',
+        },
     ];
 
 
     export default {
         data() {
-            const list = [];
-
-            [0, 1].forEach(teamId => {
-                for(let index = 0; index < 5; index++) {
-                    const no = this.$store.state['team' + teamId][index].no;
-                    const hero = HeroBuilders.get(no)();
-
-                    const data = {
-                        id: teamId + '_' + hero.no + index,
-                        no: hero.no,
-                        name: hero.name,
-                        hp: hero.getProperty(BattleProperties.MAX_HP),
-                        atk: hero.getProperty(BattleProperties.ATK),
-                        def: hero.getProperty(BattleProperties.DEF),
-                        spd: hero.getProperty(BattleProperties.SPD),
-                        cri: hero.getProperty(BattleProperties.CRI) * 100 + '%',
-                        // eslint-disable-next-line @typescript-eslint/camelcase
-                        cri_dmg: hero.getProperty(BattleProperties.CRI_DMG) * 100 + '%',
-                        ok: hero.hasTag('simple') ? '否' : '是',
-                        teamId,
-                    };
-                    list.push(data);
-                }
-
-            })
+        
 
             return {
                 count: 100,
                 winner0: 0,
                 winner1: 0,
                 error: 0,
-                data: list,
+                data: this.$store.state.team0.concat(this.$store.state.team1),
                 columns,
                 total: 0,
             }

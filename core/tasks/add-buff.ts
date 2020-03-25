@@ -39,10 +39,10 @@ export default function addBuffProcessor(battle: Battle, data: AddBuffProcessing
             if (!target) return 0;
             if (typeof buff.probability !== 'number') return 0;
 
-            const p = buff.probability * (1 + battle.getComputedProperty(source.entityId, BattleProperties.EFT_HIT)); // 基础命中×（1+效果命中）
+            const p = buff.probability * (1 + battle.getComputedProperty(source.entityId, BattleProperties.EFT_HIT) / 100); // 基础命中×（1+效果命中）
              const isHit = data.isHit = battle.testHit(p);
             if (!isHit) return -1; // 未命中
-            const res = 1 + battle.getComputedProperty(target.entityId, BattleProperties.EFT_RES); // (1 + 效果抵抗)
+            const res = 1 + battle.getComputedProperty(target.entityId, BattleProperties.EFT_RES) / 100; // (1 + 效果抵抗)
             const isRes = data.isRes = battle.testHit(p / res);
             if (isRes) { // 抵抗了
                 battle.addEventProcessor(EventCodes.BUFF_RES,  target.entityId,data);

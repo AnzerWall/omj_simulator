@@ -45,6 +45,7 @@ export const ootengu_skill2: Skill = {
         range: EventRange.NONE,
         priority: 0,
         passive: true,
+        name: '战斗开始获得【庇护】',
     }, {
         // 回合结束：获得庇护
         handle(battle: Battle, data: RealEventData) {
@@ -56,6 +57,7 @@ export const ootengu_skill2: Skill = {
         range: EventRange.SELF,
         priority: 0,
         passive: true,
+        name: '回合结束获得【庇护】',
     }, {
         // 回合开始：失去庇护
         handle(battle: Battle, data: RealEventData) {
@@ -70,6 +72,7 @@ export const ootengu_skill2: Skill = {
         range: EventRange.SELF,
         priority: 0,
         passive: false,
+        name: '回合开始失去【庇护】'
     }, {
         // 庇护效果处理
         handle(battle: Battle, data: RealEventData) {
@@ -87,6 +90,7 @@ export const ootengu_skill2: Skill = {
         range: EventRange.SELF,
         priority: 0,
         passive: false,
+        name: '庇护判定'
     },{
         // 造成伤害时: 获得雄姿英发
         handle(battle: Battle, data: RealEventData) {
@@ -98,6 +102,7 @@ export const ootengu_skill2: Skill = {
         range: EventRange.SELF,
         priority: 0,
         passive: true,
+        name: '造成伤害时: 获得雄姿英发'
     }]
 };
 export const ootengu_skill3: Skill = new GroupAttack(3,'羽刃暴风', 0.45, 3, 4);

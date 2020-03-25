@@ -43,16 +43,13 @@ jobs:
         build_dir: dist
       env:
         GITHUB_PAT: ${{ secrets.PT }}
-    - name: SSH deploy
-      uses: easingthemes/ssh-deploy@v2.0.9
+    - name: Deploy to server
+      uses: Pendect/action-rsyncer@v1.1.0
+      env:
+        DEPLOY_KEY: ${{secrets.ALIYUN_KEY}}
       with:
-        # Private Key
-        SSH_PRIVATE_KEY: ${{ secrets.ALIYUN_KEY }}
-        # Remote host
-        REMOTE_HOST: 120.25.26.193
-        # Remote user
-        REMOTE_USER: root
-        # Source directory
-        SOURCE: dist/
-        # Target directory
-        TARGET: ${{ secrets.REMOTE_TARGET }}
+        flags: '-avzr --delete'
+        options: ''
+        ssh_options: ''
+        src: 'dist/'
+        dest: 'root@120.25.26.193:22:${{ secrets.REMOTE_TARGET }}'

@@ -1,5 +1,8 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <div class="debug">
+<!--        <div class="float-panel">-->
+<!--            123-->
+<!--        </div>-->
         <div>Seed: {{data.seed}}</div>
         <div>{{data.hint}}</div>
         <div v-if="data.event">事件: {{data.event}}</div>
@@ -19,7 +22,7 @@
             </a-button>
         </div>
         <div class="runway-field"> 
-            <a-avatar  v-for="item in data.runway" :key="item.entityId"   class="runway-item" :class="{team0: item.teamId === 0, team1: item.teamId === 1}" :src=" '/avatar/'+ item.no + '.png'"  :style="{ left: Math.floor((item.distance / 100)) + '%'}"/>
+            <a-avatar  v-for="item in data.runway" :key="item.entityId"   class="runway-item" :class="{team0: item.teamId === 0, team1: item.teamId === 1, frozen: item.frozen}" :src=" '/avatar/'+ item.no + '.png'"  :style="{ left: Math.floor((item.distance / 100)) + '%'}"/>
         </div>
         <div class="team-field" v-for="teamId in 2" :key="teamId">
             <div class="mana">{{manaNum2Text(data.mana[teamId -1])}} {{data.mana[teamId -1].progress}}</div>
@@ -38,8 +41,8 @@
                                 <a-avatar class="hero-avatar active" :src=" '/avatar/'+ e.no + '.png'" size="large"/>
                             </div>
                             <div class="hero-properties">
-                                <div class="bold">{{e.name}}[{{e.entityId}}]</div>
-                                <div>
+                                <div  v-if="!e.dead" class="bold">{{e.name}}[{{e.entityId}}]</div>
+                                <div v-if="!e.dead">
                                     <a-progress size="small" :percent="Math.ceil(e.hp / e.maxHp * 100)"
                                                 :showInfo="false"
                                                 status="exception"/>
@@ -70,6 +73,18 @@
         padding: 20px;
 
     }
+    .float-panel {
+        position: fixed;
+        right: 20px;
+        top: 70px;
+        width: 300px;
+        height: calc(100vh - 90px);
+        background-color: #ffffff;
+        box-shadow: rgba(0, 0, 0, .3) -1px 1px 5px;
+        z-index: 300;
+        border-radius: 3px;
+        padding: 20px;
+    }
     .runway-field {
         width: 500px;
         height: 25px;
@@ -90,6 +105,9 @@
             }
             &.team1{
                 border:rgb(158, 5, 0) 2px solid;
+            }
+            &.frozen{
+                filter: brightness(30%)
             }
         }
     }
@@ -130,10 +148,12 @@
                     background-color: burlywood;
                 }
 
-                &.unselectable, .dead {
+                &.unselectable {
                     opacity: 0.3;
                 }
-
+                &.dead {
+                    opacity: 0.3;
+                }
                 &.selectable {
                     cursor: pointer;
                 }
@@ -240,7 +260,7 @@
             dump.runway.push({
                 entityId,
                 distance,
-                frozon: battle.runway.frozenTable.get(entityId) || false,
+                frozen: battle.runway.frozenTable.get(entityId) || false,
                 name: entity.name,
                 no: entity.no,
                 teamId: entity.teamId,

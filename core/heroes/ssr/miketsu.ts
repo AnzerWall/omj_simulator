@@ -173,9 +173,10 @@ export const miketsu_skill3: Skill = {
     cost: 3,
     target:  SkillTarget.ENEMY,
     use(battle: Battle, sourceId: number, selectedId: number) {
-        const buffs = battle.filterBuffBySource(-1, sourceId).filter(b => ['狐狩界·防御', '狐狩界·伤害', '狐狩界·速度'].includes(b.name)); // 来源是我的灵符
+        const source = battle.getEntity(sourceId);
+        const buffs = battle.filterBuffBySource(source.teamId - 2, sourceId).filter(b => ['狐狩界·防御', '狐狩界·伤害', '狐狩界·速度'].includes(b.name)); // 来源是我的灵符
         const at = Attack.build(selectedId, sourceId)
-            .rate( 1.95 * 0.25 * buffs.length / 3)
+            .rate( 1.95 * (1 + 0.25 * buffs.length / 3))
             .shouldComputeCri()
             .single()
             .end();

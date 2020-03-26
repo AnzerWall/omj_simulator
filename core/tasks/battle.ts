@@ -31,7 +31,8 @@ export default function battleProcessor(battle: Battle, _: any, step: number): n
         }
         case 4: {
             if (battle.fakeTurns.length) {
-                battle.fakeTurns.forEach(ft => battle.addProcessor(fakeTurnProcessor, ft, '伪回合处理'))
+                battle.fakeTurns.forEach(ft => battle.addProcessor(fakeTurnProcessor, ft, '伪回合处理'));
+                battle.fakeTurns = [];
             }
             return 3;
         }

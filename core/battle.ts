@@ -303,13 +303,13 @@ export default class Battle {
         const origin = entity.properties.get(name);
         if (origin === undefined) throw new Error(`Cannot found property in entity which id=${entityId} named by ${name}`);
         const effects: Effect[] = this.buffs.reduce((list: Effect[], buff: Buff) => {
-            if (buff.ownerId !== entityId && (entityId !== entity.teamId - 2 || entity.entityId === -3)) return list; // 不是全局buff或者是持有的buff，忽略    -2 表示队伍0   -1 表示队伍1   -3表示双方队伍
+            if (buff.ownerId !== entityId && !(buff.ownerId === entity.teamId - 2 || buff.ownerId === -3)) return list; // 不是全局buff或者是持有的buff，忽略    -2 表示队伍0   -1 表示队伍1   -3表示双方队伍
             if (!buff.hasParam(BuffParams.AFFECT_PROPERTY)) return list; // 不影响属性的buff跳过
             if (!buff.effect) return list; // 未提供effect属性跳过
             if (buff.effect.propertyName !== name) return list; // 不是影响该属性跳过
             if (buff.hasParam(BuffParams.DEPEND_ON)) {
                 if (this.buffs.every(b =>
-                    b.buffId !== buff.dependBuffId && !(b.ownerId === b.dependBuffId && b.name === b.dependBuffName)  // 依赖 不存在
+                    b.buffId !== buff.dependBuffId && !(b.ownerId === buff.dependEntityId && b.name === buff.dependBuffName)  // 依赖 不存在
                 )) {
                     return list;
                 }

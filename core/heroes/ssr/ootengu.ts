@@ -7,7 +7,7 @@ import {
     EffectTypes,
     EventCodes,
     EventRange,
-    RealEventData,
+    EventData,
     Reasons,
     Skill
 } from '../../index';
@@ -36,7 +36,7 @@ export const ootengu_skill2: Skill = {
     cost: 0,
     handlers: [{
         // 战斗开始：获得庇护
-        handle(battle: Battle, data: RealEventData) {
+        handle(battle: Battle, data: EventData) {
             if (data.skillOwnerId) {
                 battle.actionAddBuff(buildBuff1(data.skillOwnerId, data.skillOwnerId), Reasons.SKILL);
             }
@@ -44,11 +44,11 @@ export const ootengu_skill2: Skill = {
         code: EventCodes.BATTLE_START,
         range: EventRange.NONE,
         priority: 0,
-        passive: true,
+        passiveOrEquipment: true,
         name: '战斗开始获得【庇护】',
     }, {
         // 回合结束：获得庇护
-        handle(battle: Battle, data: RealEventData) {
+        handle(battle: Battle, data: EventData) {
             if (data.skillOwnerId) {
                 battle.actionAddBuff(buildBuff1(data.skillOwnerId, data.skillOwnerId), Reasons.SKILL);
             }
@@ -56,11 +56,11 @@ export const ootengu_skill2: Skill = {
         code: EventCodes.TURN_END,
         range: EventRange.SELF,
         priority: 0,
-        passive: true,
+        passiveOrEquipment: true,
         name: '回合结束获得【庇护】',
     }, {
         // 回合开始：失去庇护
-        handle(battle: Battle, data: RealEventData) {
+        handle(battle: Battle, data: EventData) {
             if (data.skillOwnerId) {
                 const buffs = battle.filterBuffByName(data.skillOwnerId, '庇护');
                 buffs.forEach(b => {
@@ -71,11 +71,11 @@ export const ootengu_skill2: Skill = {
         code: EventCodes.TURN_START,
         range: EventRange.SELF,
         priority: 0,
-        passive: false,
+        passiveOrEquipment: false,
         name: '回合开始失去【庇护】'
     }, {
         // 庇护效果处理
-        handle(battle: Battle, data: RealEventData) {
+        handle(battle: Battle, data: EventData) {
             if (data.skillOwnerId && data.data && (data.data as AddBuffProcessing).buff.hasParam(BuffParams.CONTROL)) {
                 const buffs = battle.filterBuffByName(data.skillOwnerId, '庇护');
                 if (buffs.length) {
@@ -89,11 +89,11 @@ export const ootengu_skill2: Skill = {
         code: EventCodes.BEFORE_BUFF_GET,
         range: EventRange.SELF,
         priority: 0,
-        passive: false,
+        passiveOrEquipment: false,
         name: '庇护判定'
     },{
         // 造成伤害时: 获得雄姿英发
-        handle(battle: Battle, data: RealEventData) {
+        handle(battle: Battle, data: EventData) {
             if(battle.testHit(0.5) && data.skillOwnerId) {
                 battle.actionAddBuff(buildBuff2(data.skillOwnerId, data.skillOwnerId), Reasons.SKILL);
             }
@@ -101,7 +101,7 @@ export const ootengu_skill2: Skill = {
         code: EventCodes.HAS_DAMAGED,
         range: EventRange.SELF,
         priority: 0,
-        passive: true,
+        passiveOrEquipment: true,
         name: '造成伤害时: 获得雄姿英发'
     }]
 };

@@ -43,7 +43,7 @@ export const akajita_skill3: Skill = {
             return -1;
         }
         for (let i = 0; i < 2; i++) {
-            const attacks: Attack[] = entities.map(e => Attack.build(e.entityId, sourceId).rate(0.72).shouldComputeCri().group().completed(computed).end());
+            const attacks: Attack[] = entities.map(e => Attack.build(e.entityId, sourceId).rate(0.72).normal().shouldComputeCri().group().completed(computed).end());
             if (!battle.actionAttack(attacks)) return 0;
 
         }

@@ -11,6 +11,7 @@ export {default as Handler} from './handler';
 export {default as Mana} from './mana';
 export {default as Runway} from './runway';
 export {default as Skill} from './skill';
+export {default as Equipment} from './equipment';
 export {default as Task} from './task';
 export * from './tasks';
 export * from './heroes';

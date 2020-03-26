@@ -15,7 +15,7 @@ import {
     attackProcessor,
     battleProcessor,
     EventProcessing,
-    eventProcessor, RealEventData,
+    eventProcessor, EventData,
     RemoveBuffProcessing,
     removeBuffProcessor,
     // UpdateHpProcessing,
@@ -74,6 +74,9 @@ export default class Battle {
 
     fakeTurns: FakeTurnProcessing[];
 
+    battleData: Map<string, string|number>;
+    turnData: Map<string, string|number>;
+
     constructor(datas: InititalData[], seed = Date.now()) {
         this.isEnd = false;
         this.winner = -1;
@@ -91,6 +94,8 @@ export default class Battle {
         this.buffs = [];
         this.fakeTurns = [];
         this.fieldSize = 0;
+        this.battleData = new Map<string, string|number>();
+        this.turnData = new Map<string, string|number>();
 
         forEach(datas, data => {
             if (data.teamId < 0 || data.teamId > 1) {
@@ -173,6 +178,52 @@ export default class Battle {
         }
     }
 
+    /**
+     * 获得实体存储的附加数据，详见setBattleData
+     * @param {string} key
+     * @return {string|null} 返回数据，对应key不存在返回null
+     */
+    getBattleData(key: string): string | null | number {
+        return this.battleData.get(key) || null;
+    }
+
+    /**
+     * 设置实体存储的附加数据，主要用于式神记录一些临时数据
+     * @param key
+     * @param value
+     */
+    setData(key: string, value: string | null | number): boolean {
+        if (value === null) {
+            return this.battleData.delete(key);
+        }
+        this.battleData.set(key, value);
+        return true;
+    }
+
+    /**
+     * 获得实体存储的附加数据，该数据表会在每次正式回合开始时被清空，详见setTurnData
+     * @param {string} key
+     * @return {string|null} 返回数据，对应key不存在返回null
+     */
+    getTurnData(key: string): string | null | number {
+        return this.turnData.get(key) || null;
+    }
+
+    /**
+     * 设置实体存储的附加数据，该数据表会在每次正式回合开始时被清空，主要用于式神记录一些临时数据
+     * 比如记录本回合内是否有人死亡，比如犬神记录本回合有没有人砍了队友
+     * @param key
+     * @param value
+     */
+    setTurnData(key: string, value: string | null | number): boolean {
+        if (value === null) {
+            return this.turnData.delete(key);
+        }
+        this.turnData.set(key, value);
+        return true;
+    }
+
+
     addFakeTurn(currentId: number, processor: Processor, data: any = {}) {
         const ft = new FakeTurnProcessing(processor, data, currentId);
         const index = this.fakeTurns.findIndex(ft => ft.currentId === currentId);
@@ -217,7 +268,7 @@ export default class Battle {
                             if (eventEntity.teamId == entity.teamId) return;
                         }
                     }
-                    processing.units.push(new RealEventData(entity.entityId, skill.no, eventId, handler, data));
+                    processing.units.push(new EventData(entity.entityId, skill.no, eventId, handler, data));
                 });
             });
         });

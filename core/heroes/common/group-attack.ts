@@ -30,6 +30,7 @@ export default class GroupAttack implements Skill {
         for (let i = 0; i < this.times; i++) {
             const infos = entities.map(e => Attack.build(e.entityId, sourceId)
                 .rate(this.rate)
+                .normal()
                 .shouldComputeCri()
                 .group()
                 .end()

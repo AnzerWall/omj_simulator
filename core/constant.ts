@@ -22,7 +22,7 @@ export enum EventCodes {
     ACTION_START, // 行动开始
     ACTION_END, // 行动结束后
     TURN_END, // 回合结束后
-    
+    SUNMON, // 召唤 复活
     
     TAKEN_SELECT, // 被选中后
   
@@ -61,6 +61,7 @@ export enum EventCodes {
 export enum AttackParams {
     SHOULD_COMPUTE_CRI= 'shouldComputeCri', //计算暴击
 
+    NORMAL = 'Normal', // 普通伤害
     INDIRECT = 'Indirect', // 是否是间接伤害
     REAL = 'Real', // 是否是真实伤害
     CRITICAL = 'Critical', // 是否是暴击伤害
@@ -140,6 +141,7 @@ export enum Reasons {
     COST,
     MANA_PROGRESS,
     RULE,
+    EQUIPMENT,
 }
 
 export enum EventRange {

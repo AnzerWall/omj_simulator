@@ -5,7 +5,7 @@ import {
     EventCodes,
     EventRange,
     Battle,
-    RealEventData,
+    EventData,
     Reasons,
     EffectTypes,
     BattleProperties,
@@ -30,7 +30,7 @@ export const shutendoji_skill1: Skill = {
         const selected = battle.getEntity(selectedId);
 
         for (let i = 0; i < (1 + buffs.length /* 增加鬼葫芦次数的普攻 */); i++) {
-            battle.actionAttack(Attack.build(selectedId, sourceId).rate(1.25).shouldComputeCri().normalAttack().end());
+            battle.actionAttack(Attack.build(selectedId, sourceId).rate(1.25).normal().shouldComputeCri().normalAttack().end());
         }
     }
 }
@@ -58,12 +58,12 @@ export const shutendoji_skill2: Skill = {
             code: EventCodes.TURN_END, // 触发事件
             range: EventRange.SELF, // 事件范围
             priority: 0, // 优先级
-            passive: true, // 是否是写在被动里的
+            passiveOrEquipment: true, // 是否是写在被动里的
             name: '回合结束获得狂气',
         },
         // 受到攻击 25% 获得狂气
         {
-            handle: (battle: Battle, data: RealEventData, step: number) =>{
+            handle: (battle: Battle, data: EventData, step: number) =>{
                 if (data.skillOwnerId) {
                     const buffs = battle.filterBuffByName(data.skillOwnerId, '狂气');
                     if (buffs.length >= 4) return; // 写了不覆盖
@@ -77,7 +77,7 @@ export const shutendoji_skill2: Skill = {
             code: EventCodes.HAS_BEEN_ATTACKED, // 触发事件
             range: EventRange.SELF, // 事件范围
             priority: 0, // 优先级
-            passive: true, // 是否是写在被动里的
+            passiveOrEquipment: true, // 是否是写在被动里的
             name: '受到攻击获得狂气',
         },
     ]
@@ -90,7 +90,7 @@ export const shutendoji_skill3: Skill = {
     cost: 3,
     handlers: [
         {
-            handle: (battle: Battle, data: RealEventData, step: number) =>{
+            handle: (battle: Battle, data: EventData, step: number) =>{
                const processing = data.data as AddBuffProcessing;
                const buff = processing.buff;
                if (buff.name === '鬼王降临') { // 形态结束时失去所有狂气
@@ -104,7 +104,7 @@ export const shutendoji_skill3: Skill = {
             code: EventCodes.BUFF_REMOVE, // 触发事件
             range: EventRange.SELF, // 事件范围
             priority: 0, // 优先级
-            passive: false, // 是否是写在被动里的
+            passiveOrEquipment: false, // 是否是写在被动里的
             name: '鬼王降临形态结束处理',
         }
     ],

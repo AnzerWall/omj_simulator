@@ -15,6 +15,10 @@ export class AttackBuilder {
         this.attack.params.push(...params);
         return this;
     }
+    tag(...tags: string[]) {
+        this.attack.tags.push(...tags);
+        return this;
+    }
 
     FR(n: number) {
         this.attack.FR = n;
@@ -33,6 +37,10 @@ export class AttackBuilder {
 
     rate(n: number) {
         this.attack.rate = n;
+        return this;
+    }
+    normal() {
+        this.attack.addParam(AttackParams.NORMAL);
         return this;
     }
 
@@ -116,7 +124,6 @@ export class AttackBuilder {
         this.attack.params.push(AttackParams.NO_SOURCE_PASSIVE);
         return this;
     }
-
 }
 
 export default class Attack {
@@ -128,6 +135,7 @@ export default class Attack {
     completedProcessor?: Processor; // 完成后触发的处理者
     FR: number;
     params: AttackParams[] = [];
+    tags: string[];
 
     hasParam(p: AttackParams) {
         return this.params.includes(p);
@@ -137,7 +145,13 @@ export default class Attack {
         this.params.push(p);
     }
 
+    hasTag(t: string) {
+        return this.tags.includes(t);
+    }
 
+    addTag(t: string) {
+        this.tags.push(t);
+    }
     constructor(targetId: number, sourceId: number) {
         this.targetId = targetId;
         this.sourceId = sourceId;
@@ -145,6 +159,7 @@ export default class Attack {
         this.rate = 1;
         this.FR = 0.01;
         this.params = [];
+        this.tags = [];
     }
 
     static build(targetId: number, sourceId: number): AttackBuilder {

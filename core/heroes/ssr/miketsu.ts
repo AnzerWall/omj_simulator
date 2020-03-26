@@ -11,11 +11,11 @@ import {
     Reasons,
     Skill
 } from '../../';
-import {RealEventData} from "../../tasks";
+import {EventData} from "../../tasks";
 import {SkillTarget} from "../../skill";
 
 function fakeTurn(battle: Battle, data: FakeTurnProcessing)  {
-    const eventData: RealEventData = data.data;
+    const eventData: EventData = data.data;
     if (data.confusion) { // 被混乱
         const e = battle.getRandomEnemy(data.currentId);
         if (e) {
@@ -33,7 +33,7 @@ export const miketsu_skill1: Skill = {
     target:  SkillTarget.ENEMY,
     handlers: [
         {
-            handle(battle: Battle, data: RealEventData) {
+            handle(battle: Battle, data: EventData) {
                 if (!data.skillOwnerId || !data.eventId) return 0;
                 const p = battle.hasBuffByName(data.skillOwnerId, '狐狩界') ? 0.4 : 0.05; // 结界启动期间提升概率
                 const isHit = battle.testHit(p);
@@ -46,13 +46,14 @@ export const miketsu_skill1: Skill = {
             code: EventCodes.ACTION_END, // 监听行动结束事件
             range: EventRange.ENEMY, // 敌方结束
             priority: 0,
-            passive: false,
+            passiveOrEquipment: false,
             name: '一矢判定'
         }
     ],
     cost: 0,
     use(battle: Battle, sourceId: number, selectedId: number) {
         const at = Attack.build(selectedId, sourceId)
+            .normal()
             .rate(1)
             .shouldComputeCri()
             .normalAttack()
@@ -69,6 +70,7 @@ export const miketsu_skill4: Skill = {
     use(battle: Battle, sourceId: number, selectedId: number) {
         const source = battle.getEntity(sourceId);
         const at = Attack.build(selectedId, sourceId)
+            .normal()
             .rate(1)
             .param(
                 AttackParams.SHOULD_COMPUTE_CRI, // 触发暴击
@@ -143,7 +145,7 @@ export const miketsu_skill2: Skill = {
     target:  SkillTarget.SELF,
     handlers: [{
         // 先机：释放狐狩界
-        handle(battle: Battle, data: RealEventData) {
+        handle(battle: Battle, data: EventData) {
             if (!data.skillOwnerId) return 0;
             battle.actionUseSkill(2, data.skillOwnerId, data.skillOwnerId, 0);
             return -1;
@@ -151,7 +153,7 @@ export const miketsu_skill2: Skill = {
         code: EventCodes.SENKI,
         range: EventRange.NONE,
         priority: 0,
-        passive: false,
+        passiveOrEquipment: false,
         name: '【先机】狐狩界'
     }],
     passive: false,
@@ -177,6 +179,7 @@ export const miketsu_skill3: Skill = {
         const buffs = battle.filterBuffBySource(source.teamId - 2, sourceId).filter(b => ['狐狩界·防御', '狐狩界·伤害', '狐狩界·速度'].includes(b.name)); // 来源是我的灵符
         const at = Attack.build(selectedId, sourceId)
             .rate( 1.95 * (1 + 0.25 * buffs.length / 3))
+            .normal()
             .shouldComputeCri()
             .single()
             .end();

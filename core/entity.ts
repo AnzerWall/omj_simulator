@@ -24,8 +24,8 @@ export default class Entity {
     lv: number; // 等级
     skills: Skill[];
     rank: string;
-    battleData: Map<string, string>;
-    turnData: Map<string, string>;
+    battleData: Map<string, string|number>;
+    turnData: Map<string, string|number>;
     summonToken: boolean; // 是否是召唤物
     waitInput: boolean; // 手动单位
 
@@ -41,8 +41,8 @@ export default class Entity {
         this.lv = 40;
         this.skills = [];
         this.rank = 'X';
-        this.battleData = new Map<string, string>();
-        this.turnData = new Map<string, string>();
+        this.battleData = new Map<string, string|number>();
+        this.turnData = new Map<string, string|number>();
         this.summonToken = false;
         this.waitInput = false;
 
@@ -57,7 +57,7 @@ export default class Entity {
      * @param {string} key
      * @return {string|null} 返回数据，对应key不存在返回null
      */
-    getBattleData(key: string): string | null {
+    getBattleData(key: string): string | null | number {
         return this.battleData.get(key) || null;
     }
 
@@ -66,7 +66,7 @@ export default class Entity {
      * @param key
      * @param value
      */
-    setData(key: string, value: string | null): boolean {
+    setData(key: string, value: string | null | number): boolean {
         if (value === null) {
             return this.battleData.delete(key);
         }
@@ -79,7 +79,7 @@ export default class Entity {
      * @param {string} key
      * @return {string|null} 返回数据，对应key不存在返回null
      */
-    getTurnData(key: string): string | null {
+    getTurnData(key: string): string | null | number {
         return this.turnData.get(key) || null;
     }
 
@@ -89,7 +89,7 @@ export default class Entity {
      * @param key
      * @param value
      */
-    setTurnData(key: string, value: string | null): boolean {
+    setTurnData(key: string, value: string | null | number): boolean {
         if (value === null) {
             return this.turnData.delete(key);
         }

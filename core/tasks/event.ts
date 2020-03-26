@@ -1,6 +1,6 @@
 import {Battle, Control, EventCodes, Handler} from "../";
 
-export class RealEventData {
+export class EventData {
     constructor(public skillOwnerId: number,
     public skillNo: number,
     public eventId: number,
@@ -10,7 +10,7 @@ export class RealEventData {
 }
 
 export class EventProcessing {
-    units: RealEventData[] = [];
+    units: EventData[] = [];
     constructor(public code: EventCodes){}
 }
 
@@ -25,7 +25,7 @@ export default function eventProcessing(battle: Battle, data: EventProcessing, s
     if (!eventData.handler) return 0;
 
     const entity = battle.getEntity(eventData.skillOwnerId);
-    if (eventData.handler.passive && battle.hasBuffByControl(eventData.skillOwnerId, Control.PASSIVE_FORBID)) return step + 1; // 被封印被动跳过处理
+    if (eventData.handler.passiveOrEquipment && battle.hasBuffByControl(eventData.skillOwnerId, Control.PASSIVE_FORBID)) return step + 1; // 被封印被动跳过处理
 
     battle.log(`${entity.name}(${entity.entityId})的${eventData.skillNo}技能事件触发`);
     battle.addProcessor(eventData.handler.handle,  eventData, `EventProcess`);

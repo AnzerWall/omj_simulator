@@ -12,6 +12,7 @@ export const houkikami_skill1: Skill = {
     use(battle: Battle, sourceId: number, selectedId: number) {
         const at = Attack.build(selectedId, sourceId)
             .rate(1)
+            .normal()
             .base((battle: Battle, sourceId: number, targetId: number): number => {
                 const target = battle.getEntity(targetId);
                 return battle.getComputedProperty(target.entityId, BattleProperties.ATK);

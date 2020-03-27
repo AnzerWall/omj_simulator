@@ -1,5 +1,5 @@
 import {Battle, BuffParams, Control, EventCodes, Reasons, WaitInputProcessing} from '../';
-import {SelectableSkill, SkillSelection, SkillTarget} from "../skill";
+import {SelectableSkill, SkillTarget} from "../skill";
 import waitInputProcessor from "./wait-input";
 
 export class TurnProcessing {
@@ -70,12 +70,14 @@ export default function turnProcessor(battle: Battle, data: TurnProcessing, step
                         battle.actionUseSkill(1, currentEntity.entityId, target.entityId, 0); //TODO: 是否需要确认鬼火
                     }
                 } else {
+                    const silent = battle.hasBuffByControl(currentEntity.entityId, Control.SILENT);
                     const mana = battle.getMana(currentEntity.teamId);
                     const skills: SelectableSkill[] = currentEntity.skills
                         .filter(s => {
                             if (s.passive) return false;
                             if (s.use === undefined) return false;
                             if (s.hide) return false;
+                            if (silent && s.no !== 1) return false; // TODO: 需要一个属性确认普攻
                             const cost: number = typeof s.cost === 'number' ? s.cost : s.cost(battle, currentEntity.entityId);
                             if (cost > 0) {
                                 if (!mana || mana.num < cost) return false;

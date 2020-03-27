@@ -2,9 +2,9 @@ import {filter, forEach, isArray, some} from 'lodash';
 import Entity from './entity';
 import Mana from './mana';
 import Runway from './runway';
-import {BuffParams, Control, EventCodes, EventRange, Reasons, BattleProperties} from './constant';
+import {BattleProperties, BuffParams, Control, EventCodes, EventRange, Reasons} from './constant';
 import {HeroBuilders} from './heroes';
-import Skill, {SelectableSkill} from './skill';
+import Skill from './skill';
 import {MersenneTwister19937, Random} from 'random-js';
 import Buff, {Effect, EffectTypes} from './buff';
 import Task, {Processor} from './task';
@@ -14,21 +14,20 @@ import {
     AttackProcessing,
     attackProcessor,
     battleProcessor,
+    EventData,
     EventProcessing,
-    eventProcessor, EventData,
+    eventProcessor,
+    FakeTurnProcessing,
     RemoveBuffProcessing,
     removeBuffProcessor,
-    // UpdateHpProcessing,
-    // updateHpProcessor,
     updateManaProcessor,
-    UpdateManaProgressProcessing,
     updateManaProcessProcessor,
+    UpdateManaProgressProcessing,
+    UpdateNanaProcessing,
     UpdateRunWayProcessing,
+    updateRunwayProcessor,
     UseSkillProcessing,
     useSkillProcessor,
-    UpdateNanaProcessing,
-    FakeTurnProcessing,
-    updateRunwayProcessor,
 } from "./tasks";
 import Attack from "./attack";
 import healingProcessor, {HealingProcessing} from './tasks/healing';
@@ -270,7 +269,7 @@ export default class Battle {
                             if (eventEntity.teamId == entity.teamId) return;
                         }
                     }
-                    if (handler.passiveOrEquipment === true && (this.hasBuffByControl(Control.PASSIVE_FORBID || noPassive))) return;
+                    if (handler.passiveOrEquipment === true && (this.hasBuffByControl(Control.PASSIVE_FORBID, Control.POLYMORPH) || noPassive )) return;
                     processing.units.push(new EventData(entity.entityId, skill.no, eventId, handler, data));
                 });
             });

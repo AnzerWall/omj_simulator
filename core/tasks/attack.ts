@@ -1,4 +1,4 @@
-import {Attack, AttackParams, Battle, BattleProperties, eps, EventCodes, Reasons} from "../";
+import {Attack, AttackParams, Battle, BattleProperties, Control, eps, EventCodes, Reasons} from "../";
 
 export class AttackProcessing {
     index: number = 0;
@@ -148,6 +148,9 @@ export default function attackProcessor(battle: Battle, data: AttackProcessing, 
             if (attack.completedProcessor) {
                 battle.addProcessor(attack.completedProcessor, data, `AttackCompletedProcessor`);
             } // 伤害后处理，一般处理伤害时的控制
+            const sleepBuffs = battle.filterBuffByControl(attack.targetId, Control.SLEEP); // 移除睡眠
+            sleepBuffs.forEach(b => battle.actionRemoveBuff(b, Reasons.RULE));
+
             if (!attack.hasParam(AttackParams.IGNORE_SOURCE)) battle.addEventProcessor(EventCodes.HAS_ATTACKED, attack.sourceId,data);
             battle.addEventProcessor(EventCodes.HAS_BEEN_ATTACKED, attack.targetId, data);
             return 8;

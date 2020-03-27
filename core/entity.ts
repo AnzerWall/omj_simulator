@@ -30,6 +30,7 @@ export default class Entity {
     turnData: Map<string, string|number>;
     summonToken: boolean; // 是否是召唤物
     waitInput: boolean; // 手动单位
+    fieldIndex: number; // 在区域上的位置
 
     constructor() {
         this.entityId = ++entityCounter;
@@ -44,6 +45,7 @@ export default class Entity {
         this.skills = [];
         this.equipments = [];
         this.rank = 'X';
+        this.fieldIndex = 0;
         this.battleData = new Map<string, string|number>();
         this.turnData = new Map<string, string|number>();
         this.summonToken = false;

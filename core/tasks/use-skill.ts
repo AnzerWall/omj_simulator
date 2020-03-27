@@ -1,6 +1,7 @@
 import {Reasons, Battle} from "../";
-
+let skillCounter = 0; // 技能使用的计数器
 export class UseSkillProcessing {
+    skillId: number = ++skillCounter;
     constructor(public no: number, public sourceId: number, public selectedId: number, public cost: number, public reason: Reasons = Reasons.NOTHING) {
 
     }
@@ -22,7 +23,7 @@ export default function useSkillProcessor(battle: Battle, data: UseSkillProcessi
             return 2;
         }
         case 2: {
-            (skill.use && skill.use(battle, data.sourceId, data.selectedId));
+            (skill.use && skill.use(battle, data.sourceId, data.selectedId, data.skillId));
             return -1;
         }
     }

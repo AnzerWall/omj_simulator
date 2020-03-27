@@ -33,6 +33,7 @@ import {
 import Attack from "./attack";
 import healingProcessor, {HealingProcessing} from './tasks/healing';
 import {Healing} from './index';
+import Equipment from "./equipment";
 
 interface InititalData {
     no: number;
@@ -69,6 +70,7 @@ export default class Battle {
     rootTask: Task; // 根任务节点
     currentTask: Task; // 当前处理的任务节点
     taskCounter: number; // 分配任务id用的计数器
+
 
     buffs: Buff[];
 
@@ -250,7 +252,7 @@ export default class Battle {
         return task.taskId;
     }
 
-    addEventProcessor(code: EventCodes, eventId: number, data?: any): number {
+    addEventProcessor(code: EventCodes, eventId: number, data?: any, noPassive: boolean = false, noEquipment: boolean = false): number {
         const eventEntity = eventId <= 0 ? null : this.getEntity(eventId);
         const processing: EventProcessing = new EventProcessing(code);
         this.entities.forEach(entity => {
@@ -268,7 +270,26 @@ export default class Battle {
                             if (eventEntity.teamId == entity.teamId) return;
                         }
                     }
+                    if (handler.passiveOrEquipment === true && (this.hasBuffByControl(Control.PASSIVE_FORBID || noPassive))) return;
                     processing.units.push(new EventData(entity.entityId, skill.no, eventId, handler, data));
+                });
+            });
+            forEach(entity.equipments, (equipment: Equipment) => {
+                forEach(equipment.handlers, handler => {
+                    if (handler.code !== code) return;
+                    if (eventId > 0 && eventEntity) {
+                        if (handler.range === EventRange.SELF) {
+                            if (eventId !== entity.entityId) return;
+                        }
+                        if (handler.range === EventRange.TEAM) {
+                            if (eventEntity.teamId !== entity.teamId) return;
+                        }
+                        if (handler.range === EventRange.ENEMY) {
+                            if (eventEntity.teamId == entity.teamId) return;
+                        }
+                    }
+                    if (handler.passiveOrEquipment === true && (this.hasBuffByControl(Control.EQUIPMENT_FORBID || noPassive))) return;
+                    processing.units.push(new EventData(entity.entityId, equipment.no, eventId, handler, data));
                 });
             });
         });

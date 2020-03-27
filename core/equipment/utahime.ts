@@ -13,6 +13,7 @@ import Battle from "../battle";
 
 export default function builder(): Equipment {
     return {
+        no: 40,
         name: '鬼灵歌姬',
         handlers:  [{
             handle(battle: Battle, data: EventData, step: number) {
@@ -27,7 +28,7 @@ export default function builder(): Equipment {
                 const source = battle.getEntity(attack.sourceId);
                 const count = source.getBattleData('鬼灵歌姬攻击计数') as number || 0;
                 if (count % 6 == 0) {
-                    const newAttack = Attack.build(data.skillOwnerId, attack.targetId)
+                    const newAttack = Attack.build(data.ownerId, attack.targetId)
                         .real()
                         .rate(1)
                         .base((battle: Battle, sourceId: number, targetId: number) => {

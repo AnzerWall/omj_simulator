@@ -131,6 +131,7 @@
             }
             &.current {
                 z-index: 30;
+                transform:translate(-50%, -50%) scale(1.3);
             }
         }
     }
@@ -408,7 +409,7 @@
             step() {
                 do {
                     this.battle.process();
-                } while (this.battle.currentTask.depth > this.depth && this.battle.currentTask.type !== 'WaitInput');
+                } while (!this.battle.isEnd && this.battle.currentTask.depth > this.depth && this.battle.currentTask.type !== 'WaitInput');
                 this.data = dump(this.battle);
                 this.updatePanel();
                 if (this.battle.isEnd) {

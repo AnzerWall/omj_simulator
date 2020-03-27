@@ -3,6 +3,7 @@ import Battle from "../battle";
 
 export default function builder(): Equipment {
     return {
+        no: 16,
         name: '蝠翼',
         handlers:  [{
             handle(battle: Battle, data: any, step: number) {

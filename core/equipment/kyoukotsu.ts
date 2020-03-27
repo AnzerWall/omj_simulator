@@ -12,6 +12,7 @@ import Battle from "../battle";
 
 export default function builder(): Equipment {
     return {
+        no: 7,
         name: '狂骨',
         handlers:  [{
             handle(battle: Battle, data: EventData, _step: number) {
@@ -21,7 +22,7 @@ export default function builder(): Equipment {
 
                 if (!attackInfo) return;
                 if ( !attack.hasParam(AttackParams.NORMAL) || attack.hasParam(AttackParams.NO_SOURCE_EQUIPMENT) ) return;
-                const owner = battle.getEntity(data.skillOwnerId);
+                const owner = battle.getEntity(data.ownerId);
                 const mana = battle.getMana(owner.teamId);
                 if (mana.num > 0) {
                     attackInfo.finalDamage = attackInfo.finalDamage * (1 + 0.08 * mana.num);

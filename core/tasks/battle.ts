@@ -17,7 +17,6 @@ export default function battleProcessor(battle: Battle, _: any, step: number): n
         case 3: {
             battle.judgeWin();
             if (battle.isEnd) return -1;
-            battle.entities.forEach(e => e.turnData.clear()); // 清理回合临时数据
             const nextId = battle.runway.computeNext() || 0;
             if (!nextId) return -1;
 

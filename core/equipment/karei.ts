@@ -3,11 +3,12 @@ import Battle from "../battle";
 
 export default function builder(): Equipment {
     return {
+        no: 28,
         name: '火灵',
         handlers:  [{
             handle(battle: Battle, data: EventData, _step: number) {
-                const owner = battle.getEntity(data.skillOwnerId);
-                battle.actionUpdateMana(data.skillOwnerId, owner.teamId, 3, Reasons.EQUIPMENT)
+                const owner = battle.getEntity(data.ownerId);
+                battle.actionUpdateMana(data.ownerId, owner.teamId, 3, Reasons.EQUIPMENT)
             },
             code: EventCodes.BATTLE_START, // 触发事件
             range: EventRange.NONE, // 事件范围

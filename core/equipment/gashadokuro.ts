@@ -1,4 +1,6 @@
 import {
+    AttackParams,
+    AttackProcessing,
     BattleProperties,
     Buff,
     EffectTypes,
@@ -14,23 +16,24 @@ import Battle from "../battle";
 
 export default function builder(): Equipment {
     return {
+        no: 11,
         name: '荒骷髅',
         handlers:  [{
             handle(battle: Battle, data: EventData, step: number) {
+                const attackProcessing = data.data as AttackProcessing;
+                const attackInfo = attackProcessing.attackInfos[attackProcessing.index];
+                const attack = attackProcessing.attacks[attackProcessing.index];
+                if (!attackInfo || !attack) return;
+                if ( !attack.hasParam(AttackParams.NORMAL) || attack.hasParam(AttackParams.NO_SOURCE_EQUIPMENT) ) return;
 
-                battle.actionAddBuff(Buff.build(data.skillOwnerId, data.skillOwnerId)
-                    .name('荒骷髅', 1)
-                    .noDispel()
-                    .noRemove()
-                    .effect(BattleProperties.DMG_DEALT_B, EffectTypes.FIXED, 0.1)
-                    .end(), Reasons.EQUIPMENT);
-
+                const buff = battle.filterBuffByName(data.ownerId, '荒骷髅');
+                attackInfo.finalDamage = attackInfo.finalDamage * (1 + buff.length ? 0.25: 0.1);
             },
-            code: EventCodes.SUNMON, // 触发事件
+            code: EventCodes.WILL_DAMAGE, // 触发事件
             range: EventRange.SELF, // 事件范围
             priority:1000,
             passiveOrEquipment: true, // 是否是写在被动里的
-            name: '荒骷髅10%-1',
+            name: '荒骷髅处理',
         }, {
             handle(battle: Battle, data: any, step: number) {
                 battle.actionAddBuff(Buff.build(data.skillOwnerId, data.skillOwnerId)
@@ -38,7 +41,6 @@ export default function builder(): Equipment {
                     .countDown(1)
                     .noDispel()
                     .noRemove()
-                    .effect(BattleProperties.DMG_DEALT_B, EffectTypes.FIXED, 0.25)
                     .end(), Reasons.EQUIPMENT);
             },
             code: EventCodes.HAS_DAMAGED, // 触发事件
@@ -46,23 +48,6 @@ export default function builder(): Equipment {
             priority:1000,
             passiveOrEquipment: true, // 是否是写在被动里的
             name: '荒骷髅25%',
-        }, {
-            handle(battle: Battle, data: EventData, step: number) {
-                const removeBuffProcessing = data.data as RemoveBuffProcessing;
-                if (removeBuffProcessing.buff.name === '荒骷髅') {
-                    battle.actionAddBuff(Buff.build(data.skillOwnerId, data.skillOwnerId)
-                        .name('荒骷髅', 1)
-                        .noDispel()
-                        .noRemove()
-                        .effect(BattleProperties.DMG_DEALT_B, EffectTypes.FIXED, 0.1)
-                        .end(), Reasons.EQUIPMENT);
-                }
-            },
-            code: EventCodes.BUFF_REMOVE, // 触发事件
-            range: EventRange.SELF, // 事件范围
-            priority:1000,
-            passiveOrEquipment: true, // 是否是写在被动里的
-            name: '荒骷髅10%-2',
         }],
     }
 }

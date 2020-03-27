@@ -64,12 +64,12 @@ export const shutendoji_skill2: Skill = {
         // 受到攻击 25% 获得狂气
         {
             handle: (battle: Battle, data: EventData, step: number) =>{
-                if (data.skillOwnerId) {
-                    const buffs = battle.filterBuffByName(data.skillOwnerId, '狂气');
+                if (data.ownerId) {
+                    const buffs = battle.filterBuffByName(data.ownerId, '狂气');
                     if (buffs.length >= 4) return; // 写了不覆盖
                     const isHit = battle.testHit(0.25);
                     if (isHit) {
-                        battle.actionAddBuff(buildKyoki(data.skillOwnerId, data.skillOwnerId), Reasons.SKILL)
+                        battle.actionAddBuff(buildKyoki(data.ownerId, data.ownerId), Reasons.SKILL)
                     }
 
                 }

@@ -4,6 +4,7 @@ import Skill, {SelectableSkill, SkillSelection} from './skill';
 import {BattleProperties} from './constant';
 import {TurnProcessing} from "./tasks";
 import {Mana} from "./index";
+import Equipment from './equipment';
 
 let entityCounter = 0;
 
@@ -23,6 +24,7 @@ export default class Entity {
     dead: boolean;
     lv: number; // 等级
     skills: Skill[];
+    equipments: Equipment[];
     rank: string;
     battleData: Map<string, string|number>;
     turnData: Map<string, string|number>;
@@ -40,6 +42,7 @@ export default class Entity {
         this.dead = false;
         this.lv = 40;
         this.skills = [];
+        this.equipments = [];
         this.rank = 'X';
         this.battleData = new Map<string, string|number>();
         this.turnData = new Map<string, string|number>();
@@ -100,7 +103,9 @@ export default class Entity {
     addSkill(skill: Skill) {
         this.skills.push(skill);
     }
-
+    addEquipment(equipment: Equipment) {
+        this.equipments.push(equipment);
+    }
     addTags(tag: string) {
         if (!this.hasTag(tag)) {
             this.tags.push(tag);

@@ -102,7 +102,6 @@ export default class Runway {
         const id = reachGoalEntities[Math.floor(this.random() * reachGoalEntities.length)];
         if (id === undefined) return null;
 
-        this.distanceTable.set(id, 0);
         return id;
     }
 

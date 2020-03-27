@@ -91,12 +91,12 @@ export default function attackProcessor(battle: Battle, data: AttackProcessing, 
             const attackInfo = data.attackInfos[data.index];
             if (!attackInfo) return 0;
             const FR = battle.random.real(1 - attackInfo.FR, 1 + attackInfo.FR); // 伤害浮动系数
-            const atk = attackInfo.damage * attack.rate * (attackInfo.isCri ? attackInfo.criticalDamage : 1) * 300; // 伤害公式攻击部
-            const def = attackInfo.targetDefence + 300; // 伤害公式防御部
+            const atk = attackInfo.damage * attack.rate * (attackInfo.isCri ? attackInfo.criticalDamage : 1); // 伤害公式攻击部
+            const def = 300 / (attackInfo.targetDefence + 300); // 伤害公式防御部
             const rate = (attackInfo.damageDealtBuff / attackInfo.damageDealtDebuff) *
                 (attackInfo.targetDamageTakenBuff / attackInfo.targetDamageTakenDebuff); // 减伤增伤易伤等计算
-
-            attackInfo.finalDamage = atk / def * rate * FR;
+            const noComputeDef = attack.hasParam(AttackParams.REAL);
+            attackInfo.finalDamage = atk * (noComputeDef ? 1 : def)  * rate * FR;
             //TODO: 计算盾的抵消伤害
 
             attackInfo.originHp = attackInfo.remainHp = target.hp; // 保存剩余生命

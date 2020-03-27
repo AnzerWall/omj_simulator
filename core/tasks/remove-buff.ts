@@ -17,7 +17,7 @@ export default function removeBuffProcessor(battle: Battle, data: RemoveBuffProc
             return 2;
         }
         case 2: {
-            const target = buff.ownerId  == -1? battle.getEntity(buff.ownerId) : null;
+            const target = buff.ownerId > 0? battle.getEntity(buff.ownerId) : null;
             battle.log(
                 target ? `【${target.name}(${target.teamId})】` : '全局',
                 `失去 【${buff.name}】 Buff`);

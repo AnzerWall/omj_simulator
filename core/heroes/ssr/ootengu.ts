@@ -37,8 +37,8 @@ export const ootengu_skill2: Skill = {
     handlers: [{
         // 战斗开始：获得庇护
         handle(battle: Battle, data: EventData) {
-            if (data.skillOwnerId) {
-                battle.actionAddBuff(buildBuff1(data.skillOwnerId, data.skillOwnerId), Reasons.SKILL);
+            if (data.ownerId) {
+                battle.actionAddBuff(buildBuff1(data.ownerId, data.ownerId), Reasons.SKILL);
             }
         },
         code: EventCodes.BATTLE_START,
@@ -49,8 +49,8 @@ export const ootengu_skill2: Skill = {
     }, {
         // 回合结束：获得庇护
         handle(battle: Battle, data: EventData) {
-            if (data.skillOwnerId) {
-                battle.actionAddBuff(buildBuff1(data.skillOwnerId, data.skillOwnerId), Reasons.SKILL);
+            if (data.ownerId) {
+                battle.actionAddBuff(buildBuff1(data.ownerId, data.ownerId), Reasons.SKILL);
             }
         },
         code: EventCodes.TURN_END,
@@ -61,8 +61,8 @@ export const ootengu_skill2: Skill = {
     }, {
         // 回合开始：失去庇护
         handle(battle: Battle, data: EventData) {
-            if (data.skillOwnerId) {
-                const buffs = battle.filterBuffByName(data.skillOwnerId, '庇护');
+            if (data.ownerId) {
+                const buffs = battle.filterBuffByName(data.ownerId, '庇护');
                 buffs.forEach(b => {
                     battle.actionRemoveBuff(b, Reasons.SKILL);
                 })
@@ -76,8 +76,8 @@ export const ootengu_skill2: Skill = {
     }, {
         // 庇护效果处理
         handle(battle: Battle, data: EventData) {
-            if (data.skillOwnerId && data.data && (data.data as AddBuffProcessing).buff.hasParam(BuffParams.CONTROL)) {
-                const buffs = battle.filterBuffByName(data.skillOwnerId, '庇护');
+            if (data.ownerId && data.data && (data.data as AddBuffProcessing).buff.hasParam(BuffParams.CONTROL)) {
+                const buffs = battle.filterBuffByName(data.ownerId, '庇护');
                 if (buffs.length) {
                     ( data.data as AddBuffProcessing).cancel = true; // 抵消
                     buffs.forEach(b => {
@@ -94,8 +94,8 @@ export const ootengu_skill2: Skill = {
     },{
         // 造成伤害时: 获得雄姿英发
         handle(battle: Battle, data: EventData) {
-            if(battle.testHit(0.5) && data.skillOwnerId) {
-                battle.actionAddBuff(buildBuff2(data.skillOwnerId, data.skillOwnerId), Reasons.SKILL);
+            if(battle.testHit(0.5) && data.ownerId) {
+                battle.actionAddBuff(buildBuff2(data.ownerId, data.ownerId), Reasons.SKILL);
             }
         },
         code: EventCodes.HAS_DAMAGED,

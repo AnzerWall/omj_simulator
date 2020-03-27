@@ -6,5 +6,5 @@ export class UpdateRunWayProcessing{
 }
 export default function updateRunWayProcessor(battle: Battle, data: UpdateRunWayProcessing, _: number) {
     // if (!(data instanceof UpdateRunWayProcessing)) return 0;
-    return battle.runway.updatePercent(data.targetId, data.percent) ? -1 : 0;
+     battle.runway.updatePercent(data.targetId, data.percent);
 }

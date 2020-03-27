@@ -154,6 +154,9 @@ export default function turnProcessor(battle: Battle, data: TurnProcessing, step
                 mana.preProgress = Math.min(5, mana.preProgress + 1);
                 battle.actionUpdateMana(0, currentEntity.teamId, mana.preProgress, Reasons.RULE);
             }
+            battle.runway.set(currentEntity.entityId, 0);
+            battle.entities.forEach(e => e.turnData.clear()); // 清理回合临时数据
+            battle.turnData.clear();
             return -1;
         }
     }

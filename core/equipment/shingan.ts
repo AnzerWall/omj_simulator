@@ -12,6 +12,7 @@ import Battle from "../battle";
 
 export default function builder(): Equipment {
     return {
+        no: 31,
         name: '心眼',
         handlers:  [{
             handle(battle: Battle, data: EventData, _step: number) {

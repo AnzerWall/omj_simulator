@@ -16,6 +16,7 @@ import Battle from "../battle";
 
 export default function builder(): Equipment {
     return {
+        no: 14,
         name: '雪幽魂',
         handlers:  [{
             handle(battle: Battle, data: EventData, step: number) {
@@ -23,7 +24,7 @@ export default function builder(): Equipment {
                 const attack = attackProcessing.attacks[attackProcessing.index];
                 if ( !attack) return;
 
-                const buffs = battle.filterBuffByParam(data.skillOwnerId, BuffParams.AFFECT_PROPERTY).filter(b => b.effect && b.effect.propertyName === BattleProperties.SPD && b.effect.value < 0);
+                const buffs = battle.filterBuffByParam(data.ownerId, BuffParams.AFFECT_PROPERTY).filter(b => b.effect && b.effect.propertyName === BattleProperties.SPD && b.effect.value < 0);
 
                 const buff = Buff.build(attack.sourceId, attack.targetId)
                     .countDown(1)

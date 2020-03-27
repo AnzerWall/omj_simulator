@@ -34,11 +34,11 @@ export const miketsu_skill1: Skill = {
     handlers: [
         {
             handle(battle: Battle, data: EventData) {
-                if (!data.skillOwnerId || !data.eventId) return 0;
-                const p = battle.hasBuffByName(data.skillOwnerId, '狐狩界') ? 0.4 : 0.05; // 结界启动期间提升概率
+                if (!data.ownerId || !data.eventId) return 0;
+                const p = battle.hasBuffByName(data.ownerId, '狐狩界') ? 0.4 : 0.05; // 结界启动期间提升概率
                 const isHit = battle.testHit(p);
                 if (isHit) {
-                    battle.addFakeTurn(data.skillOwnerId, fakeTurn, data);
+                    battle.addFakeTurn(data.ownerId, fakeTurn, data);
 
                 }
                 return -1;
@@ -146,8 +146,8 @@ export const miketsu_skill2: Skill = {
     handlers: [{
         // 先机：释放狐狩界
         handle(battle: Battle, data: EventData) {
-            if (!data.skillOwnerId) return 0;
-            battle.actionUseSkill(2, data.skillOwnerId, data.skillOwnerId, 0);
+            if (!data.ownerId) return 0;
+            battle.actionUseSkill(2, data.ownerId, data.ownerId, 0);
             return -1;
         },
         code: EventCodes.SENKI,

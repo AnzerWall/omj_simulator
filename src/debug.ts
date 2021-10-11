@@ -1,5 +1,6 @@
 import { createMachine, interpret } from 'xstate';
 import {GameSm} from "./game";
+import {getTemplate} from "./shikigami";
 
 
 const game = interpret(createMachine(GameSm))
@@ -12,32 +13,20 @@ game.send({
     type: 'ADD_ENTITY',
     data: {
         teamId: 0,
-        properties: {
-            attack: 1500,
-            defense: 1000,
-            speed: 240,
-            hp: 100,
-            maxHp: 100,
-        }
+        ...getTemplate('normal'),
     }
 })
 game.send({
     type: 'ADD_ENTITY',
     data: {
         teamId: 1,
-        properties: {
-            attack: 1500,
-            defense: 1000,
-            speed: 120,
-            hp: 100,
-            maxHp: 100,
-        }
+        ...getTemplate('normal'),
     }
 })
 game.send("GAME_START")
 
 
-for(let i = 0; i < 1000; i++) {
+for(let i = 0; i < 100; i++) {
     if (game.state.done) break;
 
     game.send("NEXT")

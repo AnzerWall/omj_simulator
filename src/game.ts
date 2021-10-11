@@ -1,10 +1,11 @@
-import {ActorRef, assign, createMachine, EventObject, MachineConfig, send, spawn, actions} from "xstate";
-import {EntitySm} from "./entity";
+import {actions, ActorRef, assign, createMachine, MachineConfig, send, spawn} from "xstate";
+import {EntityContext, EntitySm} from "./entity";
 import {Runway, runwayAdd, runwayCompute, runwayGetNext, runwayNew, runwaySet} from "./runway";
+import {NormalAttack} from "./skills/normal-attack";
 
 const {pure, respond} = actions
 
-type GameContext = {
+export type GameContext = {
     entities: Array<ActorRef<any>>
     teams: [Array<number>, Array<number>]
     runway: Runway,
@@ -13,7 +14,52 @@ type GameContext = {
         [key: string]: any,
     }
 }
+export const GameQueries = {
+    getEntity(game: GameContext, entityId: number): EntityContext | null {
+        const ref: ActorRef<any> = game.entities[entityId]
+        if (!ref) return null;
+
+        return ref.getSnapshot().context;
+    },
+    getAliceTeamMembers(game: GameContext, teamId: number) {
+        return game.teams[teamId]?.filter(entityId => {
+            const entity = this.getEntity(game, entityId)
+            return entity && entity.hp > 0
+        }) ?? []
+    },
+    getAliveTeammates(game: GameContext, entityId: number) {
+        const entity = this.getEntity(game, entityId)
+        if (!entity) return [entityId]
+
+        const teamId = entity.teamId
+        return this.getAliceTeamMembers(game, teamId)
+    },
+    getAliveEnemies(game: GameContext, entityId: number) {
+        const entity = this.getEntity(game, entityId)
+        if (!entity) return [entityId]
+
+        const teamId = entity.teamId
+        return this.getAliceTeamMembers(game, 1 - teamId)
+    },
+}
 export const entity = createMachine(EntitySm)
+
+export function createSkill(data: {
+    name: string
+    config: Record<string, any>
+}, owner: number) {
+    switch (data.name) {
+        case 'normal-attack':
+            return createMachine(NormalAttack).withContext({
+                config: data.config,
+                owner,
+                skillTarget: -1,
+                meta: {}
+            })
+        default:
+            return null
+    }
+}
 
 export const GameSm: MachineConfig<GameContext, any, any> = {
     initial: 'init',
@@ -36,7 +82,7 @@ export const GameSm: MachineConfig<GameContext, any, any> = {
                     }
                 },
                 ADD_ENTITY: {
-                    actions: assign({
+                    actions: [assign({
                         teams: (context, event) => {
                             const id = context.entities.length
                             if (event.data.teamId === 0) {
@@ -60,16 +106,35 @@ export const GameSm: MachineConfig<GameContext, any, any> = {
                             return [
                                 ...context.entities,
                                 spawn(entity.withContext({
+                                    decisionFunction: 'selectNormalAttack',
                                     teamId: event.data.teamId,
-                                    ...event.data.properties,
-                                }),  {
+                                    original: {
+                                        ...event.data.properties
+                                    },
+                                    current: {
+                                        ...event.data.properties
+                                    },
+                                    hp: event.data.properties.maxHp,
+                                    skills: [],
+                                }), {
                                     name,
-                                    sync: true,
+                                    sync: false,
                                 })
                             ]
                         },
 
-                    })
+                    }), pure((context: GameContext, event: any) => {
+                        const id = context.entities.length - 1
+                        const skills = event.data?.skills
+
+                        return skills?.map((s: any) => {
+                            const sm = createSkill(s, id)
+                            if (sm) {
+                                return send({type: 'ADD_SKILL', skillSM: sm}, {to: context.entities[id] as any})
+                            }
+                            return null
+                        })?.filter(Boolean);
+                    })]
                 },
             }
         },
@@ -98,7 +163,7 @@ export const GameSm: MachineConfig<GameContext, any, any> = {
                 runway: {
                     entry: [assign({
                         runway: (context) => runwayCompute(context.runway, context.entities.reduce((table, e, id) => {
-                            table[id] = e.getSnapshot().context.speed
+                            table[id] = e.getSnapshot().context.current.speed
                             return table;
                         }, {} as Record<string, number>)),
                     }), assign({
@@ -116,26 +181,54 @@ export const GameSm: MachineConfig<GameContext, any, any> = {
                         }
                     })],
                     on: {
-                        NEXT: 'turn'
+                        NEXT: [
+                            {target: 'win', cond: (context, event) => context.turnInfo.entityId < 0},
+                            {target: 'turn'}
+                        ]
                     }
                 },
                 turn: {
                     entry: (context) => {
-                      console.log("[当前回合]", context.turnInfo.entityId)
+                        console.log("[当前回合]", context.turnInfo.entityId, context.entities.map(e => e.getSnapshot().context.hp))
                     },
                     initial: 'init',
                     on: {
-                        NEXT: 'runway'
+                        NEXT: [
+                            {
+                                target: 'win', cond: (context, event) => {
+                                    return GameQueries.getAliceTeamMembers(context, 0).length <= 0 ||
+                                        GameQueries.getAliceTeamMembers(context, 1).length <= 0
+                                }
+
+                            },
+                            {target: 'runway'}
+                        ]
                     },
                     states: {
                         init: {
-
+                            on: {
+                                NEXT: 'compute'
+                            }
                         },
-                        selectSkill: {},
-                        waitingSelection: {},
-                        selectTarget: {},
-                        waitingSelectTarget: {},
-                        compute: {},
+                        compute: {
+                            entry: pure(((context, event) => {
+                                const me = context.turnInfo.entityId
+                                if (me === -1) return undefined
+                                const target = GameQueries.getAliveEnemies(context, me)?.[0] ?? -1
+                                if (target === -1) return undefined
+
+                                return send({
+                                    type: 'HURT',
+                                    data: {
+                                        targetId: target,
+                                        value: -3000,
+                                    }
+                                })
+                            })),
+                            on: {
+                                NEXT: 'end'
+                            }
+                        },
                         end: {
                             type: 'final' as any,
                         }
@@ -156,8 +249,31 @@ export const GameSm: MachineConfig<GameContext, any, any> = {
                         })
                     })
                 },
+                HURT: {
+                    actions: pure((context: GameContext, event: any) => {
+                        const {targetId, value} = event.data
+                        const ref = context.entities[targetId]
+
+                        return [
+                            send({
+                                type: 'UPDATE_HP',
+                                value,
+                            }, {to: ref as any}) as any
+                        ]
+                    }),
+                },
 
                 // query
+                COMPUTE_PROPERTY: {
+                    actions: ((context, event) => {
+                        return send({
+                            type: 'BROADCAST',
+                            event: {
+                                type: 'COMPUTE_PROPERTY',
+                            }
+                        })
+                    })
+                }
 
             }
         },

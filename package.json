@@ -2,7 +2,6 @@
   "name": "omj-simulator",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "debug": "ts-node src/debug.ts"
   },
